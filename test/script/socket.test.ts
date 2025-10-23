@@ -1,4 +1,4 @@
-import { WebsocketManager } from '../../src/share/script/socket_manager';
+import { WebsocketManager } from '../../src/script/socket_manager';
 
 describe("Execute Manager Test", () => {
     let socket:WebsocketManager | undefined

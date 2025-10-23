@@ -1,7 +1,7 @@
-import { ClientJobParameter } from '../../src/share/client/job_parameter';
-import { ClientJavascript } from '../../src/share/client/javascript';
-import { ClientOS } from '../../src/share/client/os';
-import { DataType, Job, JobCategory, JobType, Libraries, Parameter, Task } from '../../src/share/interface';
+import { ClientJobParameter } from '../../src/client/job_parameter';
+import { ClientJavascript } from '../../src/client/javascript';
+import { ClientOS } from '../../src/client/os';
+import { DataType, Libraries, Parameter } from '../../src/interface';
 
 
 describe("JS Test", () => {

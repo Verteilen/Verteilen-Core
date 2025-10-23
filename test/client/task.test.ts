@@ -1,7 +1,7 @@
-import { ClientJobParameter } from '../../src/share/client/job_parameter';
-import { ClientOS } from '../../src/share/client/os';
-import { DataType, Job, JobCategory, Libraries, JobType, Parameter, Property, Task } from '../../src/share/interface';
-import { ExecuteManager_Base } from '../../src/share/script/execute/base';
+import { ClientJobParameter } from '../../src/client/job_parameter';
+import { ClientOS } from '../../src/client/os';
+import { DataType, Job, JobCategory, Libraries, JobType, Parameter, Property, Task } from '../../src/interface';
+import { ExecuteManager_Base } from '../../src/script/execute/base';
 
 describe("Express Test", () => {
     let os:ClientOS | undefined = undefined

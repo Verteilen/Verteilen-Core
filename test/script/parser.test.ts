@@ -1,5 +1,5 @@
-import { DataType, DataTypeBase, Parameter } from '../../src/share/interface';
-import { Util_Parser } from '../../src/share/script/execute/util_parser';
+import { DataType, DataTypeBase, Parameter } from '../../src/interface';
+import { Util_Parser } from '../../src/script/execute/util_parser';
 
 describe('Parser testing (Replace Text Feature)', () => {
     test("Single replace", () => {

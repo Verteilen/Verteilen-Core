@@ -1,5 +1,5 @@
-import { ClientJobExecute } from "../../src/share/client/job_execute"
-import { Job, JobCategory, JobType2 } from "../../src/share/interface"
+import { ClientJobExecute } from "../../src/client/job_execute"
+import { Job, JobCategory, JobType2 } from "../../src/interface"
 
 
 describe("Client Execute Test", () => {

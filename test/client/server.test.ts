@@ -1,5 +1,4 @@
-import { Client } from '../../src/share/client/client';
-import { i18n } from '../../src/share/plugins/i18n';
+import { Client } from '../../src/client/client';
 
 describe("Client Test", () => {
     let client:Client | undefined
