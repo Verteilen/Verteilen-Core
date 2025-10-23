@@ -7,6 +7,9 @@
   "repository": "https://github.com/Verteilen/Verteilen-Core",
   "description": "The core library help verteilen software to work",
   "main": "dist/index.js",
+  "bugs": {
+    "url": "https://github.com/Verteilen/Verteilen-Core/issues"
+  },
   "scripts": {
     "test": "jest --coverage"
   },
@@ -34,8 +37,5 @@
     "uuid": "^11.0.5",
     "vue-i18n": "^11.1.12",
     "ws": "^8.18.0"
-  },
-  "bugs": {
-    "url": "https://github.com/Verteilen/Verteilen-Core/issues"
   }
 }
