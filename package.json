@@ -1,0 +1,36 @@
+{
+  "name": "verteilen-core",
+  "version": "1.0.0",
+  "license": "MIT",
+  "homepage": "https://verteilen.github.io/wiki/",
+  "author": "Elly",
+  "repository": "https://github.com/Verteilen/Verteilen-Core",
+  "description": "The core library help verteilen software to work",
+  "main": "main/main.js",
+  "scripts": {
+    "test": "jest --coverage"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/tcp-port-used": "^1.0.4",
+    "@types/ws": "^8.5.14",
+    "ts-jest": "^29.3.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "byte-size": "^9.0.1",
+    "expressionparser": "^1.1.5",
+    "jest": "^29.7.0",
+    "systeminformation": "^5.25.11",
+    "tcp-port-used": "^1.0.2",
+    "tree-kill": "^1.2.2",
+    "tsc": "^2.0.4",
+    "uuid": "^11.0.5",
+    "ws": "^8.18.0"
+  },
+  "bugs": {
+    "url": "https://github.com/Verteilen/Verteilen-Core/issues"
+  }
+}
