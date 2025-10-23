@@ -20,7 +20,7 @@ export { createI18n as Create }
  * const app = createApp(App)
  * app.use(i18n)
  */
-export const i18nDefaultData:any = {
+export const i18nDefaultData = {
     locale: 'en',
     globalInjection: true,
     fallbackFormat: 'en',
