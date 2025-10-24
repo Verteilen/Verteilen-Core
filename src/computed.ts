@@ -13,3 +13,7 @@ export * as ClientOS from './client/os'
 export * as ClientParameter from './client/parameter'
 export * as ClientResource from './client/resource'
 export * as ClientShell from './client/shell'
+/**
+ * Scripts
+ */
+export * as Execute_WebhookServerManager from './script/webhook_server_manager'

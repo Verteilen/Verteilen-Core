@@ -36,7 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UtilServer_Log = exports.UtilServer_Console = exports.Execute_WebhookServerManager = exports.Execute_WebhookManager = exports.Execute_SocketManager = exports.Execute_ExecuteManager = exports.Execute_ConsoleServerManager = exports.Execute_ConsoleManager = exports.I18N = exports.DATA_FOLDER = exports.IGNORE_CHARACTER = exports.ENV_CHARACTER = exports.SCROLL_LIMIT = exports.RENDER_FILE_UPDATETICK = exports.RENDER_UPDATETICK = exports.CLIENT_UPDATETICK = exports.MESSAGE_LIMIT = exports.WebHookPORT = exports.WebPORT = exports.PORT = void 0;
+exports.UtilServer_Log = exports.UtilServer_Console = exports.Execute_WebhookManager = exports.Execute_SocketManager = exports.Execute_ExecuteManager = exports.Execute_ConsoleServerManager = exports.Execute_ConsoleManager = exports.I18N = exports.DATA_FOLDER = exports.IGNORE_CHARACTER = exports.ENV_CHARACTER = exports.SCROLL_LIMIT = exports.RENDER_FILE_UPDATETICK = exports.RENDER_UPDATETICK = exports.CLIENT_UPDATETICK = exports.MESSAGE_LIMIT = exports.WebHookPORT = exports.WebPORT = exports.PORT = void 0;
 exports.PORT = 12080;
 exports.WebPORT = 11080;
 exports.WebHookPORT = 15080;
@@ -63,6 +63,5 @@ exports.Execute_ConsoleServerManager = __importStar(require("./script/console_se
 exports.Execute_ExecuteManager = __importStar(require("./script/execute_manager"));
 exports.Execute_SocketManager = __importStar(require("./script/socket_manager"));
 exports.Execute_WebhookManager = __importStar(require("./script/webhook_manager"));
-exports.Execute_WebhookServerManager = __importStar(require("./script/webhook_server_manager"));
 exports.UtilServer_Console = __importStar(require("./util/server/console_handle"));
 exports.UtilServer_Log = __importStar(require("./util/server/log_handle"));

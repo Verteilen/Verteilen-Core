@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ClientShell = exports.ClientResource = exports.ClientParameter = exports.ClientOS = exports.ClientJavascript = exports.ClientHttp = exports.ClientJobParameter = exports.ClientJobExecute = exports.ClientExecute = exports.ClientCluster = exports.Client = exports.ClientAnalysis = void 0;
+exports.Execute_WebhookServerManager = exports.ClientShell = exports.ClientResource = exports.ClientParameter = exports.ClientOS = exports.ClientJavascript = exports.ClientHttp = exports.ClientJobParameter = exports.ClientJobExecute = exports.ClientExecute = exports.ClientCluster = exports.Client = exports.ClientAnalysis = void 0;
 exports.ClientAnalysis = __importStar(require("./client/analysis"));
 exports.Client = __importStar(require("./client/client"));
 exports.ClientCluster = __importStar(require("./client/cluster"));
@@ -46,3 +46,4 @@ exports.ClientOS = __importStar(require("./client/os"));
 exports.ClientParameter = __importStar(require("./client/parameter"));
 exports.ClientResource = __importStar(require("./client/resource"));
 exports.ClientShell = __importStar(require("./client/shell"));
+exports.Execute_WebhookServerManager = __importStar(require("./script/webhook_server_manager"));
