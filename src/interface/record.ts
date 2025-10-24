@@ -129,3 +129,13 @@ export interface ExecutePair {
     record?: ExecuteRecord
     meta?: any
 }
+
+export const CreatePreference = ():Preference => ({
+    lan: 'en',
+    log: false,
+    font: 16,
+    notification: false,
+    theme: "dark",
+    plugin_token: [],
+    animation: true,
+})
