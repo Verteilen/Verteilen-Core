@@ -4,6 +4,7 @@
 //                           
 // ========================
 import { Preference } from "./record"
+import { v6 as uuidv6 } from 'uuid'
 
 export enum ACLType {
     PUBLIC,
@@ -31,20 +32,20 @@ export enum PermissionType {
 }
 
 export interface GlobalPermission {
-    project: LocalPermiision
-    task: LocalPermiision
-    job: LocalPermiision
-    parameter: LocalPermiision
+    project: LocalPermission
+    task: LocalPermission
+    job: LocalPermission
+    parameter: LocalPermission
 
-    plugin: LocalPermiision
-    node: LocalPermiision
-    lib: LocalPermiision
-    log: LocalPermiision
+    plugin: LocalPermission
+    node: LocalPermission
+    lib: LocalPermission
+    log: LocalPermission
 
     execute_job: boolean
 }
 
-export interface LocalPermiision {
+export interface LocalPermission {
     view: boolean
     create: boolean
     edit: boolean
@@ -53,13 +54,13 @@ export interface LocalPermiision {
 
 export interface LocalPermissionContainer {
     uuid: string
-    permission: LocalPermiision
+    permission: LocalPermission
 }
 
 export interface LocalPermissionContainer2 {
     uuid: string
     uuid2: string
-    permission: LocalPermiision
+    permission: LocalPermission
 }
 
 /**
@@ -68,6 +69,7 @@ export interface LocalPermissionContainer2 {
 export interface UserProfile {
     token: string
     name: string
+    email?: string
     preference: Preference
     type: UserType
     description?: string
@@ -88,4 +90,44 @@ export interface UserProfileClient {
 
 export interface ServerSetting {
     open_guest: boolean
+}
+
+export const CreateRootPermission = ():GlobalPermission => {
+    const perl:LocalPermission = {
+        view: true,
+        create: true,
+        edit: true,
+        delete: true,
+    }
+    const per:GlobalPermission = {
+        project: perl,
+        task: perl,
+        job: perl,
+        plugin: perl,
+        node: perl,
+        parameter: perl,
+        lib: perl,
+        log: perl,
+        execute_job: true
+    }
+    return per
+}
+
+export const CreateRootUser = ():UserProfile => {
+    return {
+        token: uuidv6(),
+        type: UserType.ROOT,
+        preference: {
+            lan: 'en',
+            log: true,
+            font: 18,
+            theme: "dark",
+            notification: false,
+            plugin_token: [],
+            animation: true,
+        },
+        name: "root",
+        description: "Root User",
+        permission: CreateRootPermission()
+    }
 }

@@ -110,6 +110,10 @@ export enum JavascriptLib {
     PATH = 1 << 4,
 }
 
+export enum ServiceMode {
+    ONCE, CYCLE, EVENT
+}
+
 export const DataTypeText: { [key:number]:string } = {
     0: 'types.boolean',
     1: 'types.number',

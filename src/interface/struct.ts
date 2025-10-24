@@ -5,6 +5,7 @@
 // ========================
 import { ParameterContainer, Project } from "./base"
 import ws from 'ws'
+import { ServiceMode } from "./enum"
 
 type ProjectCall = (p:Project) => Project
 type ParameterCall = () => Array<ParameterContainer>
@@ -111,7 +112,6 @@ export interface FeedBack {
     meta: number
     message: string
 }
-
 
 export interface KeyValue {
     key: any
@@ -289,4 +289,8 @@ export interface BuildinAssetsContent {
 
 export interface BuildinAssets {
     data: Array<BuildinAssetsContent>
+}
+
+export interface ServiceConfig {
+    mode: ServiceMode
 }
