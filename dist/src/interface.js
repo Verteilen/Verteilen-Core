@@ -36,7 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UtilServer_Log = exports.UtilServer_Console = exports.Execute_WebhookManager = exports.Execute_SocketManager = exports.Execute_ExecuteManager = exports.Execute_ConsoleServerManager = exports.Execute_ConsoleManager = exports.I18N = exports.DATA_FOLDER = exports.IGNORE_CHARACTER = exports.ENV_CHARACTER = exports.SCROLL_LIMIT = exports.RENDER_FILE_UPDATETICK = exports.RENDER_UPDATETICK = exports.CLIENT_UPDATETICK = exports.MESSAGE_LIMIT = exports.WebHookPORT = exports.WebPORT = exports.PORT = void 0;
+exports.UtilServer_Log = exports.UtilServer_Console = exports.Execute_WebhookManager = exports.Execute_SocketManager = exports.Execute_ExecuteManager = exports.Execute_ConsoleServerManager = exports.Execute_ConsoleManager = exports.Execute_PART = exports.I18N = exports.DATA_FOLDER = exports.IGNORE_CHARACTER = exports.ENV_CHARACTER = exports.SCROLL_LIMIT = exports.RENDER_FILE_UPDATETICK = exports.RENDER_UPDATETICK = exports.CLIENT_UPDATETICK = exports.MESSAGE_LIMIT = exports.WebHookPORT = exports.WebPORT = exports.PORT = void 0;
 exports.PORT = 12080;
 exports.WebPORT = 11080;
 exports.WebHookPORT = 15080;
@@ -58,6 +58,7 @@ __exportStar(require("./interface/struct"), exports);
 __exportStar(require("./interface/table"), exports);
 __exportStar(require("./interface/ui"), exports);
 exports.I18N = __importStar(require("./plugins/i18n"));
+exports.Execute_PART = __importStar(require("./script/execute/interface"));
 exports.Execute_ConsoleManager = __importStar(require("./script/console_manager"));
 exports.Execute_ConsoleServerManager = __importStar(require("./script/console_server_manager"));
 exports.Execute_ExecuteManager = __importStar(require("./script/execute_manager"));

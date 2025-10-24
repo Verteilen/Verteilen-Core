@@ -54,6 +54,7 @@ export * as I18N from './plugins/i18n'
 /**
  * Scripts
  */
+export * as Execute_PART from './script/execute/interface'
 export * as Execute_ConsoleManager from './script/console_manager'
 export * as Execute_ConsoleServerManager from './script/console_server_manager'
 export * as Execute_ExecuteManager from './script/execute_manager'
