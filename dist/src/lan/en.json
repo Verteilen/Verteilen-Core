@@ -44,21 +44,34 @@
     "settings": {
         "system": "System",
         "appearance": "Appearance",
-        "workflow": "Workflow"
+        "workflow": "Workflow",
+        "token_remove": "Are you sure you want to remove the token"
     },
     "toast": {
         "server": "Server Mode",
         "node": "Node Mode",
+        "cluster": "Cluster Mode",
         "server_d": "Select server mode, You can control node by using monitor",
         "node_d": "Select node mode, You are waiting server to connect...",
+        "cluster_d": "Select cluster mode, You can group all the node in your area now",
         "connection-create-title": "Connection Establish",
         "connection-create-des": "Create new connection",
         "connection-remove-title": "Disconnect",
         "connection-remove-des": "Disconnect detected"
     },
     "modeselect": {
-        "title": "Your role",
-        "titlebar": "Role Selection"
+        "title": "Role",
+        "title2": "Please select your role",
+        "titlebar": "Role Selection",
+        "welcome": "Welcome to verteilen",
+        "welcome2": "Finish the configuration, to define your identify",
+        "server": "Server Mode",
+        "server2": "Do you want to use this app as client side only?",
+        "url": "Server URL",
+        "confirm": "Final Step",
+        "confirm2": "Final confirm, It will send you to homepage, after you click confirm button",
+        "confirm3": "Server Mode",
+        "confirm4": "Role"
     },
     "error": {
         "title-needed": "Title is needed",
@@ -326,6 +339,7 @@
             "messager_log": "messager_log(message:string)"
         }
     },
+    "token": "Token",
     "info": "Information",
     "search": "Search",
     "selectall": "Select All",
@@ -391,5 +405,9 @@
     "plugin": "Plugin",
     "template": "Template",
     "loading": "Loading",
-    "relogin": "Re-Login"
+    "relogin": "Re-Login",
+    "yes": "Yes",
+    "no": "No",
+    "next": "Next",
+    "previous": "Previous"
 }

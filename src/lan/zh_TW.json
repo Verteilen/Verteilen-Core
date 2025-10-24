@@ -44,7 +44,8 @@
     "settings": {
         "system": "系統",
         "appearance": "外觀",
-        "workflow": "流程"
+        "workflow": "流程",
+        "token_remove": "確定刪除密鑰嗎"
     },
     "toast": {
         "server": "伺服器模式",
@@ -338,6 +339,7 @@
             "messager_log": "messager_log(message:string)"
         }
     },
+    "token": "密鑰",
     "info": "資訊",
     "search": "搜尋",
     "selectall": "全選",

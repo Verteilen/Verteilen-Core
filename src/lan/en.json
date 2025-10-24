@@ -44,7 +44,8 @@
     "settings": {
         "system": "System",
         "appearance": "Appearance",
-        "workflow": "Workflow"
+        "workflow": "Workflow",
+        "token_remove": "Are you sure you want to remove the token"
     },
     "toast": {
         "server": "Server Mode",
@@ -338,6 +339,7 @@
             "messager_log": "messager_log(message:string)"
         }
     },
+    "token": "Token",
     "info": "Information",
     "search": "Search",
     "selectall": "Select All",

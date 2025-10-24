@@ -22,6 +22,7 @@ export { createI18n as Create }
  * app.use(i18n)
  */
 export const i18nDefaultData = {
+    legacy: true,
     locale: 'en',
     globalInjection: true,
     fallbackFormat: 'en',
