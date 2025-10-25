@@ -3,15 +3,25 @@
 //      Share Codebase     
 //                           
 // ========================
+/**
+ * Express server related data structure
+ */
 import { Preference } from "./record"
 import { v6 as uuidv6 } from 'uuid'
 
+/**
+ * **Access Control Type**\
+ * Ot will have effect on permission value
+ */
 export enum ACLType {
     PUBLIC,
     PROTECTED,
     PRIVATE
 }
-
+/**
+ * **User Type**\
+ * It will have effect on permission value
+ */
 export enum UserType {
     ROOT,
     ADMIN,

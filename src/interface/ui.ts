@@ -3,6 +3,10 @@
 //      Share Codebase     
 //                           
 // ========================
+/**
+ * Vue Client-side only data structure
+ */
+
 export interface AppConfig {
     isExpress: boolean
     isElectron: boolean

@@ -15,6 +15,7 @@ import * as pem from 'pem'
 import * as https from 'https'
 
 /**
+ * **Compute Client**\
  * The calculation node worker
  */
 export class Client {

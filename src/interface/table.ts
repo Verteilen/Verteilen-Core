@@ -3,6 +3,10 @@
 //      Share Codebase     
 //                           
 // ========================
+/**
+ * Value override for some base value\
+ * The data structure that use in Vue
+ */
 import { Node } from './base'
 import { Plugin, SystemLoad } from './struct'
 

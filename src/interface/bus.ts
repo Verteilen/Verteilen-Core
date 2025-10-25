@@ -3,6 +3,9 @@
 //      Share Codebase     
 //                           
 // ========================
+/**
+ * Event bus related type and interface
+ */
 import { Job, Parameter, Project, Task } from "./base"
 import { ExecuteState } from "./enum"
 import { ExecutionLog, Log, Preference } from "./record"
@@ -43,6 +46,7 @@ export interface EmitterProxy<T> {
 }
 
 /**
+ * **Execute Event Proxy**\
  * The middleware for task scheduler worker with singal sender
  */
 export interface ExecuteProxy {
@@ -90,6 +94,7 @@ export interface NodeProxy {
 }
 
 /**
+ * **Vue Event Bus Type**\
  * Emitter events container for Primary use
  */
 export type BusType = {

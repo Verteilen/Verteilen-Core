@@ -3,6 +3,9 @@
 //      Share Codebase     
 //                           
 // ========================
+/**
+ * The data structure which will use in execute stage
+ */
 import { Job } from "./base"
 import { ExecuteState } from "./enum"
 

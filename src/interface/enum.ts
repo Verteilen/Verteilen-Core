@@ -3,13 +3,25 @@
 //      Share Codebase     
 //                           
 // ========================
+/**
+ * Enum library, including translation which will be use in Vue
+ */
+
+/**
+ * **Socket Type**\
+ * This exists because reference to ws or buildin socket will sometime cause error\
+ * So we will need to create one for ourselves
+ */
 export enum SocketState {
     CONNECTING = 0,
     OPEN = 1,
     CLOSING = 2,
     CLOSED = 3
 }
-
+/**
+ * **Data Type**\
+ * The support data type for parameter
+ */
 export enum DataType {
     Boolean, 
     Number, 
@@ -20,13 +32,21 @@ export enum DataType {
     Select,
     List,
 }
-
+/**
+ * **Data Type Base**\
+ * The support data type for calculation\
+ * Proerty or expression calculation will use this
+ */
 export enum DataTypeBase {
     Boolean, 
     Number, 
     String,
 }
-
+/**
+ * **Resource Query Type**\
+ * Client resource type\
+ * Use in when server query system information from node
+ */
 export enum ResourceType {
     ALL = ~(~0 << 10),
     SYSTEM = 1 << 0,

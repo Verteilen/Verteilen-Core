@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ParameterTemplateText = exports.ProjectTemplateText = exports.JobType2Text = exports.JobTypeText = exports.JobResultText = exports.ConnectionText = exports.JobCategoryText = exports.ExecuteStateText = exports.DataTypeText = exports.JavascriptLib = exports.RenderUpdateType = exports.ExecuteState = exports.ParameterTemplate = exports.ProjectTemplate = exports.JobType2 = exports.JobType = exports.ConditionResult = exports.JobCategory = exports.FrontendUpdate = exports.ResourceType = exports.DataTypeBase = exports.DataType = exports.SocketState = void 0;
+exports.ParameterTemplateText = exports.ProjectTemplateText = exports.JobType2Text = exports.JobTypeText = exports.JobResultText = exports.ConnectionText = exports.JobCategoryText = exports.ExecuteStateText = exports.DataTypeText = exports.ServiceMode = exports.JavascriptLib = exports.RenderUpdateType = exports.ExecuteState = exports.ParameterTemplate = exports.ProjectTemplate = exports.JobType2 = exports.JobType = exports.ConditionResult = exports.JobCategory = exports.FrontendUpdate = exports.ResourceType = exports.DataTypeBase = exports.DataType = exports.SocketState = void 0;
 var SocketState;
 (function (SocketState) {
     SocketState[SocketState["CONNECTING"] = 0] = "CONNECTING";
@@ -112,6 +112,12 @@ var JavascriptLib;
     JavascriptLib[JavascriptLib["HTTP"] = 8] = "HTTP";
     JavascriptLib[JavascriptLib["PATH"] = 16] = "PATH";
 })(JavascriptLib || (exports.JavascriptLib = JavascriptLib = {}));
+var ServiceMode;
+(function (ServiceMode) {
+    ServiceMode[ServiceMode["ONCE"] = 0] = "ONCE";
+    ServiceMode[ServiceMode["CYCLE"] = 1] = "CYCLE";
+    ServiceMode[ServiceMode["EVENT"] = 2] = "EVENT";
+})(ServiceMode || (exports.ServiceMode = ServiceMode = {}));
 exports.DataTypeText = {
     0: 'types.boolean',
     1: 'types.number',

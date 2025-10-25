@@ -3,6 +3,10 @@
 //      Share Codebase     
 //                           
 // ========================
+/**
+ * All kinds of data structure
+ * It's a mess, i know
+ */
 import { ParameterContainer, Project } from "./base"
 import ws from 'ws'
 import { ServiceMode } from "./enum"
