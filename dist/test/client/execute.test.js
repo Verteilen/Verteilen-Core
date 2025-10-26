@@ -27,7 +27,8 @@ describe("Client Execute Test", () => {
             script: "",
             string_args: ["Not Exist"],
             number_args: [],
-            boolean_args: []
+            boolean_args: [],
+            id_args: [],
         };
         execute = new job_execute_1.ClientJobExecute((str) => console.log(str), (str) => console.log(str), job, undefined, { plugins: [] });
         yield expect(execute.execute()).rejects.toBeDefined();
@@ -42,7 +43,8 @@ describe("Client Execute Test", () => {
             script: "",
             string_args: [process.cwd()],
             number_args: [],
-            boolean_args: []
+            boolean_args: [],
+            id_args: [],
         };
         execute = new job_execute_1.ClientJobExecute((str) => console.log(str), (str) => console.log(str), job, undefined, { plugins: [] });
         yield expect(execute.execute()).resolves.toBeDefined();

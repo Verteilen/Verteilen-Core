@@ -38,7 +38,7 @@ class ExecuteManager extends runner_1.ExecuteManager_Runner {
             this.current_projects = this.record.projects;
             this.current_nodes = [];
             this.record.nodes.forEach(x => {
-                const n = this.websocket_manager.targets.find(y => y.uuid == x.ID);
+                const n = this.websocket_manager.targets.find(y => y.uuid == x.uuid);
                 if (n != undefined)
                     this.current_nodes.push(n);
             });

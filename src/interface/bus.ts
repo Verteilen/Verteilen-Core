@@ -98,7 +98,13 @@ export interface NodeProxy {
  * Emitter events container for Primary use
  */
 export type BusType = {
+    /**
+     * Setting dialog popup event
+     */
     setting: void
+    /**
+     * Guide link click event
+     */
     guide: void
     makeToast: ToastData
     modeSelect: boolean
@@ -109,6 +115,7 @@ export type BusType = {
     relogin: void
     loginGuest: void
     login: Setter
+    logout: void
     updateTask: void
     updateJob: void
     updateParameter: void

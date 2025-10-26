@@ -17,7 +17,8 @@ describe("Express Test", () => {
             script: "",
             string_args: str,
             number_args: [],
-            boolean_args: []
+            boolean_args: [],
+            id_args: [],
         }
     }
     const generateTask = (Job:Job, property:Array<Property>, cronjob?:string):Task => {

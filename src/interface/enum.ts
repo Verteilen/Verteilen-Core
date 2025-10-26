@@ -121,6 +121,10 @@ export enum RenderUpdateType {
     Parameter = 1 << 2
 }
 
+export enum RecordType {
+    PROJECT, PARAMETER, NODE, LOG, LIB, USER,
+}
+
 export enum JavascriptLib {
     ALL = ~(~0 << 7),
     OS = 1 << 0, 

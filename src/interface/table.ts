@@ -7,32 +7,52 @@
  * Value override for some base value\
  * The data structure that use in Vue
  */
-import { Node } from './base'
+import { Node, Parameter, Project, Task } from './base'
 import { Plugin, SystemLoad } from './struct'
 
+/**
+ * **UI Parameter Table Data Structure**\
+ * For display the data on the parameter page
+ */
+export interface ParameterTable extends Parameter {
+    /**
+     * **Select State**
+     */
+    s: boolean
+}
+/**
+ * **UI Node Table Data Structure**\
+ * For display the data on the node page
+ */
 export interface NodeTable extends Node {
-    s?: boolean
+    /**
+     * **Select State**
+     */
+    s: boolean
     state: number
     connection_rate?: number
     plugins?: Array<Plugin>
     system?: SystemLoad
 }
-
-export interface TaskTable {
+export interface TaskTable extends Task {
+    /**
+     * **Select State**
+     */
     s: boolean
-    ID: string
-    setupjob: boolean
-    cronjob: boolean
-    multi:boolean
-    title: string
-    description: string
+    /**
+     * **Compute Job Count**\
+     * Show how many jobs the task have
+     */
     jobCount: number
 }
-
-export interface ProjectTable {
+export interface ProjectTable extends Project {
+    /**
+     * **Select State**
+     */
     s: boolean
-    ID: string
-    title: string
-    description: string
+    /**
+     * **Compute Task Count**\
+     * Show how many tasks the project have
+     */
     taskCount: number
 }

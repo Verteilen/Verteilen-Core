@@ -16,7 +16,6 @@ export interface ParameterConfigTrigger {
  * **Parameter Context**\
  */
 export interface ParameterContainer {
-    s?: boolean
     name: string
     meta?: any
     config?: ParameterConfigTrigger
@@ -49,7 +48,10 @@ export interface Property {
      */
     deep?: number
 }
-
+/**
+ * **Data Parameter Bank**\
+ * Store the data which will be reference in the execute stage
+ */
 export interface Parameter {
     uuid: string
     title: string
@@ -124,6 +126,11 @@ export interface Job {
      * In order to execute job, some type of job will require arguments
      */
     boolean_args: Array<boolean>
+    /**
+     * **ID Arguments**\
+     * In order to execute job, some type of job will require arguments
+     */
+    id_args: Array<boolean>
     /**
      * **Local Permission**\
      * Client-side only permission field\
@@ -235,7 +242,7 @@ export interface Project {
      * **Parameter ID**\
      * In order reference to parameter database
      */
-    store_uuid: string
+    parameter_uuid: string
     /**
      * **Parameter instance**\
      * The data field of parameter
@@ -270,7 +277,12 @@ export interface Node {
      * **ID**\
      * The UUID of the compute node
      */
-    ID: string
+    uuid: string
+    /**
+     * **The parent cluster**
+     * The node parent url
+     */
+    parent?: string
     /**
      * **URL**\
      * The address to the compute node

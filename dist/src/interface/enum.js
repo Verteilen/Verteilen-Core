@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ParameterTemplateText = exports.ProjectTemplateText = exports.JobType2Text = exports.JobTypeText = exports.JobResultText = exports.ConnectionText = exports.JobCategoryText = exports.ExecuteStateText = exports.DataTypeText = exports.ServiceMode = exports.JavascriptLib = exports.RenderUpdateType = exports.ExecuteState = exports.ParameterTemplate = exports.ProjectTemplate = exports.JobType2 = exports.JobType = exports.ConditionResult = exports.JobCategory = exports.FrontendUpdate = exports.ResourceType = exports.DataTypeBase = exports.DataType = exports.SocketState = void 0;
+exports.ParameterTemplateText = exports.ProjectTemplateText = exports.JobType2Text = exports.JobTypeText = exports.JobResultText = exports.ConnectionText = exports.JobCategoryText = exports.ExecuteStateText = exports.DataTypeText = exports.ServiceMode = exports.JavascriptLib = exports.RecordType = exports.RenderUpdateType = exports.ExecuteState = exports.ParameterTemplate = exports.ProjectTemplate = exports.JobType2 = exports.JobType = exports.ConditionResult = exports.JobCategory = exports.FrontendUpdate = exports.ResourceType = exports.DataTypeBase = exports.DataType = exports.SocketState = void 0;
 var SocketState;
 (function (SocketState) {
     SocketState[SocketState["CONNECTING"] = 0] = "CONNECTING";
@@ -103,6 +103,15 @@ var RenderUpdateType;
     RenderUpdateType[RenderUpdateType["Node"] = 2] = "Node";
     RenderUpdateType[RenderUpdateType["Parameter"] = 4] = "Parameter";
 })(RenderUpdateType || (exports.RenderUpdateType = RenderUpdateType = {}));
+var RecordType;
+(function (RecordType) {
+    RecordType[RecordType["PROJECT"] = 0] = "PROJECT";
+    RecordType[RecordType["PARAMETER"] = 1] = "PARAMETER";
+    RecordType[RecordType["NODE"] = 2] = "NODE";
+    RecordType[RecordType["LOG"] = 3] = "LOG";
+    RecordType[RecordType["LIB"] = 4] = "LIB";
+    RecordType[RecordType["USER"] = 5] = "USER";
+})(RecordType || (exports.RecordType = RecordType = {}));
 var JavascriptLib;
 (function (JavascriptLib) {
     JavascriptLib[JavascriptLib["ALL"] = 127] = "ALL";

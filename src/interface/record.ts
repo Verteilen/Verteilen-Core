@@ -87,6 +87,11 @@ export interface Preference_Recover {
     nodes: Array<string | null>
 }
 
+/**
+ * **User Preference**\
+ * Store the user preference setting\
+ * This could store for any kinds of backend
+ */
 export interface Preference {
     /**
      * Language setting
@@ -106,9 +111,13 @@ export interface Preference {
     plugin_token: Array<PluginToken>
     animation: boolean
     recover?: Preference_Recover
+
+    mode?: number
+    url?: string
 }
 
 export interface Library {
+    uuid: string
     name: string
     load: boolean
     content: string

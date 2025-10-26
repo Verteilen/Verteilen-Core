@@ -57,7 +57,7 @@ class WebsocketManager {
         this.server_update = () => this.sendUpdate();
         this.server_record = (ns) => {
             ns.forEach(x => {
-                this.serverconnect(x.url, x.ID);
+                this.serverconnect(x.url, x.uuid);
             });
         };
         this.shell_open = (uuid) => {
@@ -184,16 +184,17 @@ class WebsocketManager {
             const data = [];
             this.targets.forEach(x => {
                 if (x.websocket.readyState == interface_1.SocketState.CLOSED) {
-                    data.push({ ID: x.uuid, url: x.websocket.url });
+                    data.push({ uuid: x.uuid, url: x.websocket.url });
                 }
             });
-            data.forEach(d => this.removeByUUID(d.ID));
+            data.forEach(d => this.removeByUUID(d.uuid));
             data.forEach(d => {
-                this.serverconnect(d.url, d.ID);
+                this.serverconnect(d.url, d.uuid);
             });
             result = this.targets.map(x => {
                 return {
-                    ID: x.uuid,
+                    s: false,
+                    uuid: x.uuid,
                     state: x.websocket.readyState,
                     url: x.websocket.url,
                     connection_rate: x.ms,

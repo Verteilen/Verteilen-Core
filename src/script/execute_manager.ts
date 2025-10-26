@@ -55,7 +55,7 @@ export class ExecuteManager extends ExecuteManager_Runner {
         this.current_projects = this.record.projects
         this.current_nodes = []
         this.record.nodes.forEach(x => {
-            const n = this.websocket_manager.targets.find(y => y.uuid == x.ID)
+            const n = this.websocket_manager.targets.find(y => y.uuid == x.uuid)
             if(n != undefined) this.current_nodes.push(n)
         })
         this.messager_log(`[Execute] Start executing, Project count: ${this.current_projects.length}, Node count: ${this.current_nodes.length}`)

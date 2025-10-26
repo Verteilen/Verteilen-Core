@@ -77,6 +77,7 @@ export interface LocalPermissionContainer2 {
  * The data structure store in the DATA_Folder
  */
 export interface UserProfile {
+    uuid: string
     token: string
     name: string
     email?: string
@@ -125,6 +126,7 @@ export const CreateRootPermission = ():GlobalPermission => {
 
 export const CreateRootUser = ():UserProfile => {
     return {
+        uuid: uuidv6(),
         token: uuidv6(),
         type: UserType.ROOT,
         preference: {
