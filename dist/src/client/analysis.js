@@ -61,7 +61,7 @@ class ClientAnalysis {
                 'execute_job': this.execute_job,
                 'release': this.release,
                 'stop_job': this.stop_all,
-                'set_parameter': this.set_parameter,
+                'set_database': this.set_database,
                 'set_libs': this.set_libs,
                 'shell_folder': this.shell.shell_folder,
                 'open_shell': this.shell.open_shell,
@@ -109,11 +109,11 @@ class ClientAnalysis {
                 return;
             this.exec.splice(index, 1);
         };
-        this.set_parameter = (data, source, channel) => {
+        this.set_database = (data, source, channel) => {
             if (channel == undefined)
                 return;
             const target = this.exec_checker(channel);
-            target.set_parameter(data);
+            target.set_database(data);
         };
         this.set_libs = (data, source, channel) => {
             if (channel == undefined)
