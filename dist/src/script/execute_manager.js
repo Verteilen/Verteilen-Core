@@ -14,7 +14,7 @@ class ExecuteManager extends runner_1.ExecuteManager_Runner {
                 this.current_p = this.current_projects[0];
                 this.messager_log(`[Execute] Project Start ${this.current_p.uuid}`);
                 (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.executeProjectStart([this.current_p, 0]);
-                this.SyncParameter(this.current_p);
+                this.SyncDatabase(this.current_p);
             }
             else if (this.current_p != undefined) {
                 if (this.first)
@@ -199,7 +199,7 @@ class ExecuteManager extends runner_1.ExecuteManager_Runner {
             var _a;
             this.current_p = this.current_projects[1];
             (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.executeProjectStart([this.current_p, 1]);
-            this.SyncParameter(this.current_p);
+            this.SyncDatabase(this.current_p);
             this.state = interface_1.ExecuteState.RUNNING;
             return 1;
         };
@@ -236,7 +236,7 @@ class ExecuteManager extends runner_1.ExecuteManager_Runner {
                     this.messager_log(`[Execute] Previous project ${index}. ${this.current_p.uuid}`);
                 }
                 (_b = this.proxy) === null || _b === void 0 ? void 0 : _b.executeProjectStart([this.current_p, index + (forward ? 1 : -1)]);
-                this.SyncParameter(this.current_p);
+                this.SyncDatabase(this.current_p);
                 return index;
             }
         };

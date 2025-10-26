@@ -26,8 +26,8 @@ import {
 } from "../interface"
 import { PluginFeedback } from "./server"
 import { MemoryData, RecordIOBase } from './io'
-import { Util_Server_Console_Proxy } from '../util/server/console_handle'
-import { Util_Server_Log_Proxy } from '../util/server/log_handle'
+import { Util_Server_Console_Proxy } from '../util/console_handle'
+import { Util_Server_Log_Proxy } from '../util/log_handle'
 
 export type Translate = (key:string) => string
 
@@ -80,6 +80,7 @@ export class ServerDetail {
     t:Translate
     updatehandle: any
     /**
+     * **A simple message queue**\
      * message, trace message, error message return data, for update
      */
     re: Array<any> = []
@@ -248,12 +249,14 @@ export class ServerDetail {
                 else if (p[0] == 'execute') this.console_execute(undefined, x.record!.uuid, p[1])
             }
         })
-        const logss = this.logs.logs.filter(x => x.dirty && x.output)
-        logss.forEach(x => {
-            x.dirty = false
-            const filename = path.join(os.homedir(), DATA_FOLDER, "log", `${x.uuid}.json`)
-            fs.writeFileSync(filename, JSON.stringify(x, null, 4))
-        })
+        if(this.loader != undefined){
+            const logss = this.backend.memory.logs.filter(x => x.dirty && x.output)
+            for(var x of logss){
+                x.dirty = false
+                const filename = this.loader.join(this.loader.root, "log", `${x.uuid}.json`)
+                this.loader.write_string(filename, JSON.stringify(x, null, 4))
+            }
+        }
         return re
     }
 
@@ -413,11 +416,13 @@ export class ServerDetail {
     console_update_call = () => {
         const p = this.re
         this.re = []
-        const h:Header = {
-            name: "console_update-feedback",
-            data: JSON.stringify(p)
+        if(this.feedback.socket){
+            const h:Header = {
+                name: "console_update-feedback",
+                data: JSON.stringify(p)
+            }
+            this.feedback.socket(JSON.stringify(h))
         }
-        socket.send(JSON.stringify(h))
     }
     console_clean = (socket:any, uuid:string) => {
         const target = this.execute_manager.find(x => x.record!.uuid == uuid)

@@ -12,7 +12,7 @@
         "project": "Project Container",
         "task": "Task Container",
         "job": "Job Container",
-        "parameter": "Parameter Binding",
+        "database": "Database Binding",
         "console": "Console"
     },
     "profile": {
@@ -78,7 +78,7 @@
         "url-needed": "URL is needed",
         "title-repeat": "Cannot use title which already exists",
         "project-empty": "Project list cannot be zero",
-        "parameter-empty": "Project must binding with parameter",
+        "database-empty": "Project must binding with database",
         "node-empty": "node list cannot be zero"
     },
     "filter": {
@@ -89,13 +89,13 @@
     },
     "modal": {
         "project-template-select": "Select Template",
-        "parameter-template-select": "Select Template",
+        "database-template-select": "Select Template",
         "new-project": "New Project",
         "modify-project": "Modify Project",
         "delete-project": "Delete Project",
         "import-project": "Import Project",
         "delete-project-confirm": "Are you sure delete projects below",
-        "delete-project-binding": "Delete the binding parameter set as well",
+        "delete-project-binding": "Delete the binding database set as well",
         "enter-project-name": "Enter Project Name",
         "enter-project-description": "Enter Project Description",
         "new-task": "New Task",
@@ -103,17 +103,17 @@
         "enter-task-name": "Enter Task Name",
         "enter-task-description": "Enter Task Description",
         "new-job": "New Job",
-        "new-parameter": "New Parameter",
-        "edit-parameter": "Modify Parameter",
-        "delete-parameter": "Delete Parameter",
-        "enter-parameter-name": "Enter Parameter Name",
-        "new-parameter-set": "New Parameter Set",
-        "clone-parameter-set": "Clone Parameter Set",
-        "edit-parameter-set": "Modify Parameter Set",
-        "enter-parameter-set-name": "Enter Parameter Set Name",
-        "import-parameter": "Delete Parameter",
-        "delete-parameter-confirm": "Are you sure delete parameter you selected",
-        "parameter-datatype": "Datatype",
+        "new-database": "New Database",
+        "edit-database": "Modify Database",
+        "delete-database": "Delete Database",
+        "enter-database-name": "Enter Database Name",
+        "new-database-set": "New Database Set",
+        "clone-database-set": "Clone Database Set",
+        "edit-database-set": "Modify Database Set",
+        "enter-database-set-name": "Enter Database Set Name",
+        "import-database": "Delete Database",
+        "delete-database-confirm": "Are you sure delete database you selected",
+        "database-datatype": "Datatype",
         "create-library": "Create Lib",
         "enter-library-name": "Enter Lib Name",
         "enter-library-type": "Enter Lib Type",
@@ -123,7 +123,7 @@
         "delete-node": "Delete Node",
         "delete-node-confirm": "Are you sure delete nodes below",
         "log-recover-project-title": "New Project Title",
-        "log-recover-parameter-title": "New Parameter Title",
+        "log-recover-database-title": "New Database Title",
         "console-create": "Create Console",
         "console-name": "Console Name",
         "delete-library": "Library Delete",
@@ -144,7 +144,7 @@
         "project": "Project (Q)",
         "task": "Task (W)",
         "job": "Job (E)",
-        "parameter": "Parameter (R)",
+        "database": "Database (R)",
         "node": "Node (A)",
         "console": "Console (S)",
         "log": "Log (D)",
@@ -174,7 +174,7 @@
         "path": "Path",
         "content": "Content",
         "command": "Command",
-        "parameters": "Parameters"
+        "databases": "Databases"
     },
     "enum": {
         "jobtype": {
@@ -214,7 +214,7 @@
             "blender_cluster": "Blender Cluster Render",
             "aftereffect": "After Effect Render"
         },
-        "parameter": {
+        "database": {
             "default": "Default",
             "ffmpeg": "FFmpeg"
         },
@@ -243,7 +243,7 @@
     "console": {
         "list": "Project List",
         "dashboard": "Dashboard",
-        "parameter": "Parameter"
+        "database": "Database"
     },
     "types": {
         "number": "Number",
@@ -347,7 +347,7 @@
     "project": "Project",
     "task": "Task",
     "job": "JOB",
-    "parameter": "Parameter",
+    "database": "Database",
     "create": "Create",
     "import-template": "Import Template",
     "import-plugin": "Import Plugin",
@@ -379,10 +379,10 @@
     "export": "Export",
     "import": "Import",
     "useTemplate": "Use Template",
-    "useExistParameter": "Use Exist Parameter",
+    "useExistDatabase": "Use Exist Database",
     "execute-keep": "Execute (Keep)",
-    "parameter-setting": "Parameter Setting",
-    "parameter-select": "Parameter Select",
+    "database-setting": "Database Setting",
+    "database-select": "Database Select",
     "is-running": "Is Running",
     "is-stop": "Is Stop",
     "clear": "Clear",

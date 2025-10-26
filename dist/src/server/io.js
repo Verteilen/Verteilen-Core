@@ -16,7 +16,7 @@ const _CreateRecordMemoryLoader = (loader, type) => {
         switch (type) {
             default:
             case interface_1.RecordType.PROJECT: return loader.projects;
-            case interface_1.RecordType.PARAMETER: return loader.parameter;
+            case interface_1.RecordType.Database: return loader.database;
             case interface_1.RecordType.NODE: return loader.nodes;
             case interface_1.RecordType.LOG: return loader.logs;
             case interface_1.RecordType.LIB: return loader.libs;
@@ -67,7 +67,7 @@ const _CreateRecordIOLoader = (loader, memory, type, folder, ext = ".json") => {
         switch (type) {
             default:
             case interface_1.RecordType.PROJECT: return memory.projects;
-            case interface_1.RecordType.PARAMETER: return memory.parameter;
+            case interface_1.RecordType.Database: return memory.database;
             case interface_1.RecordType.NODE: return memory.nodes;
             case interface_1.RecordType.LOG: return memory.logs;
             case interface_1.RecordType.LIB: return memory.libs;
@@ -157,7 +157,7 @@ exports._CreateRecordIOLoader = _CreateRecordIOLoader;
 const CreateRecordMemoryLoader = (loader) => {
     return {
         project: (0, exports._CreateRecordMemoryLoader)(loader, interface_1.RecordType.PROJECT),
-        parameter: (0, exports._CreateRecordMemoryLoader)(loader, interface_1.RecordType.PARAMETER),
+        database: (0, exports._CreateRecordMemoryLoader)(loader, interface_1.RecordType.Database),
         node: (0, exports._CreateRecordMemoryLoader)(loader, interface_1.RecordType.NODE),
         log: (0, exports._CreateRecordMemoryLoader)(loader, interface_1.RecordType.LOG),
         lib: (0, exports._CreateRecordMemoryLoader)(loader, interface_1.RecordType.LIB),
@@ -168,7 +168,7 @@ exports.CreateRecordMemoryLoader = CreateRecordMemoryLoader;
 const CreateRecordIOLoader = (loader, memory) => {
     return {
         project: (0, exports._CreateRecordIOLoader)(loader, memory, interface_1.RecordType.PROJECT, "record"),
-        parameter: (0, exports._CreateRecordIOLoader)(loader, memory, interface_1.RecordType.PARAMETER, "parameter"),
+        database: (0, exports._CreateRecordIOLoader)(loader, memory, interface_1.RecordType.Database, "database"),
         node: (0, exports._CreateRecordIOLoader)(loader, memory, interface_1.RecordType.NODE, "node"),
         log: (0, exports._CreateRecordIOLoader)(loader, memory, interface_1.RecordType.LOG, "log"),
         lib: (0, exports._CreateRecordIOLoader)(loader, memory, interface_1.RecordType.LIB, "lib", ""),

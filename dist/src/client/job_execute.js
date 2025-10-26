@@ -13,7 +13,7 @@ exports.ClientJobExecute = void 0;
 const interface_1 = require("../interface");
 const i18n_1 = require("../plugins/i18n");
 const javascript_1 = require("./javascript");
-const job_parameter_1 = require("./job_parameter");
+const job_database_1 = require("./job_database");
 const os_1 = require("./os");
 class ClientJobExecute {
     constructor(_messager, _messager_log, _job, _source, _plugin) {
@@ -160,7 +160,7 @@ class ClientJobExecute {
         this.runtime = _job.runtime_uuid || '';
         this.job = _job;
         this.plugin = _plugin;
-        this.para = new job_parameter_1.ClientJobParameter();
+        this.para = new job_database_1.ClientJobDatabase();
         this.os = new os_1.ClientOS(() => this.tag, () => this.job.runtime_uuid || '', _messager, _messager_log);
         this.javascript = new javascript_1.ClientJavascript(_messager, _messager_log, () => this.job);
         this.parameter = process.env.parameter != undefined ? JSON.parse(process.env.parameter) : undefined;

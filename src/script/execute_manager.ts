@@ -21,7 +21,7 @@ export class ExecuteManager extends ExecuteManager_Runner {
             this.current_p = this.current_projects[0]
             this.messager_log(`[Execute] Project Start ${this.current_p.uuid}`)
             this.proxy?.executeProjectStart([this.current_p, 0])
-            this.SyncParameter(this.current_p)
+            this.SyncDatabase(this.current_p)
         }
         else if (this.current_p != undefined){
             if(this.first) this.first = false
@@ -107,7 +107,7 @@ export class ExecuteManager extends ExecuteManager_Runner {
     }
 
     /**
-     * Tell clients release lib and parameter data
+     * Tell clients release lib and database data
      */
     Release = () => {
         this.current_nodes.forEach(x => this.release(x))
@@ -243,7 +243,7 @@ export class ExecuteManager extends ExecuteManager_Runner {
     private skipProjectFirst = ():number => {
         this.current_p = this.current_projects[1]
         this.proxy?.executeProjectStart([this.current_p, 1])
-        this.SyncParameter(this.current_p)
+        this.SyncDatabase(this.current_p)
         this.state = ExecuteState.RUNNING
         return 1
     }
@@ -277,7 +277,7 @@ export class ExecuteManager extends ExecuteManager_Runner {
                 this.messager_log(`[Execute] Previous project ${index}. ${this.current_p.uuid}`)
             }
             this.proxy?.executeProjectStart([this.current_p, index + (forward ? 1 : -1)])
-            this.SyncParameter(this.current_p)
+            this.SyncDatabase(this.current_p)
             return index
         }
     }

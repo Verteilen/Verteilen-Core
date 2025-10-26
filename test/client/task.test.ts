@@ -1,12 +1,12 @@
-import { ClientJobParameter } from '../../src/client/job_database';
+import { ClientJobDatabase } from '../../src/client/job_database';
 import { ClientOS } from '../../src/client/os';
-import { DataType, Job, JobCategory, Libraries, JobType, Parameter, Property, Task } from '../../src/interface';
+import { DataType, Job, JobCategory, Libraries, JobType, Database, Property, Task } from '../../src/interface';
 import { ExecuteManager_Base } from '../../src/script/execute/base';
 
 describe("Express Test", () => {
     let os:ClientOS | undefined = undefined
-    let para:ClientJobParameter | undefined = undefined
-    let parameter:Parameter | undefined = undefined
+    let para:ClientJobDatabase | undefined = undefined
+    let database:Database | undefined = undefined
     let lib:Libraries | undefined = undefined
     
     const generateJob = (str:Array<string>):Job => {
@@ -37,8 +37,8 @@ describe("Express Test", () => {
     }
     beforeEach(() => {
         os = new ClientOS(() => "", () => "", (str) => console.log(str), (str) => console.log(str))
-        para = new ClientJobParameter()
-        parameter = {
+        para = new ClientJobDatabase()
+        database = {
             uuid: "",
             title: "",
             canWrite: true,
@@ -61,7 +61,7 @@ describe("Express Test", () => {
     afterEach(() => {
         os = undefined
         para = undefined
-        parameter = undefined
+        database = undefined
         lib = undefined
     })
     test("Property getter", () => {
@@ -70,7 +70,7 @@ describe("Express Test", () => {
             name: "POS",
             expression: "n1 + n2 + n1"
         }])
-        ExecuteManager_Base.string_args_transform(task, job, (str) => console.log(str), parameter!, 1)
+        ExecuteManager_Base.string_args_transform(task, job, (str) => console.log(str), database!, 1)
         expect(job.string_args[0]).toBe("12")
         expect(job.string_args[1]).toBe("KKK Hello World")
         expect(job.string_args[2]).toBe("19")
@@ -92,7 +92,7 @@ describe("Express Test", () => {
                 expression: "POS_Deep + 1"
             }
         ])
-        ExecuteManager_Base.string_args_transform(task, job, (str) => console.log(str), parameter!, 1)
+        ExecuteManager_Base.string_args_transform(task, job, (str) => console.log(str), database!, 1)
         expect(job.string_args[0]).toBe("b1.data.1.p")
         expect(job.string_args[1]).toBe("Hello 122")
         expect(job.string_args[2]).toBe("123")
@@ -109,7 +109,7 @@ describe("Express Test", () => {
                 expression: "HELLO__ck_",
             },
         ])
-        ExecuteManager_Base.string_args_transform(task, job, (str) => console.log(str), parameter!, 0)
+        ExecuteManager_Base.string_args_transform(task, job, (str) => console.log(str), database!, 0)
         expect(job.string_args[0]).toBe("10")
         expect(job.string_args[1]).toBe("99")
     })
@@ -125,13 +125,13 @@ describe("Express Test", () => {
                 expression: "HELLO__ck_",
             },
         ])
-        ExecuteManager_Base.string_args_transform(task, job, (str) => console.log(str), parameter!, 1)
+        ExecuteManager_Base.string_args_transform(task, job, (str) => console.log(str), database!, 1)
         expect(job.string_args[0]).toBe("1000")
         expect(job.string_args[1]).toBe("9999")
     })
     test("Cronjob Key Testing", () => {
-        expect(ExecuteManager_Base.get_number_global("e1", parameter)).toBe(12)
-        expect(ExecuteManager_Base.get_number_global("n1", parameter)).toBe(7)
-        expect(ExecuteManager_Base.get_number_global("b1.data.0.p", parameter)).toBe(5)
+        expect(ExecuteManager_Base.get_number_global("e1", database)).toBe(12)
+        expect(ExecuteManager_Base.get_number_global("n1", database)).toBe(7)
+        expect(ExecuteManager_Base.get_number_global("b1.data.0.p", database)).toBe(5)
     })
 })

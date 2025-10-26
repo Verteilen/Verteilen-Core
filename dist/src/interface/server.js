@@ -21,7 +21,7 @@ var PermissionType;
     PermissionType[PermissionType["PROJECT"] = 1] = "PROJECT";
     PermissionType[PermissionType["Task"] = 2] = "Task";
     PermissionType[PermissionType["JOB"] = 3] = "JOB";
-    PermissionType[PermissionType["PARAMETER"] = 4] = "PARAMETER";
+    PermissionType[PermissionType["DATABASE"] = 4] = "DATABASE";
     PermissionType[PermissionType["PLUGIN"] = 5] = "PLUGIN";
     PermissionType[PermissionType["NODE"] = 6] = "NODE";
     PermissionType[PermissionType["LIB"] = 7] = "LIB";
@@ -40,7 +40,7 @@ const CreateRootPermission = () => {
         job: perl,
         plugin: perl,
         node: perl,
-        parameter: perl,
+        database: perl,
         lib: perl,
         log: perl,
         execute_job: true

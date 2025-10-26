@@ -109,10 +109,10 @@ class ExecuteManager_Runner extends feedback_1.ExecuteManager_Feedback {
             wss.websocket.send(stringdata);
             this.jobstack = this.jobstack + 1;
         };
-        this.SyncParameter = (p) => {
-            this.localPara = JSON.parse(JSON.stringify(p.parameter));
-            this.messager_log("[Execute] Sync Parameter !");
-            this.messager_log("[Execute] Generate local parameter object");
+        this.SyncDatabase = (p) => {
+            this.localPara = JSON.parse(JSON.stringify(p.database));
+            this.messager_log("[Execute] Sync Database !");
+            this.messager_log("[Execute] Generate local database object");
             for (let i = 0; i < this.localPara.containers.length; i++) {
                 if (this.localPara.containers[i].type == interface_1.DataType.Expression && this.localPara.containers[i].meta != undefined) {
                     const text = `%{${this.localPara.containers[i].meta}}%`;

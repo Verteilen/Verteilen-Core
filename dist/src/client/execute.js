@@ -6,7 +6,7 @@ const ws_1 = require("ws");
 const interface_1 = require("../interface");
 const i18n_1 = require("../plugins/i18n");
 const client_1 = require("./client");
-const parameter_1 = require("./parameter");
+const database_1 = require("./database");
 class ClientExecute {
     get count() {
         return this.workers.length;
@@ -42,7 +42,7 @@ class ClientExecute {
             const index = this.parameter.containers.findIndex(x => x.name == data.key && x.type == interface_1.DataType.String);
             if (index != -1)
                 this.parameter.containers[index].value = data.value;
-            this.messager_log(`[Parameter string sync] ${data.key} = ${data.value}`);
+            this.messager_log(`[Database string sync] ${data.key} = ${data.value}`);
         };
         this.set_number = (data) => {
             if (this.parameter == undefined)
@@ -50,7 +50,7 @@ class ClientExecute {
             const index = this.parameter.containers.findIndex(x => x.name == data.key && x.type == interface_1.DataType.Number);
             if (index != -1)
                 this.parameter.containers[index].value = data.value;
-            this.messager_log(`[Parameter number sync] ${data.key} = ${data.value}`);
+            this.messager_log(`[Database number sync] ${data.key} = ${data.value}`);
         };
         this.set_boolean = (data) => {
             if (this.parameter == undefined)
@@ -58,7 +58,7 @@ class ClientExecute {
             const index = this.parameter.containers.findIndex(x => x.name == data.key && x.type == interface_1.DataType.Boolean);
             if (index != -1)
                 this.parameter.containers[index].value = data.value;
-            this.messager_log(`[Parameter boolean sync] ${data.key} = ${data.value}`);
+            this.messager_log(`[Database boolean sync] ${data.key} = ${data.value}`);
         };
         this.uuid = _uuid;
         this.client = _client;
@@ -74,7 +74,7 @@ class ClientExecute {
         });
         child.stdin.setDefaultEncoding('utf-8');
         this.workers.push(child);
-        const para = new parameter_1.ClientParameter(source);
+        const para = new database_1.ClientDatabase(source);
         let k = "";
         const workerFeedbackExec = (str) => {
             var _a;

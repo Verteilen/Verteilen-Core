@@ -122,9 +122,9 @@ class ExecuteManager_Feedback extends base_1.ExecuteManager_Base {
             else
                 this.localPara.containers.push({ name: data.key, value: data.value, type: interface_1.DataType.String, hidden: true, runtimeOnly: true });
             this.messager_log(`[String Feedback] ${data.key} = ${data.value}`);
-            const d = { name: 'set_parameter', data: this.localPara };
+            const d = { name: 'set_database', data: this.localPara };
             this.current_nodes.forEach(x => x.websocket.send(JSON.stringify(d)));
-            (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.updateParameter(this.localPara);
+            (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.updateDatabase(this.localPara);
         };
         this.feedback_number = (data) => {
             var _a;
@@ -136,9 +136,9 @@ class ExecuteManager_Feedback extends base_1.ExecuteManager_Base {
             else
                 this.localPara.containers.push({ name: data.key, value: data.value, type: interface_1.DataType.Number, hidden: true, runtimeOnly: true });
             this.messager_log(`[Number Feedback] ${data.key} = ${data.value}`);
-            const d = { name: 'set_parameter', data: this.localPara };
+            const d = { name: 'set_database', data: this.localPara };
             this.current_nodes.forEach(x => x.websocket.send(JSON.stringify(d)));
-            (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.updateParameter(this.localPara);
+            (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.updateDatabase(this.localPara);
         };
         this.feedback_object = (data) => {
             var _a;
@@ -150,9 +150,9 @@ class ExecuteManager_Feedback extends base_1.ExecuteManager_Base {
             else
                 this.localPara.containers.push({ name: data.key, value: data.value, type: interface_1.DataType.Object, hidden: true, runtimeOnly: true });
             this.messager_log(`[Object Feedback] ${data.key}`);
-            const d = { name: 'set_parameter', data: this.localPara };
+            const d = { name: 'set_database', data: this.localPara };
             this.current_nodes.forEach(x => x.websocket.send(JSON.stringify(d)));
-            (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.updateParameter(this.localPara);
+            (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.updateDatabase(this.localPara);
         };
         this.feedback_boolean = (data) => {
             var _a;
@@ -164,9 +164,9 @@ class ExecuteManager_Feedback extends base_1.ExecuteManager_Base {
             else
                 this.localPara.containers.push({ name: data.key, value: data.value, type: interface_1.DataType.Boolean, hidden: true, runtimeOnly: true });
             this.messager_log(`[Boolean Feedback] ${data.key} = ${data.value}`);
-            const d = { name: 'set_parameter', data: this.localPara };
+            const d = { name: 'set_database', data: this.localPara };
             this.current_nodes.forEach(x => x.websocket.send(JSON.stringify(d)));
-            (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.updateParameter(this.localPara);
+            (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.updateDatabase(this.localPara);
         };
         this.GetCronAndWork = (runtime, source) => {
             let cron = undefined;

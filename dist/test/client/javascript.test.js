@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const job_parameter_1 = require("../../src/client/job_parameter");
+const job_database_1 = require("../../src/client/job_database");
 const javascript_1 = require("../../src/client/javascript");
 const os_1 = require("../../src/client/os");
 const interface_1 = require("../../src/interface");
@@ -17,12 +17,12 @@ describe("JS Test", () => {
     let js = undefined;
     let os = undefined;
     let para = undefined;
-    let parameter = undefined;
+    let database = undefined;
     let lib = undefined;
     beforeAll(() => {
         os = new os_1.ClientOS(() => "", () => "", (str) => console.log(str), (str) => console.log(str));
-        para = new job_parameter_1.ClientJobParameter();
-        parameter = {
+        para = new job_database_1.ClientJobDatabase();
+        database = {
             uuid: "",
             title: "",
             canWrite: true,
@@ -35,13 +35,13 @@ describe("JS Test", () => {
             ]
         };
         js = new javascript_1.ClientJavascript((str) => console.log(str), (str) => console.log(str), () => undefined);
-        javascript_1.ClientJavascript.Init((str) => console.log(str), (str) => console.log(str), os, para, () => lib, () => parameter, () => undefined);
+        javascript_1.ClientJavascript.Init((str) => console.log(str), (str) => console.log(str), os, para, () => lib, () => database, () => undefined);
     });
     afterAll(() => {
         js = undefined;
         os = undefined;
         para = undefined;
-        parameter = undefined;
+        database = undefined;
         lib = undefined;
     });
     test("Env test getter", () => __awaiter(void 0, void 0, void 0, function* () {

@@ -1,4 +1,4 @@
-import { DataType, DataTypeBase, Parameter } from '../../src/interface';
+import { DataType, DataTypeBase, Database } from '../../src/interface';
 import { Util_Parser } from '../../src/script/execute/util_parser';
 
 describe('Parser testing (Replace Text Feature)', () => {
@@ -11,7 +11,7 @@ describe('Parser testing (Replace Text Feature)', () => {
 });
 
 describe('Parser testing (ToKeyValue)', () => {
-    let p:Parameter | undefined = undefined
+    let p:Database | undefined = undefined
     beforeAll(() => {
         p = { uuid: '', title: '', canWrite: true, containers: [
             { name: 'n1', value: 0, type: DataType.Number, hidden: false, runtimeOnly: false },
@@ -35,7 +35,7 @@ describe('Parser testing (ToKeyValue)', () => {
 })
 
 describe('Parser testing (replacePara)', () => {
-    let p:Parameter | undefined = undefined
+    let p:Database | undefined = undefined
     let e:Util_Parser | undefined = undefined
     beforeAll(() => {
         p = { uuid: '', title: '', canWrite: true, containers: [

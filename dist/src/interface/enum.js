@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ParameterTemplateText = exports.ProjectTemplateText = exports.JobType2Text = exports.JobTypeText = exports.JobResultText = exports.ConnectionText = exports.JobCategoryText = exports.ExecuteStateText = exports.DataTypeText = exports.ServiceMode = exports.JavascriptLib = exports.RecordType = exports.RenderUpdateType = exports.ExecuteState = exports.ParameterTemplate = exports.ProjectTemplate = exports.JobType2 = exports.JobType = exports.ConditionResult = exports.JobCategory = exports.FrontendUpdate = exports.ResourceType = exports.DataTypeBase = exports.DataType = exports.SocketState = void 0;
+exports.DatabaseTemplateText = exports.ProjectTemplateText = exports.JobType2Text = exports.JobTypeText = exports.JobResultText = exports.ConnectionText = exports.JobCategoryText = exports.ExecuteStateText = exports.DataTypeText = exports.ServiceMode = exports.JavascriptLib = exports.RecordType = exports.RenderUpdateType = exports.ExecuteState = exports.ParameterTemplate = exports.ProjectTemplate = exports.JobType2 = exports.JobType = exports.ConditionResult = exports.JobCategory = exports.FrontendUpdate = exports.ResourceType = exports.DataTypeBase = exports.DataType = exports.SocketState = void 0;
 var SocketState;
 (function (SocketState) {
     SocketState[SocketState["CONNECTING"] = 0] = "CONNECTING";
@@ -101,12 +101,12 @@ var RenderUpdateType;
     RenderUpdateType[RenderUpdateType["All"] = 127] = "All";
     RenderUpdateType[RenderUpdateType["Project"] = 1] = "Project";
     RenderUpdateType[RenderUpdateType["Node"] = 2] = "Node";
-    RenderUpdateType[RenderUpdateType["Parameter"] = 4] = "Parameter";
+    RenderUpdateType[RenderUpdateType["Database"] = 4] = "Database";
 })(RenderUpdateType || (exports.RenderUpdateType = RenderUpdateType = {}));
 var RecordType;
 (function (RecordType) {
     RecordType[RecordType["PROJECT"] = 0] = "PROJECT";
-    RecordType[RecordType["PARAMETER"] = 1] = "PARAMETER";
+    RecordType[RecordType["Database"] = 1] = "Database";
     RecordType[RecordType["NODE"] = 2] = "NODE";
     RecordType[RecordType["LOG"] = 3] = "LOG";
     RecordType[RecordType["LIB"] = 4] = "LIB";
@@ -185,6 +185,6 @@ exports.ProjectTemplateText = {
     101: 'enum.project.blender_cluster',
     200: 'enum.project.aftereffect',
 };
-exports.ParameterTemplateText = {
-    0: 'enum.parameter.default'
+exports.DatabaseTemplateText = {
+    0: 'enum.database.default'
 };

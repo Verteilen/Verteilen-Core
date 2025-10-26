@@ -33,7 +33,7 @@ const GetCurrentPlugin = (loader) => __awaiter(void 0, void 0, void 0, function*
                 filename: x.filename,
                 title: x.title
             }));
-            const ps2 = config.parameters.map(x => ({
+            const ps2 = config.databases.map(x => ({
                 value: -1,
                 group: x.group,
                 filename: x.filename,
@@ -42,7 +42,7 @@ const GetCurrentPlugin = (loader) => __awaiter(void 0, void 0, void 0, function*
             b.templates.push({
                 name: files[index].replace('.json', ''),
                 project: ps,
-                parameter: ps2,
+                database: ps2,
                 url: config.url
             });
         }
@@ -85,11 +85,11 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
             }
             return result;
         },
-        get_parameter: (group, filename) => {
+        get_database: (group, filename) => {
             let find = false;
             let result = undefined;
             for (let x of memory.templates) {
-                for (let y of x.parameter) {
+                for (let y of x.database) {
                     if (y.group == group && y.filename == filename) {
                         result = JSON.stringify(y);
                         find = true;
@@ -110,7 +110,7 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
             const tokens = [undefined, ...token.split(' ')];
             const content_folder = loader.join(root, name);
             const project_folder = loader.join(content_folder, 'project');
-            const parameter_folder = loader.join(content_folder, 'parameter');
+            const database_folder = loader.join(content_folder, 'database');
             if (!loader.exists(root))
                 yield loader.mkdir(root);
             let req = {};
@@ -155,11 +155,11 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
                 loader.mkdir(content_folder);
             if (!loader.exists(project_folder))
                 loader.mkdir(project_folder);
-            if (!loader.exists(parameter_folder))
-                loader.mkdir(parameter_folder);
+            if (!loader.exists(database_folder))
+                loader.mkdir(database_folder);
             const folder = url.substring(0, url.lastIndexOf('/'));
             const project_calls = [];
-            const parameter_calls = [];
+            const database_calls = [];
             ob.projects.forEach((p) => {
                 project_calls.push(fetch(folder + "/" + p.filename + '.json', req));
             });
@@ -177,21 +177,21 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
                     error_children.push([`Import Project ${n} Error`, error.message]);
                 }
             });
-            ob.parameters.forEach((p) => {
-                parameter_calls.push(fetch(folder + "/" + p.filename + '.json', req));
+            ob.databases.forEach((p) => {
+                database_calls.push(fetch(folder + "/" + p.filename + '.json', req));
             });
-            const pss2 = yield Promise.all(parameter_calls);
-            const parameter_calls2 = pss2.map(x => x.text());
-            const pss_result2 = yield Promise.all(parameter_calls2);
+            const pss2 = yield Promise.all(database_calls);
+            const database_calls2 = pss2.map(x => x.text());
+            const pss_result2 = yield Promise.all(database_calls2);
             pss_result2.forEach((text, index) => {
-                const n = ob.parameters[index].filename + '.json';
+                const n = ob.databases[index].filename + '.json';
                 try {
-                    const parameter = JSON.parse(text);
-                    loader.write_string(loader.join(parameter_folder, n), JSON.stringify(parameter, null, 4));
+                    const database = JSON.parse(text);
+                    loader.write_string(loader.join(database_folder, n), JSON.stringify(database, null, 4));
                 }
                 catch (error) {
                     console.log("Parse error:\n", text);
-                    error_children.push([`Import Parameter ${n} Error`, error.message]);
+                    error_children.push([`Import Database ${n} Error`, error.message]);
                 }
             });
             for (let x of error_children) {

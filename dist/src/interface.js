@@ -64,5 +64,5 @@ exports.Execute_ConsoleServerManager = __importStar(require("./script/console_se
 exports.Execute_ExecuteManager = __importStar(require("./script/execute_manager"));
 exports.Execute_SocketManager = __importStar(require("./script/socket_manager"));
 exports.Execute_WebhookManager = __importStar(require("./script/webhook_manager"));
-exports.UtilServer_Console = __importStar(require("./util/server/console_handle"));
-exports.UtilServer_Log = __importStar(require("./util/server/log_handle"));
+exports.UtilServer_Console = __importStar(require("./util/console_handle"));
+exports.UtilServer_Log = __importStar(require("./util/log_handle"));

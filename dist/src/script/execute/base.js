@@ -24,11 +24,11 @@ class ExecuteManager_Base {
         this.sync_local_para = (target) => {
             var _a;
             this.current_nodes.forEach(x => this.sync_para(target, x));
-            (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.updateParameter(target);
+            (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.updateDatabase(target);
         };
         this.sync_para = (target, source) => {
             const h = {
-                name: 'set_parameter',
+                name: 'set_database',
                 channel: this.uuid,
                 data: target
             };
@@ -69,27 +69,27 @@ class ExecuteManager_Base {
                 x.task.forEach(t => {
                     var _a, _b, _c, _d, _e, _f;
                     if (t.cronjob) {
-                        const index = (_b = (_a = x.parameter) === null || _a === void 0 ? void 0 : _a.containers.findIndex(x => x.name == t.cronjobKey && x.type == interface_1.DataType.Number)) !== null && _b !== void 0 ? _b : -1;
+                        const index = (_b = (_a = x.database) === null || _a === void 0 ? void 0 : _a.containers.findIndex(x => x.name == t.cronjobKey && x.type == interface_1.DataType.Number)) !== null && _b !== void 0 ? _b : -1;
                         if (index == -1) {
-                            this.messager_log(`[Execute:CronJob] Project ${x.title} (${x.uuid}), Task ${t.title} (${t.uuid}), Has unknoed parameter: \"${t.cronjobKey}\"`);
+                            this.messager_log(`[Execute:CronJob] Project ${x.title} (${x.uuid}), Task ${t.title} (${t.uuid}), Has unknoed database: \"${t.cronjobKey}\"`);
                             this.messager_log(`[Execute:CronJob] Cron task registerd key not found`);
                             return false;
                         }
-                        else if (((_c = x.parameter) === null || _c === void 0 ? void 0 : _c.containers[index].value) == 0) {
-                            this.messager_log(`[Execute:CronJob] Project ${x.title} (${x.uuid}), Task ${t.title} (${t.uuid}), Has unknoed parameter: \"${t.cronjobKey}\"`);
+                        else if (((_c = x.database) === null || _c === void 0 ? void 0 : _c.containers[index].value) == 0) {
+                            this.messager_log(`[Execute:CronJob] Project ${x.title} (${x.uuid}), Task ${t.title} (${t.uuid}), Has unknoed database: \"${t.cronjobKey}\"`);
                             this.messager_log(`[Execute:CronJob] Cron task value must bigger than 0`);
                             return false;
                         }
                     }
                     if (t.cronjob && t.multi) {
-                        const index = (_e = (_d = x.parameter) === null || _d === void 0 ? void 0 : _d.containers.findIndex(x => x.name == t.multiKey && x.type == interface_1.DataType.Number)) !== null && _e !== void 0 ? _e : -1;
+                        const index = (_e = (_d = x.database) === null || _d === void 0 ? void 0 : _d.containers.findIndex(x => x.name == t.multiKey && x.type == interface_1.DataType.Number)) !== null && _e !== void 0 ? _e : -1;
                         if (index == -1) {
-                            this.messager_log(`[Execute:Multi] Project ${x.title} (${x.uuid}), Task ${t.title} (${t.uuid}), Has unknoed parameter: \"${t.multiKey}\"`);
+                            this.messager_log(`[Execute:Multi] Project ${x.title} (${x.uuid}), Task ${t.title} (${t.uuid}), Has unknoed database: \"${t.multiKey}\"`);
                             this.messager_log(`[Execute:Multi] Cron task registerd key not found`);
                             return false;
                         }
-                        else if (((_f = x.parameter) === null || _f === void 0 ? void 0 : _f.containers[index].value) == 0) {
-                            this.messager_log(`[Execute:Multi] Project ${x.title} (${x.uuid}), Task ${t.title} (${t.uuid}), Has unknoed parameter: \"${t.multiKey}\"`);
+                        else if (((_f = x.database) === null || _f === void 0 ? void 0 : _f.containers[index].value) == 0) {
+                            this.messager_log(`[Execute:Multi] Project ${x.title} (${x.uuid}), Task ${t.title} (${t.uuid}), Has unknoed database: \"${t.multiKey}\"`);
                             this.messager_log(`[Execute:Multi] Cron task value must bigger than 0`);
                             return false;
                         }
@@ -152,14 +152,14 @@ class ExecuteManager_Base {
         return ExecuteManager_Base.get_number_global(key, this.localPara);
     }
     static get_number_global(key, localPara) {
-        const e = ExecuteManager_Base.parameter_update(localPara);
+        const e = ExecuteManager_Base.database_update(localPara);
         const a = e.replacePara(`%{${key}}%`);
         return Number(a);
     }
 }
 exports.ExecuteManager_Base = ExecuteManager_Base;
 ExecuteManager_Base.string_args_transform = (task, job, messager_log, localPara, n) => {
-    let e = ExecuteManager_Base.parameter_update(localPara, n);
+    let e = ExecuteManager_Base.database_update(localPara, n);
     e = ExecuteManager_Base.property_update(task, e);
     for (let i = 0; i < job.string_args.length; i++) {
         const b = job.string_args[i];
@@ -182,7 +182,7 @@ ExecuteManager_Base.property_update = (task, e) => {
     }
     return e;
 };
-ExecuteManager_Base.parameter_update = (localPara, n) => {
+ExecuteManager_Base.database_update = (localPara, n) => {
     const e = new util_parser_1.Util_Parser([...util_parser_1.Util_Parser.to_keyvalue(localPara)]);
     if (n != undefined) {
         e.paras.push({ key: 'ck', value: n.toString() });

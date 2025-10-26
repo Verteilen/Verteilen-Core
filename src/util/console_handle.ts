@@ -1,4 +1,4 @@
-import { ConditionResult, ExecutePair, ExecuteProxy, ExecuteRecordTask, ExecuteState, FeedBack, Job, JobCategory, MESSAGE_LIMIT, Database, Project, Record, Task } from "../../interface"
+import { ConditionResult, ExecutePair, ExecuteProxy, ExecuteRecordTask, ExecuteState, FeedBack, Job, JobCategory, MESSAGE_LIMIT, Database, Project, Record, Task } from "../interface"
 
 export class Util_Server_Console { 
 
