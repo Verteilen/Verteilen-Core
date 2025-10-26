@@ -20,7 +20,7 @@ export enum SocketState {
 }
 /**
  * **Data Type**\
- * The support data type for parameter
+ * The support data type for database
  */
 export enum DataType {
     Boolean, 

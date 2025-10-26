@@ -7,7 +7,7 @@ import { Header, Setter } from "../interface"
 
 export class ClientJobDatabase {
     /**
-     * Update parameter number on the cluster server
+     * Update database number on the cluster server
      * @param data Target KeyValue
      */
     feedbacknumber = (data:Setter) => {

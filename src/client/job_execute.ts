@@ -16,9 +16,9 @@ import { ClientOS } from "./os";
  */
 export class ClientJobExecute {
     /**
-     * Project parameters for references
+     * Project databases for references
      */
-    parameter:Database | undefined
+    database:Database | undefined
     /**
      * User library for scripts
      */
@@ -48,12 +48,12 @@ export class ClientJobExecute {
         this.para = new ClientJobDatabase()
         this.os = new ClientOS(() => this.tag, () => this.job.runtime_uuid || '', _messager, _messager_log)
         this.javascript = new ClientJavascript(_messager, _messager_log, () => this.job)
-        this.parameter = process.env.parameter != undefined ? JSON.parse(process.env.parameter) : undefined
+        this.database = process.env.database != undefined ? JSON.parse(process.env.database) : undefined
         this.libraries = process.env.libraries != undefined ? JSON.parse(process.env.libraries) : undefined
 
         ClientJavascript.Init(_messager, _messager_log, this.os, this.para, 
             () => this.libraries,
-            () => this.parameter,
+            () => this.database,
             () => this.job
         )
     }

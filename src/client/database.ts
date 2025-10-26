@@ -7,8 +7,8 @@ import WebSocket from "ws";
 import { Header, Setter } from "../interface";
 
 /**
- * The parameter feedback helper\
- * Update the main parameter container on the cluster server
+ * The database feedback helper\
+ * Update the main database container on the cluster server
  */
 export class ClientDatabase {
     private source:WebSocket | undefined
@@ -18,21 +18,21 @@ export class ClientDatabase {
     }
 
     /**
-     * Update parameter number on the cluster server
+     * Update database number on the cluster server
      * @param data Target KeyValue
      */
     feedbacknumber = (data:Setter) => {
         this.feedback("feedback_number", data)
     }
     /**
-     * Update parameter boolean on the cluster server
+     * Update database boolean on the cluster server
      * @param data Target KeyValue
      */
     feedbackboolean = (data:Setter) => {
         this.feedback("feedback_boolean", data)
     }
     /**
-     * Update parameter string on the cluster server
+     * Update database string on the cluster server
      * @param data Target KeyValue
      */
     feedbackstring = (data:Setter) => {

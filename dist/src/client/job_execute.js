@@ -163,9 +163,9 @@ class ClientJobExecute {
         this.para = new job_database_1.ClientJobDatabase();
         this.os = new os_1.ClientOS(() => this.tag, () => this.job.runtime_uuid || '', _messager, _messager_log);
         this.javascript = new javascript_1.ClientJavascript(_messager, _messager_log, () => this.job);
-        this.parameter = process.env.parameter != undefined ? JSON.parse(process.env.parameter) : undefined;
+        this.database = process.env.database != undefined ? JSON.parse(process.env.database) : undefined;
         this.libraries = process.env.libraries != undefined ? JSON.parse(process.env.libraries) : undefined;
-        javascript_1.ClientJavascript.Init(_messager, _messager_log, this.os, this.para, () => this.libraries, () => this.parameter, () => this.job);
+        javascript_1.ClientJavascript.Init(_messager, _messager_log, this.os, this.para, () => this.libraries, () => this.database, () => this.job);
     }
 }
 exports.ClientJobExecute = ClientJobExecute;

@@ -12,7 +12,7 @@ class ClientExecute {
         return this.workers.length;
     }
     constructor(_uuid, _messager, _messager_log, _client) {
-        this.parameter = undefined;
+        this.database = undefined;
         this.libraries = undefined;
         this.tag = '';
         this.workers = [];
@@ -30,34 +30,34 @@ class ClientExecute {
             this.tag = job.uuid;
             this.execute_job_worker(job, source);
         };
-        this.set_parameter = (data) => {
-            this.parameter = data;
+        this.set_database = (data) => {
+            this.database = data;
         };
         this.set_libs = (data) => {
             this.libraries = data;
         };
         this.set_string = (data) => {
-            if (this.parameter == undefined)
+            if (this.database == undefined)
                 return;
-            const index = this.parameter.containers.findIndex(x => x.name == data.key && x.type == interface_1.DataType.String);
+            const index = this.database.containers.findIndex(x => x.name == data.key && x.type == interface_1.DataType.String);
             if (index != -1)
-                this.parameter.containers[index].value = data.value;
+                this.database.containers[index].value = data.value;
             this.messager_log(`[Database string sync] ${data.key} = ${data.value}`);
         };
         this.set_number = (data) => {
-            if (this.parameter == undefined)
+            if (this.database == undefined)
                 return;
-            const index = this.parameter.containers.findIndex(x => x.name == data.key && x.type == interface_1.DataType.Number);
+            const index = this.database.containers.findIndex(x => x.name == data.key && x.type == interface_1.DataType.Number);
             if (index != -1)
-                this.parameter.containers[index].value = data.value;
+                this.database.containers[index].value = data.value;
             this.messager_log(`[Database number sync] ${data.key} = ${data.value}`);
         };
         this.set_boolean = (data) => {
-            if (this.parameter == undefined)
+            if (this.database == undefined)
                 return;
-            const index = this.parameter.containers.findIndex(x => x.name == data.key && x.type == interface_1.DataType.Boolean);
+            const index = this.database.containers.findIndex(x => x.name == data.key && x.type == interface_1.DataType.Boolean);
             if (index != -1)
-                this.parameter.containers[index].value = data.value;
+                this.database.containers[index].value = data.value;
             this.messager_log(`[Database boolean sync] ${data.key} = ${data.value}`);
         };
         this.uuid = _uuid;
@@ -70,7 +70,7 @@ class ClientExecute {
             stdio: ['pipe', 'pipe', 'pipe'],
             windowsHide: true,
             shell: true,
-            env: Object.assign(Object.assign({}, process.env), { type: "JOB", job: JSON.stringify(job), plugin: JSON.stringify(this.client.plugins), parameter: JSON.stringify(this.parameter), libraries: JSON.stringify(this.libraries) })
+            env: Object.assign(Object.assign({}, process.env), { type: "JOB", job: JSON.stringify(job), plugin: JSON.stringify(this.client.plugins), database: JSON.stringify(this.database), libraries: JSON.stringify(this.libraries) })
         });
         child.stdin.setDefaultEncoding('utf-8');
         this.workers.push(child);

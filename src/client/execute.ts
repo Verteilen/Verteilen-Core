@@ -15,7 +15,7 @@ import { ClientDatabase } from './database';
  */
 export class ClientExecute {
     uuid:string
-    private parameter:Database | undefined = undefined
+    private database:Database | undefined = undefined
     private libraries:Libraries | undefined = undefined
     private tag: string = ''
     private workers:Array<ChildProcess> = []
@@ -69,7 +69,7 @@ export class ClientExecute {
                     type: "JOB",
                     job: JSON.stringify(job),
                     plugin: JSON.stringify(this.client.plugins),
-                    parameter: JSON.stringify(this.parameter),
+                    database: JSON.stringify(this.database),
                     libraries: JSON.stringify(this.libraries),
                 }
         })
@@ -159,11 +159,11 @@ export class ClientExecute {
     }
     
     /**
-     * Update parameter, Called by cluster server
+     * Update database, Called by cluster server
      * @param data Target container
      */
-    set_parameter = (data:Database) => {
-        this.parameter = data
+    set_database = (data:Database) => {
+        this.database = data
     }
     
     /**
@@ -175,36 +175,36 @@ export class ClientExecute {
     }
     
     /**
-     * Update parameter string, Called by cluster server
+     * Update database string, Called by cluster server
      * @deprecated The method should not be used
      * @param data Target keyvalue
      */
     set_string = (data:Setter) => {
-        if(this.parameter == undefined) return
-        const index = this.parameter.containers.findIndex(x => x.name == data.key&& x.type == DataType.String)
-        if(index != -1) this.parameter.containers[index].value = data.value
+        if(this.database == undefined) return
+        const index = this.database.containers.findIndex(x => x.name == data.key&& x.type == DataType.String)
+        if(index != -1) this.database.containers[index].value = data.value
         this.messager_log(`[Database string sync] ${data.key} = ${data.value}`)
     }
     /**
-     * Update parameter number, Called by cluster server
+     * Update database number, Called by cluster server
      * @deprecated The method should not be used
      * @param data Target keyvalue
      */
     set_number = (data:Setter) => {
-        if(this.parameter == undefined) return
-        const index = this.parameter.containers.findIndex(x => x.name == data.key && x.type == DataType.Number)
-        if(index != -1) this.parameter.containers[index].value = data.value
+        if(this.database == undefined) return
+        const index = this.database.containers.findIndex(x => x.name == data.key && x.type == DataType.Number)
+        if(index != -1) this.database.containers[index].value = data.value
         this.messager_log(`[Database number sync] ${data.key} = ${data.value}`)
     }
     /**
-     * Update parameter boolean, Called by cluster server
+     * Update database boolean, Called by cluster server
      * @deprecated The method should not be used
      * @param data Target keyvalue
      */
     set_boolean = (data:Setter) => {
-        if(this.parameter == undefined) return
-        const index = this.parameter.containers.findIndex(x => x.name == data.key && x.type == DataType.Boolean)
-        if(index != -1) this.parameter.containers[index].value = data.value
+        if(this.database == undefined) return
+        const index = this.database.containers.findIndex(x => x.name == data.key && x.type == DataType.Boolean)
+        if(index != -1) this.database.containers[index].value = data.value
         this.messager_log(`[Database boolean sync] ${data.key} = ${data.value}`)
     }
 }

@@ -49,7 +49,7 @@ export class ClientAnalysis {
             'execute_job': this.execute_job,
             'release': this.release,
             'stop_job': this.stop_all,
-            'set_parameter': this.set_parameter,
+            'set_database': this.set_database,
             'set_libs': this.set_libs,
             'shell_folder': this.shell.shell_folder,
             'open_shell': this.shell.open_shell,
@@ -97,10 +97,10 @@ export class ClientAnalysis {
         this.exec.splice(index, 1)
     }
 
-    private set_parameter = (data:Database, source: WebSocket, channel:string | undefined) => {
+    private set_database = (data:Database, source: WebSocket, channel:string | undefined) => {
         if(channel == undefined) return
         const target = this.exec_checker(channel)
-        target.set_parameter(data)
+        target.set_database(data)
     }
 
     private set_libs = (data:Libraries, source: WebSocket, channel:string | undefined) => {
