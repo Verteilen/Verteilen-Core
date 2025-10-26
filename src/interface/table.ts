@@ -7,14 +7,14 @@
  * Value override for some base value\
  * The data structure that use in Vue
  */
-import { Node, Parameter, Project, Task } from './base'
+import { Node, Database, Project, Task } from './base'
 import { Plugin, SystemLoad } from './struct'
 
 /**
- * **UI Parameter Table Data Structure**\
- * For display the data on the parameter page
+ * **UI Database Table Data Structure**\
+ * For display the data on the database page
  */
-export interface ParameterTable extends Parameter {
+export interface DatabaseTable extends Database {
     /**
      * **Select State**
      */

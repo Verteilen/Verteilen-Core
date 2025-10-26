@@ -20,7 +20,7 @@ export class Server {
     manager:Array<Execute_ConsoleServerManager.ConsoleServerManager> = []
     memory: MemoryData = {
         projects: [],
-        parameter: [],
+        database: [],
         nodes: [],
         logs: [],
         libs: [],
@@ -48,7 +48,7 @@ export class Server {
     LoadFromDisk = ():Promise<Array<Array<string>>> => {
         const ts = [
             this.current_loader.project.load_all(),
-            this.current_loader.parameter.load_all(),
+            this.current_loader.database.load_all(),
             this.current_loader.node.load_all(),
             this.current_loader.log.load_all(),
             this.current_loader.lib.load_all(),

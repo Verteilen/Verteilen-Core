@@ -12,7 +12,7 @@
         "project": "專案容器",
         "task": "流程容器",
         "job": "工作容器",
-        "parameter": "數據綁定",
+        "database": "數據綁定",
         "console": "控制台"
     },
     "profile": {
@@ -78,7 +78,7 @@
         "title-repeat": "名稱不能重複",
         "url-needed": "URL 不能為空",
         "project-empty": "專案清單不能爲空",
-        "parameter-empty": "專案必須綁定參數",
+        "database-empty": "專案必須綁定資料庫",
         "node-empty": "節點清單不能爲空"
     },
     "filter": {
@@ -89,13 +89,13 @@
     },
     "modal": {
         "project-template-select": "樣板選擇",
-        "parameter-template-select": "樣板選擇",
+        "database-template-select": "樣板選擇",
         "new-project": "新增專案",
         "modify-project": "編輯專案",
         "delete-project": "刪除專案",
         "import-project": "匯入專案",
         "delete-project-confirm": "確定刪除以下專案嗎?",
-        "delete-project-binding": "連同綁定的參數集一起刪除",
+        "delete-project-binding": "連同綁定的資料庫集一起刪除",
         "enter-project-name": "輸入專案名稱",
         "enter-project-description": "輸入專案敘述",
         "new-task": "新增流程",
@@ -103,17 +103,17 @@
         "enter-task-name": "輸入流程名稱",
         "enter-task-description": "輸入流程敘述",
         "new-job": "新增工作",
-        "new-parameter": "新增參數",
-        "edit-parameter": "編輯參數",
-        "delete-parameter": "刪除參數",
-        "enter-parameter-name": "輸入參數名稱",
-        "new-parameter-set": "新增參數組",
-        "clone-parameter-set": "複製參數組",
-        "edit-parameter-set": "編輯參數組",
-        "enter-parameter-set-name": "輸入參數組名稱",
-        "import-parameter": "刪除參數",
-        "delete-parameter-confirm": "確認刪除選擇參數嗎?",
-        "parameter-datatype": "資料型態",
+        "new-database": "新增資料庫",
+        "edit-database": "編輯資料庫",
+        "delete-database": "刪除資料庫",
+        "enter-database-name": "輸入資料庫名稱",
+        "new-database-set": "新增資料庫組",
+        "clone-database-set": "複製資料庫組",
+        "edit-database-set": "編輯資料庫組",
+        "enter-database-set-name": "輸入資料庫組名稱",
+        "import-database": "刪除資料庫",
+        "delete-database-confirm": "確認刪除選擇資料庫嗎?",
+        "database-datatype": "資料型態",
         "create-library": "新增程式庫",
         "enter-library-name": "輸入程式庫名稱",
         "enter-library-type": "輸入程式庫類型",
@@ -123,7 +123,7 @@
         "delete-node": "刪除節點",
         "delete-node-confirm": "確定刪除以下節點嗎?",
         "log-recover-project-title": "新專案名稱",
-        "log-recover-parameter-title": "新參數名稱",
+        "log-recover-database-title": "新資料庫名稱",
         "console-create": "建立控制台",
         "console-name": "控制台名稱",
         "delete-library": "刪除程式腳本",
@@ -144,7 +144,7 @@
         "project": "專案管理 (Q)",
         "task": "流程管理 (W)",
         "job": "工作管理 (E)",
-        "parameter": "參數管理 (R)",
+        "database": "資料庫管理 (R)",
         "node": "節點管理 (A)",
         "console": "控制台 (S)",
         "log": "紀錄 (D)",
@@ -174,7 +174,7 @@
         "path": "路徑",
         "content": "內容",
         "command": "命令",
-        "parameters": "參數值"
+        "databases": "資料庫值"
     },
     "enum":{
         "jobtype": {
@@ -214,7 +214,7 @@
             "blender_cluster": "Blender 群集渲染",
             "aftereffect": "After Effect 渲染"
         },
-        "parameter": {
+        "database": {
             "default": "Default",
             "ffmpeg": "FFmpeg"
         },
@@ -243,7 +243,7 @@
     "console": {
         "list": "專案列表",
         "dashboard": "儀錶板",
-        "parameter": "參數版"
+        "database": "資料庫版"
     },
     "types": {
         "number": "數字",
@@ -347,7 +347,7 @@
     "project": "專案",
     "task": "流程",
     "job": "工作",
-    "parameter": "參數",
+    "database": "資料庫",
     "create": "新增",
     "import-template": "匯入樣板",
     "import-plugin": "匯入插件",
@@ -379,10 +379,10 @@
     "export": "匯出",
     "import": "匯入",
     "useTemplate": "使用樣板",
-    "useExistParameter": "使用參數組",
+    "useExistParameter": "使用資料庫組",
     "execute-keep": "執行 (保留)",
-    "parameter-setting": "參數設定",
-    "parameter-select": "參數選擇",
+    "database-setting": "資料庫設定",
+    "database-select": "資料庫選擇",
     "is-running": "是否執行中",
     "is-stop": "是否停止",
     "clear": "清除",

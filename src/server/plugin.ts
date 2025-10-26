@@ -1,14 +1,14 @@
 import { RecordIOBase } from "./io";
 import { 
     Header,
-    ParameterContainer,
+    DatabaseContainer,
     Plugin,
     PluginList, 
     PluginPageData, 
     PluginWithToken, 
     Project, 
     TemplateData, 
-    TemplateDataParameter, 
+    TemplateDataDatabase, 
     TemplateDataProject, 
     TemplateGroup, 
     TemplateGroup2, 
@@ -22,7 +22,7 @@ export type SocketGetter = (uuid:string) => WebsocketPack | undefined
 export interface PluginLoader {
     load_all: () => Promise<PluginPageData>
     get_project: (group:string, filename:string) => string | undefined
-    get_parameter: (group:string, filename:string) => string | undefined
+    get_database: (group:string, filename:string) => string | undefined
     get_plugin: () => Promise<Array<PluginList>>
     import_template: (name:string, url:string, token:string) => Promise<PluginPageData>
     import_plugin: (name:string, url:string, token:string) => Promise<PluginPageData>
@@ -59,7 +59,7 @@ export const GetCurrentPlugin = async (loader:RecordIOBase):Promise<PluginPageDa
                 filename: x.filename,
                 title: x.title
             }))
-            const ps2:Array<TemplateGroup2> = config.parameters.map(x => ({
+            const ps2:Array<TemplateGroup2> = config.databases.map(x => ({
                 value: -1,
                 group: x.group,
                 filename: x.filename,
@@ -68,7 +68,7 @@ export const GetCurrentPlugin = async (loader:RecordIOBase):Promise<PluginPageDa
             b.templates.push({
                 name: files[index].replace('.json', ''),
                 project: ps,
-                parameter: ps2,
+                database: ps2,
                 url: config.url
             })
         }
@@ -113,11 +113,11 @@ export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, s
             }
             return result
         },
-        get_parameter: (group:string, filename:string):string | undefined => {
+        get_database: (group:string, filename:string):string | undefined => {
             let find = false
             let result:string | undefined = undefined
             for(let x of memory.templates){
-                for(let y of x.parameter){
+                for(let y of x.database){
                     if(y.group == group && y.filename == filename){
                         result = JSON.stringify(y)
                         find = true
@@ -137,7 +137,7 @@ export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, s
             const tokens = [undefined, ...token.split(' ')]
             const content_folder = loader.join(root, name)
             const project_folder = loader.join(content_folder, 'project')
-            const parameter_folder = loader.join(content_folder, 'parameter')
+            const database_folder = loader.join(content_folder, 'database')
             if (!loader.exists(root)) await loader.mkdir(root)
             let req:RequestInit = {}
             let ob:TemplateData | undefined = undefined
@@ -177,10 +177,10 @@ export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, s
             loader.write_string(loader.join(root, name + '.json'), JSON.stringify(ob, null, 4))
             if(!loader.exists(content_folder)) loader.mkdir(content_folder)
             if(!loader.exists(project_folder)) loader.mkdir(project_folder)
-            if(!loader.exists(parameter_folder)) loader.mkdir(parameter_folder)
+            if(!loader.exists(database_folder)) loader.mkdir(database_folder)
             const folder = url.substring(0, url.lastIndexOf('/'))
             const project_calls:Array<Promise<Response>> = []
-            const parameter_calls:Array<Promise<Response>> = []
+            const database_calls:Array<Promise<Response>> = []
 
             ob.projects.forEach((p:TemplateDataProject) => {
                 project_calls.push(fetch(folder + "/" + p.filename + '.json', req))
@@ -199,20 +199,20 @@ export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, s
                 }
             })
 
-            ob.parameters.forEach((p:TemplateDataParameter) => {
-                parameter_calls.push(fetch(folder + "/" + p.filename + '.json', req))
+            ob.databases.forEach((p:TemplateDataDatabase) => {
+                database_calls.push(fetch(folder + "/" + p.filename + '.json', req))
             })
-            const pss2 = await Promise.all(parameter_calls)
-            const parameter_calls2:Array<Promise<string>> = pss2.map(x => x.text())
-            const pss_result2 = await Promise.all(parameter_calls2)
+            const pss2 = await Promise.all(database_calls)
+            const database_calls2:Array<Promise<string>> = pss2.map(x => x.text())
+            const pss_result2 = await Promise.all(database_calls2)
             pss_result2.forEach((text, index) => {
-                const n = ob.parameters[index].filename + '.json'
+                const n = ob.databases[index].filename + '.json'
                 try{
-                    const parameter:Array<ParameterContainer> = JSON.parse(text)
-                    loader.write_string(loader.join(parameter_folder, n), JSON.stringify(parameter, null, 4))
+                    const database:Array<DatabaseContainer> = JSON.parse(text)
+                    loader.write_string(loader.join(database_folder, n), JSON.stringify(database, null, 4))
                 }catch(error:any){
                     console.log("Parse error:\n", text)
-                    error_children.push([`Import Parameter ${n} Error`, error.message])
+                    error_children.push([`Import Database ${n} Error`, error.message])
                 }
             })
             for(let x of error_children){

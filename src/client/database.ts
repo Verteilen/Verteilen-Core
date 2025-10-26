@@ -10,7 +10,7 @@ import { Header, Setter } from "../interface";
  * The parameter feedback helper\
  * Update the main parameter container on the cluster server
  */
-export class ClientParameter {
+export class ClientDatabase {
     private source:WebSocket | undefined
 
     constructor(_source:WebSocket | undefined){

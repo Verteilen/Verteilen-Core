@@ -1,7 +1,7 @@
 import { 
     Project, 
     RecordType, 
-    Parameter, 
+    Database, 
     UserProfile, 
     Library,
     ExecutionLog,
@@ -10,7 +10,7 @@ import {
 
 export interface MemoryData {
     projects: Array<Project>
-    parameter: Array<Parameter>
+    database: Array<Database>
     nodes: Array<Node>
     logs: Array<ExecutionLog>
     libs: Array<Library>
@@ -33,7 +33,7 @@ export interface RecordIOLoader {
 
 export interface RecordLoader {
     project: RecordIOLoader
-    parameter: RecordIOLoader
+    database: RecordIOLoader
     node: RecordIOLoader
     log: RecordIOLoader
     lib: RecordIOLoader
@@ -73,7 +73,7 @@ export const _CreateRecordMemoryLoader = (loader:MemoryData, type:RecordType):Re
         switch(type){
             default:
             case RecordType.PROJECT: return loader.projects
-            case RecordType.PARAMETER: return loader.parameter
+            case RecordType.Database: return loader.database
             case RecordType.NODE: return loader.nodes
             case RecordType.LOG: return loader.logs
             case RecordType.LIB: return loader.libs
@@ -127,7 +127,7 @@ export const _CreateRecordIOLoader = (loader:RecordIOBase, memory:MemoryData, ty
         switch(type){
             default:
             case RecordType.PROJECT: return memory.projects
-            case RecordType.PARAMETER: return memory.parameter
+            case RecordType.Database: return memory.database
             case RecordType.NODE: return memory.nodes
             case RecordType.LOG: return memory.logs
             case RecordType.LIB: return memory.libs
@@ -213,7 +213,7 @@ export const _CreateRecordIOLoader = (loader:RecordIOBase, memory:MemoryData, ty
 export const CreateRecordMemoryLoader = (loader:MemoryData):RecordLoader => {
     return {
         project: _CreateRecordMemoryLoader(loader, RecordType.PROJECT),
-        parameter: _CreateRecordMemoryLoader(loader, RecordType.PARAMETER),
+        database: _CreateRecordMemoryLoader(loader, RecordType.Database),
         node: _CreateRecordMemoryLoader(loader, RecordType.NODE),
         log: _CreateRecordMemoryLoader(loader, RecordType.LOG),
         lib: _CreateRecordMemoryLoader(loader, RecordType.LIB),
@@ -230,7 +230,7 @@ export const CreateRecordMemoryLoader = (loader:MemoryData):RecordLoader => {
 export const CreateRecordIOLoader = (loader:RecordIOBase, memory:MemoryData):RecordLoader => {
     return {
         project: _CreateRecordIOLoader(loader, memory, RecordType.PROJECT, "record"),
-        parameter: _CreateRecordIOLoader(loader, memory, RecordType.PARAMETER, "parameter"),
+        database: _CreateRecordIOLoader(loader, memory, RecordType.Database, "database"),
         node: _CreateRecordIOLoader(loader, memory, RecordType.NODE, "node"),
         log: _CreateRecordIOLoader(loader, memory, RecordType.LOG, "log"),
         lib: _CreateRecordIOLoader(loader, memory, RecordType.LIB, "lib", ""),

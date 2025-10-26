@@ -59,18 +59,25 @@ export enum ResourceType {
     DISK = 1 << 7,
     NETWORK = 1 << 8,
 }
-
+/**
+ * **Vue Update Type**
+ */
 export enum FrontendUpdate {
     ALL = ~(~0 << 10),
     PROJECT = 1 << 0,
     PARAMETER = 1 << 1,
 }
-
+/**
+ * **Job Category Type**
+ */
 export enum JobCategory {
     Condition,
     Execution
 }
-
+/**
+ * **Condition Error Handle Result**\
+ * Determine the action after receive error
+ */
 export enum ConditionResult {
     None,
     SkipProject,
@@ -79,7 +86,9 @@ export enum ConditionResult {
     ThrowTask,
     Pause,
 }
-
+/**
+ * **Job SubType: Execution**
+ */
 export enum JobType {
     COPY_FILE,
     COPY_DIR,
@@ -92,7 +101,9 @@ export enum JobType {
     COMMAND,
     LIB_COMMAND,
 }
-
+/**
+ * **Job SubType: Condition**
+ */
 export enum JobType2 {
     CHECK_PATH,
     JAVASCRIPT,
@@ -118,13 +129,18 @@ export enum RenderUpdateType {
     All= ~(~0 << 7),
     Project = 1 << 0, 
     Node = 1 << 1, 
-    Parameter = 1 << 2
+    Database = 1 << 2
 }
-
+/**
+ * **Database Table Type**
+ */
 export enum RecordType {
-    PROJECT, PARAMETER, NODE, LOG, LIB, USER,
+    PROJECT, Database, NODE, LOG, LIB, USER,
 }
-
+/**
+ * **Lib Import Type**\
+ * For client-side javascript vm library import options
+ */
 export enum JavascriptLib {
     ALL = ~(~0 << 7),
     OS = 1 << 0, 
@@ -133,11 +149,26 @@ export enum JavascriptLib {
     HTTP = 1 << 3,
     PATH = 1 << 4,
 }
-
+/**
+ * **Service Activate Mode**\
+ * Determine what cost service turn on
+ */
 export enum ServiceMode {
-    ONCE, CYCLE, EVENT
+    /**
+     * Do it once, and shutdown
+     */
+    ONCE, 
+    /**
+     * Schedule setup, or a time cycle
+     */
+    CYCLE, 
+    /**
+     * API event trigger, or other service trigger
+     */
+    EVENT
 }
 
+//#region Translation
 export const DataTypeText: { [key:number]:string } = {
     0: 'types.boolean',
     1: 'types.number',
@@ -204,6 +235,7 @@ export const ProjectTemplateText: { [key:number]:string } = {
     200: 'enum.project.aftereffect',
 }
 
-export const ParameterTemplateText: { [key:number]:string } = {
-    0: 'enum.parameter.default'
+export const DatabaseTemplateText: { [key:number]:string } = {
+    0: 'enum.database.default'
 }
+//#endregion

@@ -5,17 +5,17 @@
 // ========================
 import { ChildProcess, spawn } from 'child_process';
 import { WebSocket } from 'ws';
-import { DataType, FeedBack, Header, Job, JobCategory, JobType2Text, JobTypeText, Libraries, Messager, Messager_log, Parameter, Setter } from "../interface";
+import { DataType, FeedBack, Header, Job, JobCategory, JobType2Text, JobTypeText, Libraries, Messager, Messager_log, Database, Setter } from "../interface";
 import { i18n } from "../plugins/i18n";
 import { Client } from "./client";
-import { ClientParameter } from './parameter';
+import { ClientDatabase } from './database';
 
 /**
  * Execute worker, Execute the job container
  */
 export class ClientExecute {
     uuid:string
-    private parameter:Parameter | undefined = undefined
+    private parameter:Database | undefined = undefined
     private libraries:Libraries | undefined = undefined
     private tag: string = ''
     private workers:Array<ChildProcess> = []
@@ -75,7 +75,7 @@ export class ClientExecute {
         })
         child.stdin.setDefaultEncoding('utf-8')
         this.workers.push(child)
-        const para = new ClientParameter(source)
+        const para = new ClientDatabase(source)
         let k = "" 
 
         const workerFeedbackExec = (str:string) => {
@@ -162,7 +162,7 @@ export class ClientExecute {
      * Update parameter, Called by cluster server
      * @param data Target container
      */
-    set_parameter = (data:Parameter) => {
+    set_parameter = (data:Database) => {
         this.parameter = data
     }
     
@@ -183,7 +183,7 @@ export class ClientExecute {
         if(this.parameter == undefined) return
         const index = this.parameter.containers.findIndex(x => x.name == data.key&& x.type == DataType.String)
         if(index != -1) this.parameter.containers[index].value = data.value
-        this.messager_log(`[Parameter string sync] ${data.key} = ${data.value}`)
+        this.messager_log(`[Database string sync] ${data.key} = ${data.value}`)
     }
     /**
      * Update parameter number, Called by cluster server
@@ -194,7 +194,7 @@ export class ClientExecute {
         if(this.parameter == undefined) return
         const index = this.parameter.containers.findIndex(x => x.name == data.key && x.type == DataType.Number)
         if(index != -1) this.parameter.containers[index].value = data.value
-        this.messager_log(`[Parameter number sync] ${data.key} = ${data.value}`)
+        this.messager_log(`[Database number sync] ${data.key} = ${data.value}`)
     }
     /**
      * Update parameter boolean, Called by cluster server
@@ -205,6 +205,6 @@ export class ClientExecute {
         if(this.parameter == undefined) return
         const index = this.parameter.containers.findIndex(x => x.name == data.key && x.type == DataType.Boolean)
         if(index != -1) this.parameter.containers[index].value = data.value
-        this.messager_log(`[Parameter boolean sync] ${data.key} = ${data.value}`)
+        this.messager_log(`[Database boolean sync] ${data.key} = ${data.value}`)
     }
 }

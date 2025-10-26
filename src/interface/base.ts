@@ -9,16 +9,16 @@
 import { DataType, DataTypeBase, JobType, JobType2 } from "./enum"
 import { ACLType, LocalPermission as LocalPermission } from "./server"
 
-export interface ParameterConfigTrigger {
+export interface DatabaseConfigTrigger {
     types: Array<DataTypeBase>
 }
 /**
- * **Parameter Context**\
+ * **Database Context**\
  */
-export interface ParameterContainer {
+export interface DatabaseContainer {
     name: string
     meta?: any
-    config?: ParameterConfigTrigger
+    config?: DatabaseConfigTrigger
     type: DataType
     hidden: boolean
     runtimeOnly: boolean
@@ -49,14 +49,14 @@ export interface Property {
     deep?: number
 }
 /**
- * **Data Parameter Bank**\
+ * **Data Database Bank**\
  * Store the data which will be reference in the execute stage
  */
-export interface Parameter {
+export interface Database {
     uuid: string
     title: string
     canWrite: boolean
-    containers: Array<ParameterContainer>
+    containers: Array<DatabaseContainer>
     /**
      * **Local Permission**\
      * Client-side only permission field\
@@ -68,7 +68,7 @@ export interface Parameter {
 /**
  * **Compute Instruction Container**\
  * Specifed the command, which show how does user want these compute to do\
- * Contains different arguments list, which could reference to parameter value
+ * Contains different arguments list, which could reference to database value
  */
 export interface Job {
     /**
@@ -174,7 +174,7 @@ export interface Task {
     cronjob: boolean
     /**
      * **Cron Reference Key**\
-     * Reference a parameter number in database
+     * Reference a database number in database
      */
     cronjobKey: string
     /**
@@ -185,7 +185,7 @@ export interface Task {
     multi: boolean
     /**
      * **Multi Reference Key**\
-     * Reference a parameter number in database
+     * Reference a database number in database
      */
     multiKey: string
     /**
@@ -212,7 +212,7 @@ export interface Task {
 }
 /**
  * **Compute Structure Container**\
- * It has reference to parameter And contains multiple task\
+ * It has reference to database And contains multiple task\
  * We grab this container structure to execute queue to execute one by one
  */
 export interface Project {
@@ -239,15 +239,15 @@ export interface Project {
      */
     description?: string
     /**
-     * **Parameter ID**\
-     * In order reference to parameter database
+     * **Database ID**\
+     * In order reference to database database
      */
-    parameter_uuid: string
+    database_uuid: string
     /**
-     * **Parameter instance**\
-     * The data field of parameter
+     * **Database instance**\
+     * The data field of database
      */
-    parameter?: Parameter
+    database?: Database
     /**
      * **Tasks**\
      * The context of this project\

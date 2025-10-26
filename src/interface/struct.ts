@@ -7,12 +7,12 @@
  * All kinds of data structure
  * It's a mess, i know
  */
-import { ParameterContainer, Project } from "./base"
+import { DatabaseContainer, Project } from "./base"
 import ws from 'ws'
 import { ServiceMode } from "./enum"
 
 type ProjectCall = (p:Project) => Project
-type ParameterCall = () => Array<ParameterContainer>
+type DatabaseCall = () => Array<DatabaseContainer>
 
 /**
  * The websocket instance with extra information
@@ -220,7 +220,7 @@ export interface TemplateGroup2 {
     group: string
     title?: string
     filename?: string
-    template?: ParameterCall
+    template?: DatabaseCall
 }
 
 export interface PluginContent {
@@ -258,7 +258,7 @@ export interface PluginState {
 export interface PluginPageTemplate {
     name: string
     project: Array<TemplateGroup>
-    parameter: Array<TemplateGroup2>
+    database: Array<TemplateGroup2>
     url?: string
 }
 
@@ -273,7 +273,7 @@ export interface TemplateDataProject {
     group: string
 }
 
-export interface TemplateDataParameter {
+export interface TemplateDataDatabase {
     title: string
     filename: string
     group: string
@@ -282,7 +282,7 @@ export interface TemplateDataParameter {
 export interface TemplateData {
     url?: string
     projects: Array<TemplateDataProject>
-    parameters: Array<TemplateDataParameter>
+    databases: Array<TemplateDataDatabase>
 }
 
 export interface BuildinAssetsContent {

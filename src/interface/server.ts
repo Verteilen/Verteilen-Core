@@ -34,18 +34,26 @@ export enum PermissionType {
     PROJECT,
     Task,
     JOB,
-    PARAMETER,
+    DATABASE,
     PLUGIN,
     NODE,
     LIB,
     LOG,
 }
 
+/**
+ * **Websocket Data Format: Login**
+ */
+export interface Login {
+    username: string
+    password: string
+}
+
 export interface GlobalPermission {
     project: LocalPermission
     task: LocalPermission
     job: LocalPermission
-    parameter: LocalPermission
+    database: LocalPermission
 
     plugin: LocalPermission
     node: LocalPermission
@@ -116,7 +124,7 @@ export const CreateRootPermission = ():GlobalPermission => {
         job: perl,
         plugin: perl,
         node: perl,
-        parameter: perl,
+        database: perl,
         lib: perl,
         log: perl,
         execute_job: true

@@ -1,4 +1,4 @@
-import { ClientJobParameter } from '../../src/client/job_parameter';
+import { ClientJobParameter } from '../../src/client/job_database';
 import { ClientJavascript } from '../../src/client/javascript';
 import { ClientOS } from '../../src/client/os';
 import { DataType, Libraries, Parameter } from '../../src/interface';

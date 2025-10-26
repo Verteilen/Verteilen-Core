@@ -5,7 +5,7 @@
 // ========================
 import { Header, Setter } from "../interface"
 
-export class ClientJobParameter {
+export class ClientJobDatabase {
     /**
      * Update parameter number on the cluster server
      * @param data Target KeyValue

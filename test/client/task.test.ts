@@ -1,4 +1,4 @@
-import { ClientJobParameter } from '../../src/client/job_parameter';
+import { ClientJobParameter } from '../../src/client/job_database';
 import { ClientOS } from '../../src/client/os';
 import { DataType, Job, JobCategory, Libraries, JobType, Parameter, Property, Task } from '../../src/interface';
 import { ExecuteManager_Base } from '../../src/script/execute/base';

@@ -1,4 +1,4 @@
-import { ConditionResult, ExecutePair, ExecuteProxy, ExecuteRecordTask, ExecuteState, FeedBack, Job, JobCategory, MESSAGE_LIMIT, Parameter, Project, Record, Task } from "../../interface"
+import { ConditionResult, ExecutePair, ExecuteProxy, ExecuteRecordTask, ExecuteState, FeedBack, Job, JobCategory, MESSAGE_LIMIT, Database, Project, Record, Task } from "../../interface"
 
 export class Util_Server_Console { 
 
@@ -62,7 +62,7 @@ export class Util_Server_Console_Proxy {
             executeJobStart: (data:[Job, number, string]):void => { this.execute_job_start(data) },
             executeJobFinish: (data:[Job, number, string, number]):void => { this.execute_job_finish(data) },
             feedbackMessage: (data:FeedBack):void => { this.feedback_message(data) },
-            updateParameter: (data:Parameter):void => { this.update_runtime_parameter(data) }
+            updateDatabase: (data:Database):void => { this.update_runtime_database(data) }
         }
         return d
     }
@@ -238,11 +238,11 @@ export class Util_Server_Console_Proxy {
     }
 
     /**
-     * When parameter getting change by the process steps\
+     * When database getting change by the process steps\
      * This get called
-     * @param d The whole container for the parameters
+     * @param d The whole container for the databases
      */
-    update_runtime_parameter = (d:Parameter, ) => {
+    update_runtime_database = (d:Database, ) => {
         this.model.record!.para = d
     }
 }

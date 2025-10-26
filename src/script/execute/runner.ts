@@ -295,14 +295,14 @@ export class ExecuteManager_Runner extends ExecuteManager_Feedback {
     }
 
     /**
-     * Boradcasting all the parameter and library to all the websocket nodes
+     * Boradcasting all the database and library to all the websocket nodes
      * @param p Target project
      */
-    SyncParameter = (p:Project) => {
+    SyncDatabase = (p:Project) => {
         // Get the clone para from it
-        this.localPara = JSON.parse(JSON.stringify(p.parameter))
-        this.messager_log("[Execute] Sync Parameter !")
-        this.messager_log("[Execute] Generate local parameter object")
+        this.localPara = JSON.parse(JSON.stringify(p.database))
+        this.messager_log("[Execute] Sync Database !")
+        this.messager_log("[Execute] Generate local database object")
         // Then phrase the expression to value
         for(let i = 0; i < this.localPara!.containers.length; i++){
             if(this.localPara!.containers[i].type == DataType.Expression && this.localPara!.containers[i].meta != undefined){

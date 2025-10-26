@@ -5,7 +5,7 @@
 // ========================
 import { ChildProcess, exec, spawn } from 'child_process';
 import { WebSocket } from 'ws';
-import { DATA_FOLDER, Header, Job, Libraries, Messager, Messager_log, Parameter, Plugin, PluginList, PluginToken, PluginWithToken } from "../interface";
+import { DATA_FOLDER, Header, Job, Libraries, Messager, Messager_log, Database, Plugin, PluginList, PluginToken, PluginWithToken } from "../interface";
 import { Client } from './client';
 import { ClientExecute } from "./execute";
 import { ClientShell } from './shell';
@@ -97,7 +97,7 @@ export class ClientAnalysis {
         this.exec.splice(index, 1)
     }
 
-    private set_parameter = (data:Parameter, source: WebSocket, channel:string | undefined) => {
+    private set_parameter = (data:Database, source: WebSocket, channel:string | undefined) => {
         if(channel == undefined) return
         const target = this.exec_checker(channel)
         target.set_parameter(data)
