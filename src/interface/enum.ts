@@ -127,7 +127,7 @@ export enum ProjectTemplate {
     AfterEffect = 200,
 }
 
-export enum ParameterTemplate {
+export enum DatabaseTemplate {
     DEFAULT = 0
 }
 

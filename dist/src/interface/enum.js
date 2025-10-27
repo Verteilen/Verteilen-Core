@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DatabaseTemplateText = exports.ProjectTemplateText = exports.JobType2Text = exports.JobTypeText = exports.JobResultText = exports.ConnectionText = exports.JobCategoryText = exports.ExecuteStateText = exports.DataTypeText = exports.ServiceMode = exports.JavascriptLib = exports.RecordType = exports.RenderUpdateType = exports.ExecuteState = exports.ParameterTemplate = exports.ProjectTemplate = exports.JobType2 = exports.JobType = exports.ConditionResult = exports.JobCategory = exports.FrontendUpdate = exports.ResourceType = exports.DataTypeBase = exports.BackendType = exports.DataType = exports.SocketState = void 0;
+exports.DatabaseTemplateText = exports.ProjectTemplateText = exports.JobType2Text = exports.JobTypeText = exports.JobResultText = exports.ConnectionText = exports.JobCategoryText = exports.ExecuteStateText = exports.DataTypeText = exports.ServiceMode = exports.JavascriptLib = exports.RecordType = exports.RenderUpdateType = exports.ExecuteState = exports.DatabaseTemplate = exports.ProjectTemplate = exports.JobType2 = exports.JobType = exports.ConditionResult = exports.JobCategory = exports.FrontendUpdate = exports.ResourceType = exports.DataTypeBase = exports.BackendType = exports.DataType = exports.SocketState = void 0;
 var SocketState;
 (function (SocketState) {
     SocketState[SocketState["CONNECTING"] = 0] = "CONNECTING";
@@ -91,10 +91,10 @@ var ProjectTemplate;
     ProjectTemplate[ProjectTemplate["Blender_Cluster"] = 101] = "Blender_Cluster";
     ProjectTemplate[ProjectTemplate["AfterEffect"] = 200] = "AfterEffect";
 })(ProjectTemplate || (exports.ProjectTemplate = ProjectTemplate = {}));
-var ParameterTemplate;
-(function (ParameterTemplate) {
-    ParameterTemplate[ParameterTemplate["DEFAULT"] = 0] = "DEFAULT";
-})(ParameterTemplate || (exports.ParameterTemplate = ParameterTemplate = {}));
+var DatabaseTemplate;
+(function (DatabaseTemplate) {
+    DatabaseTemplate[DatabaseTemplate["DEFAULT"] = 0] = "DEFAULT";
+})(DatabaseTemplate || (exports.DatabaseTemplate = DatabaseTemplate = {}));
 var ExecuteState;
 (function (ExecuteState) {
     ExecuteState[ExecuteState["NONE"] = 0] = "NONE";
