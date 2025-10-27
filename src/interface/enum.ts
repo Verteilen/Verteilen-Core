@@ -33,6 +33,16 @@ export enum DataType {
     List,
 }
 /**
+ * **Express Server Type**\
+ * For checking the express server type
+ */
+export enum BackendType {
+    NONE,
+    SERVER,
+    CLUSTER,
+    NODE,
+}
+/**
  * **Data Type Base**\
  * The support data type for calculation\
  * Proerty or expression calculation will use this

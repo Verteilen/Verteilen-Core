@@ -7,6 +7,8 @@
  * Vue Client-side only data structure
  */
 
+import { BackendType } from "./enum"
+
 /**
  * **Application Configuration**\
  * Show current state of the app\
@@ -40,6 +42,10 @@ export interface AppConfig {
      * FOr express mode detect only
      */
     login:boolean
+    /**
+     * **Server Type**
+     */
+    backendType: BackendType
 }
 /**
  * **Notification Data Structure**\

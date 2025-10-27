@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DatabaseTemplateText = exports.ProjectTemplateText = exports.JobType2Text = exports.JobTypeText = exports.JobResultText = exports.ConnectionText = exports.JobCategoryText = exports.ExecuteStateText = exports.DataTypeText = exports.ServiceMode = exports.JavascriptLib = exports.RecordType = exports.RenderUpdateType = exports.ExecuteState = exports.ParameterTemplate = exports.ProjectTemplate = exports.JobType2 = exports.JobType = exports.ConditionResult = exports.JobCategory = exports.FrontendUpdate = exports.ResourceType = exports.DataTypeBase = exports.DataType = exports.SocketState = void 0;
+exports.DatabaseTemplateText = exports.ProjectTemplateText = exports.JobType2Text = exports.JobTypeText = exports.JobResultText = exports.ConnectionText = exports.JobCategoryText = exports.ExecuteStateText = exports.DataTypeText = exports.ServiceMode = exports.JavascriptLib = exports.RecordType = exports.RenderUpdateType = exports.ExecuteState = exports.ParameterTemplate = exports.ProjectTemplate = exports.JobType2 = exports.JobType = exports.ConditionResult = exports.JobCategory = exports.FrontendUpdate = exports.ResourceType = exports.DataTypeBase = exports.BackendType = exports.DataType = exports.SocketState = void 0;
 var SocketState;
 (function (SocketState) {
     SocketState[SocketState["CONNECTING"] = 0] = "CONNECTING";
@@ -19,6 +19,13 @@ var DataType;
     DataType[DataType["Select"] = 6] = "Select";
     DataType[DataType["List"] = 7] = "List";
 })(DataType || (exports.DataType = DataType = {}));
+var BackendType;
+(function (BackendType) {
+    BackendType[BackendType["NONE"] = 0] = "NONE";
+    BackendType[BackendType["SERVER"] = 1] = "SERVER";
+    BackendType[BackendType["CLUSTER"] = 2] = "CLUSTER";
+    BackendType[BackendType["NODE"] = 3] = "NODE";
+})(BackendType || (exports.BackendType = BackendType = {}));
 var DataTypeBase;
 (function (DataTypeBase) {
     DataTypeBase[DataTypeBase["Boolean"] = 0] = "Boolean";
