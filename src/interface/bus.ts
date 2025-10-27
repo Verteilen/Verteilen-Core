@@ -9,6 +9,7 @@
 import { Job, Database, Project, Task } from "./base"
 import { ExecuteState } from "./enum"
 import { ExecutionLog, Log, Preference } from "./record"
+import { Login } from "./server"
 import { FeedBack, Header, Setter, ShellFolder, Single, WebsocketPack } from "./struct"
 import { NodeTable } from "./table"
 import { ToastData } from "./ui"
@@ -136,7 +137,7 @@ export type BusType = {
     recoverDatabase: Database
     relogin: void
     loginGuest: void
-    login: Setter
+    login: Login
     logout: void
     updateTask: void
     updateJob: void
