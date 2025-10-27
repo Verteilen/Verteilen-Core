@@ -2,7 +2,6 @@ import { createI18n } from 'vue-i18n';
 import { I18n } from "i18n-js";
 export { createI18n as Create };
 export declare const i18nDefaultData: {
-    legacy: boolean;
     locale: string;
     globalInjection: boolean;
     fallbackFormat: string;

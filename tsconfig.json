@@ -10,8 +10,10 @@
     "skipLibCheck": false,
     "forceConsistentCasingInFileNames": true,
     "outDir": "dist",
+    "rootDir": "src",
     "allowJs": true,
     "removeComments": true,
     "noImplicitAny": false
-  }
+  },
+  "exclude": ["coverage", "test", "index.ts", "jest.config.js", "dist"]
 }

@@ -10,7 +10,6 @@ const i18n_js_1 = require("i18n-js");
 const en_json_1 = __importDefault(require("./../lan/en.json"));
 const zh_TW_json_1 = __importDefault(require("./../lan/zh_TW.json"));
 exports.i18nDefaultData = {
-    legacy: true,
     locale: 'en',
     globalInjection: true,
     fallbackFormat: 'en',

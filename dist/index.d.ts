@@ -1,3 +1,3 @@
-export * from './src/computed';
-export * from './src/interface';
-export * from './src/server';
+export * from './computed';
+export * from './interface';
+export * from './server';
