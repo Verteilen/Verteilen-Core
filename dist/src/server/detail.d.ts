@@ -1,0 +1,72 @@
+import { BusAnalysis, Execute_SocketManager, ExecutePair, ExecuteProxy, ExecuteRecord, ExecuteState, Messager, Preference, Record, ShellFolder, Single, UtilServer_Console, WebsocketPack } from "../interface";
+import { PluginFeedback } from "./server";
+import { MemoryData, RecordIOBase } from './io';
+export type Translate = (key: string) => string;
+export interface BackendAction {
+    memory: MemoryData;
+    GetPreference: (uuid?: string) => Preference;
+    Boradcasting?: (name: string, data: any) => void;
+}
+export interface ServerDetailEvent {
+    resource_start: (socket: any, uuid: string) => void;
+    resource_end: (socket: any, uuid: string) => void;
+    shell_enter: (socket: any, uuid: string, value: string) => void;
+    shell_open: (socket: any, uuid: string) => void;
+    shell_close: (socket: any, uuid: string) => void;
+    shell_folder: (socket: any, uuid: string, path: string) => void;
+    node_list: (socket: any) => void;
+    node_add: (socket: any, url: string, uuid: string) => void;
+    node_update: (socket: any) => void;
+    node_delete: (socket: any, uuid: string, reason?: string) => void;
+    console_list: (socket: any) => Array<ExecuteRecord> | undefined;
+    console_record: (socket: any, uuid: string) => void;
+    console_execute: (socket: any, uuid: string, type: number) => void;
+    console_stop: (socket: any, uuid: string) => void;
+    console_clean: (socket: any, uuid: string) => void;
+    console_skip: (socket: any, uuid: string, forward: boolean, type: number, state: ExecuteState) => void;
+    console_skip2: (socket: any, uuid: string, v: number) => void;
+    console_add: (socket: any, name: string, record: Record, preference: Preference) => void;
+    console_update: (socket: any) => void;
+}
+export declare class ServerDetail {
+    execute_manager: Array<ExecutePair>;
+    console: UtilServer_Console.Util_Server_Console;
+    websocket_manager: Execute_SocketManager.WebsocketManager | undefined;
+    shellBind: Map<any, any>;
+    loader: RecordIOBase | undefined;
+    backend: BackendAction;
+    feedback: PluginFeedback;
+    message: Messager;
+    messager_log: Function;
+    t: Translate;
+    updatehandle: any;
+    re: Array<any>;
+    constructor(loader: RecordIOBase | undefined, backend: BackendAction, feedback: PluginFeedback, message: Messager, messager_log: Function, t: Translate);
+    get events(): ServerDetailEvent;
+    NewConnection: (x: WebsocketPack) => void;
+    DisConnection: (x: WebsocketPack) => void;
+    Analysis: (d: BusAnalysis) => void;
+    shellReply: (data: Single, p?: WebsocketPack) => void;
+    folderReply: (data: ShellFolder, p?: WebsocketPack) => void;
+    console_update: () => any[];
+    resource_start: (socket: any, uuid: string) => void;
+    resource_end: (socket: any, uuid: string) => void;
+    shell_enter: (socket: any, uuid: string, value: string) => void;
+    shell_open: (socket: any, uuid: string) => void;
+    shell_close: (socket: any, uuid: string) => void;
+    shell_folder: (socket: any, uuid: string, path: string) => void;
+    node_list: (socket: any) => WebsocketPack[] | undefined;
+    node_add: (socket: any, url: string, id: string) => void;
+    node_update: (socket: any) => import("../interface").NodeTable[] | undefined;
+    node_delete: (socket: any, uuid: string, reason?: string) => void;
+    console_list: (socket: any) => ExecuteRecord[] | undefined;
+    console_record: (socket: any, uuid: string) => string;
+    console_execute: (socket: any, uuid: string, type: number) => void;
+    console_stop: (socket: any, uuid: string) => void;
+    console_add: (socket: any, name: string, record: Record, preference: Preference) => ExecuteRecord | undefined;
+    console_update_call: () => void;
+    console_clean: (socket: any, uuid: string) => void;
+    console_skip: (socket: any, uuid: string, forward: boolean, type: number, state?: ExecuteState) => void;
+    console_skip2: (socket: any, uuid: string, v: number) => void;
+    CombineProxy: (eps: Array<ExecuteProxy>) => ExecuteProxy;
+}

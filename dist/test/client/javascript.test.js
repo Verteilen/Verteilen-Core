@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const job_database_1 = require("../../src/client/job_database");
 const javascript_1 = require("../../src/client/javascript");
@@ -44,17 +35,17 @@ describe("JS Test", () => {
         database = undefined;
         lib = undefined;
     });
-    test("Env test getter", () => __awaiter(void 0, void 0, void 0, function* () {
-        expect(yield js.JavascriptExecuteWithLib(`return env.getnumber("n1");`, [])).toBe(7);
-        expect(yield js.JavascriptExecuteWithLib(`return env.getnumber("n2");`, [])).toBe(5);
-        expect(yield js.JavascriptExecuteWithLib(`return env.getstring("s1");`, [])).toBe("Hello World");
-        expect(yield js.JavascriptExecuteWithLib(`return env.getboolean("b1");`, [])).toBe(true);
-        expect(yield js.JavascriptExecuteWithLib(`return env.getnumber("nnn");`, [])).toBe(undefined);
-        expect(yield js.JavascriptExecuteWithLib(`return env.getstring("sss");`, [])).toBe(undefined);
-        expect(yield js.JavascriptExecuteWithLib(`return env.getboolean("bbb");`, [])).toBe(undefined);
-    }));
-    test("Env test loop", () => __awaiter(void 0, void 0, void 0, function* () {
-        expect(yield js.JavascriptExecuteWithLib(`
+    test("Env test getter", async () => {
+        expect(await js.JavascriptExecuteWithLib(`return env.getnumber("n1");`, [])).toBe(7);
+        expect(await js.JavascriptExecuteWithLib(`return env.getnumber("n2");`, [])).toBe(5);
+        expect(await js.JavascriptExecuteWithLib(`return env.getstring("s1");`, [])).toBe("Hello World");
+        expect(await js.JavascriptExecuteWithLib(`return env.getboolean("b1");`, [])).toBe(true);
+        expect(await js.JavascriptExecuteWithLib(`return env.getnumber("nnn");`, [])).toBe(undefined);
+        expect(await js.JavascriptExecuteWithLib(`return env.getstring("sss");`, [])).toBe(undefined);
+        expect(await js.JavascriptExecuteWithLib(`return env.getboolean("bbb");`, [])).toBe(undefined);
+    });
+    test("Env test loop", async () => {
+        expect(await js.JavascriptExecuteWithLib(`
         result = 0;
         n = env.getnumber("n2");
         for(i=0;i<3;i++){
@@ -62,14 +53,14 @@ describe("JS Test", () => {
         }
         return result;
         `, [])).toBe(15);
-    }));
-    test("Env test has", () => __awaiter(void 0, void 0, void 0, function* () {
-        expect(yield js.JavascriptExecuteWithLib(`return env.hasnumber("n1");`, [])).toBe(true);
-        expect(yield js.JavascriptExecuteWithLib(`return env.hasnumber("n2");`, [])).toBe(true);
-        expect(yield js.JavascriptExecuteWithLib(`return env.hasstring("s1");`, [])).toBe(true);
-        expect(yield js.JavascriptExecuteWithLib(`return env.hasboolean("b1");`, [])).toBe(true);
-        expect(yield js.JavascriptExecuteWithLib(`return env.hasnumber("nnn");`, [])).toBe(false);
-        expect(yield js.JavascriptExecuteWithLib(`return env.hasstring("sss");`, [])).toBe(false);
-        expect(yield js.JavascriptExecuteWithLib(`return env.hasboolean("bbb");`, [])).toBe(false);
-    }));
+    });
+    test("Env test has", async () => {
+        expect(await js.JavascriptExecuteWithLib(`return env.hasnumber("n1");`, [])).toBe(true);
+        expect(await js.JavascriptExecuteWithLib(`return env.hasnumber("n2");`, [])).toBe(true);
+        expect(await js.JavascriptExecuteWithLib(`return env.hasstring("s1");`, [])).toBe(true);
+        expect(await js.JavascriptExecuteWithLib(`return env.hasboolean("b1");`, [])).toBe(true);
+        expect(await js.JavascriptExecuteWithLib(`return env.hasnumber("nnn");`, [])).toBe(false);
+        expect(await js.JavascriptExecuteWithLib(`return env.hasstring("sss");`, [])).toBe(false);
+        expect(await js.JavascriptExecuteWithLib(`return env.hasboolean("bbb");`, [])).toBe(false);
+    });
 });

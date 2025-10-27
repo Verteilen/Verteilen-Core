@@ -8,76 +8,56 @@ const i18n_1 = require("../plugins/i18n");
 const client_1 = require("./client");
 const database_1 = require("./database");
 class ClientExecute {
+    uuid;
+    database = undefined;
+    libraries = undefined;
+    tag = '';
+    workers = [];
+    client;
+    messager;
+    messager_log;
     get count() {
         return this.workers.length;
     }
     constructor(_uuid, _messager, _messager_log, _client) {
-        this.database = undefined;
-        this.libraries = undefined;
-        this.tag = '';
-        this.workers = [];
-        this.stop_job = () => {
-            this.messager_log(`[Execute] Stop All: ${this.workers.length}`);
-            this.workers.forEach(x => {
-                x.stdin.cork();
-                x.stdin.write("kill\n");
-                x.stdin.uncork();
-                x.stdin.end();
-            });
-        };
-        this.execute_job = (job, source) => {
-            this.messager_log(`[Execute] ${job.uuid}  ${job.category == interface_1.JobCategory.Execution ? i18n_1.i18n.global.t(interface_1.JobTypeText[job.type]) : i18n_1.i18n.global.t(interface_1.JobType2Text[job.type])}`, job.uuid, job.runtime_uuid);
-            this.tag = job.uuid;
-            this.execute_job_worker(job, source);
-        };
-        this.set_database = (data) => {
-            this.database = data;
-        };
-        this.set_libs = (data) => {
-            this.libraries = data;
-        };
-        this.set_string = (data) => {
-            if (this.database == undefined)
-                return;
-            const index = this.database.containers.findIndex(x => x.name == data.key && x.type == interface_1.DataType.String);
-            if (index != -1)
-                this.database.containers[index].value = data.value;
-            this.messager_log(`[Database string sync] ${data.key} = ${data.value}`);
-        };
-        this.set_number = (data) => {
-            if (this.database == undefined)
-                return;
-            const index = this.database.containers.findIndex(x => x.name == data.key && x.type == interface_1.DataType.Number);
-            if (index != -1)
-                this.database.containers[index].value = data.value;
-            this.messager_log(`[Database number sync] ${data.key} = ${data.value}`);
-        };
-        this.set_boolean = (data) => {
-            if (this.database == undefined)
-                return;
-            const index = this.database.containers.findIndex(x => x.name == data.key && x.type == interface_1.DataType.Boolean);
-            if (index != -1)
-                this.database.containers[index].value = data.value;
-            this.messager_log(`[Database boolean sync] ${data.key} = ${data.value}`);
-        };
         this.uuid = _uuid;
         this.client = _client;
         this.messager = _messager;
         this.messager_log = _messager_log;
     }
+    stop_job = () => {
+        this.messager_log(`[Execute] Stop All: ${this.workers.length}`);
+        this.workers.forEach(x => {
+            x.stdin.cork();
+            x.stdin.write("kill\n");
+            x.stdin.uncork();
+            x.stdin.end();
+        });
+    };
+    execute_job = (job, source) => {
+        this.messager_log(`[Execute] ${job.uuid}  ${job.category == interface_1.JobCategory.Execution ? i18n_1.i18n.global.t(interface_1.JobTypeText[job.type]) : i18n_1.i18n.global.t(interface_1.JobType2Text[job.type])}`, job.uuid, job.runtime_uuid);
+        this.tag = job.uuid;
+        this.execute_job_worker(job, source);
+    };
     execute_job_worker(job, source) {
         const child = (0, child_process_1.spawn)(client_1.Client.workerPath(), [], {
             stdio: ['pipe', 'pipe', 'pipe'],
             windowsHide: true,
             shell: true,
-            env: Object.assign(Object.assign({}, process.env), { type: "JOB", job: JSON.stringify(job), plugin: JSON.stringify(this.client.plugins), database: JSON.stringify(this.database), libraries: JSON.stringify(this.libraries) })
+            env: {
+                ...process.env,
+                type: "JOB",
+                job: JSON.stringify(job),
+                plugin: JSON.stringify(this.client.plugins),
+                database: JSON.stringify(this.database),
+                libraries: JSON.stringify(this.libraries),
+            }
         });
         child.stdin.setDefaultEncoding('utf-8');
         this.workers.push(child);
         const para = new database_1.ClientDatabase(source);
         let k = "";
         const workerFeedbackExec = (str) => {
-            var _a;
             try {
                 const msg = JSON.parse(str);
                 if (msg.name == 'messager') {
@@ -113,7 +93,7 @@ class ClientExecute {
             }
             catch (err) {
                 this.messager_log(`Error: ${str}`, job.uuid, job.runtime_uuid);
-                this.messager_log(`(${(_a = err.code) !== null && _a !== void 0 ? _a : 'unknown'}) ${err.message}`, job.uuid, job.runtime_uuid);
+                this.messager_log(`(${err.code ?? 'unknown'}) ${err.message}`, job.uuid, job.runtime_uuid);
             }
         };
         const workerFeedback = (str) => {
@@ -158,5 +138,35 @@ class ClientExecute {
         }
         this.tag = '';
     }
+    set_database = (data) => {
+        this.database = data;
+    };
+    set_libs = (data) => {
+        this.libraries = data;
+    };
+    set_string = (data) => {
+        if (this.database == undefined)
+            return;
+        const index = this.database.containers.findIndex(x => x.name == data.key && x.type == interface_1.DataType.String);
+        if (index != -1)
+            this.database.containers[index].value = data.value;
+        this.messager_log(`[Database string sync] ${data.key} = ${data.value}`);
+    };
+    set_number = (data) => {
+        if (this.database == undefined)
+            return;
+        const index = this.database.containers.findIndex(x => x.name == data.key && x.type == interface_1.DataType.Number);
+        if (index != -1)
+            this.database.containers[index].value = data.value;
+        this.messager_log(`[Database number sync] ${data.key} = ${data.value}`);
+    };
+    set_boolean = (data) => {
+        if (this.database == undefined)
+            return;
+        const index = this.database.containers.findIndex(x => x.name == data.key && x.type == interface_1.DataType.Boolean);
+        if (index != -1)
+            this.database.containers[index].value = data.value;
+        this.messager_log(`[Database boolean sync] ${data.key} = ${data.value}`);
+    };
 }
 exports.ClientExecute = ClientExecute;

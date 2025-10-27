@@ -4,6 +4,10 @@ exports.Region_Project = void 0;
 const interface_1 = require("../../interface");
 const region_task_1 = require("./region_task");
 class Region_Project {
+    target;
+    state;
+    project;
+    task;
     constructor(_target, _project) {
         this.project = _project;
         this.target = _target;

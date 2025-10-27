@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateRecordMongoLoader = exports.CreateRecordIOLoader = exports.CreateRecordMemoryLoader = exports._CreateRecordIOLoader = exports._CreateRecordMemoryLoader = void 0;
 const interface_1 = require("../interface");
@@ -24,41 +15,41 @@ const _CreateRecordMemoryLoader = (loader, type) => {
         }
     };
     return {
-        load_all: () => __awaiter(void 0, void 0, void 0, function* () {
+        load_all: async () => {
             return get_array(type).map(x => JSON.stringify(x));
-        }),
-        delete_all: () => __awaiter(void 0, void 0, void 0, function* () {
+        },
+        delete_all: async () => {
             const arr = get_array(type).map(x => JSON.stringify(x));
             arr.splice(0, arr.length);
-        }),
-        list_all: () => __awaiter(void 0, void 0, void 0, function* () {
+        },
+        list_all: async () => {
             return get_array(type).map(x => x.uuid);
-        }),
-        save: (name, data) => __awaiter(void 0, void 0, void 0, function* () {
+        },
+        save: async (name, data) => {
             const arr = get_array(type);
             const b = arr.findIndex(x => name == x.uuid);
             if (b != -1)
                 arr[b] = JSON.parse(data);
             else
                 arr.push(JSON.parse(data));
-        }),
-        load: (name) => __awaiter(void 0, void 0, void 0, function* () {
+        },
+        load: async (name) => {
             const arr = get_array(type);
             const b = arr.find(x => name == x.uuid);
             return b ? JSON.stringify(b) : "";
-        }),
-        rename: (name, newname) => __awaiter(void 0, void 0, void 0, function* () {
+        },
+        rename: async (name, newname) => {
             const arr = get_array(type);
             const b = arr.findIndex(x => x.uuid == name);
             if (b != -1)
                 arr[b].uuid = newname;
-        }),
-        delete: (name) => __awaiter(void 0, void 0, void 0, function* () {
+        },
+        delete: async (name) => {
             const arr = get_array(type);
             const b = arr.findIndex(x => x.uuid == name);
             if (b != -1)
                 arr.splice(b, 1);
-        })
+        }
     };
 };
 exports._CreateRecordMemoryLoader = _CreateRecordMemoryLoader;
@@ -75,46 +66,46 @@ const _CreateRecordIOLoader = (loader, memory, type, folder, ext = ".json") => {
         }
     };
     return {
-        load_all: () => __awaiter(void 0, void 0, void 0, function* () {
+        load_all: async () => {
             const root = loader.join(loader.root, folder);
             if (!loader.exists(root))
-                yield loader.mkdir(root);
-            const files = yield loader.read_dir_file(root);
+                await loader.mkdir(root);
+            const files = await loader.read_dir_file(root);
             const r = files.map(x => loader.read_string(x, { encoding: 'utf8', flag: 'r' }));
-            const p = yield Promise.all(r);
+            const p = await Promise.all(r);
             const arr = get_array(type);
             arr.splice(0, arr.length);
             arr.push(...p.map(x => JSON.parse(x)));
             return p;
-        }),
-        delete_all: () => __awaiter(void 0, void 0, void 0, function* () {
+        },
+        delete_all: async () => {
             const root = loader.join(loader.root, folder);
             if (loader.exists(root))
-                yield loader.rm(root);
-            yield loader.mkdir(root);
+                await loader.rm(root);
+            await loader.mkdir(root);
             const arr = get_array(type);
             arr.splice(0, arr.length);
-        }),
-        list_all: () => __awaiter(void 0, void 0, void 0, function* () {
+        },
+        list_all: async () => {
             const root = loader.join(loader.root, folder);
             if (!loader.exists(root))
-                yield loader.mkdir(root);
+                await loader.mkdir(root);
             return loader.read_dir_file(root);
-        }),
-        save: (name, data) => __awaiter(void 0, void 0, void 0, function* () {
+        },
+        save: async (name, data) => {
             const root = loader.join(loader.root, folder);
             if (!loader.exists(root))
-                yield loader.mkdir(root);
+                await loader.mkdir(root);
             const file = loader.join(root, name + ext);
-            yield loader.write_string(file, data);
+            await loader.write_string(file, data);
             const arr = get_array(type);
             const b = arr.findIndex(x => x.uuid == name);
             if (b != -1)
                 arr.push(JSON.parse(data));
             else
                 arr[b] = JSON.parse(data);
-        }),
-        load: (name, cache) => __awaiter(void 0, void 0, void 0, function* () {
+        },
+        load: async (name, cache) => {
             if (cache) {
                 const arr = get_array(type);
                 const b = arr.findIndex(x => x.uuid == name);
@@ -123,34 +114,34 @@ const _CreateRecordIOLoader = (loader, memory, type, folder, ext = ".json") => {
             }
             const root = loader.join(loader.root, folder);
             if (!loader.exists(root))
-                yield loader.mkdir(root);
+                await loader.mkdir(root);
             const file = loader.join(root, name + ext);
             return loader.read_string(file);
-        }),
-        rename: (name, newname) => __awaiter(void 0, void 0, void 0, function* () {
+        },
+        rename: async (name, newname) => {
             const root = loader.join(loader.root, folder);
             if (!loader.exists(root))
-                yield loader.mkdir(root);
+                await loader.mkdir(root);
             const oldfile = loader.join(root, name + ext);
             const newfile = loader.join(root, newname + ext);
-            yield loader.cp(oldfile, newfile);
-            yield loader.rm(oldfile);
+            await loader.cp(oldfile, newfile);
+            await loader.rm(oldfile);
             const arr = get_array(type);
             const b = arr.findIndex(x => x.uuid == name);
             if (b != -1)
                 arr[b].uuid = newname;
-        }),
-        delete: (name) => __awaiter(void 0, void 0, void 0, function* () {
+        },
+        delete: async (name) => {
             const root = loader.join(loader.root, folder);
             if (!loader.exists(root))
-                yield loader.mkdir(root);
+                await loader.mkdir(root);
             const file = loader.join(root, name + ext);
-            yield loader.rm(file);
+            await loader.rm(file);
             const arr = get_array(type);
             const b = arr.findIndex(x => x.uuid == name);
             if (b != -1)
                 arr.splice(b, 1);
-        })
+        }
     };
 };
 exports._CreateRecordIOLoader = _CreateRecordIOLoader;

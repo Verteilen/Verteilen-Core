@@ -33,11 +33,10 @@ const messager_log = (msg, tag, meta) => {
     console.log(JSON.stringify(d));
 };
 const ERROR = (err) => {
-    var _a;
     const d = {
         name: "error",
         meta: "Execute job failed",
-        data: `(${(_a = err.code) !== null && _a !== void 0 ? _a : 'unknown'}) ${err.message}`,
+        data: `(${err.code ?? 'unknown'}) ${err.message}`,
     };
     console.log(JSON.stringify(d));
     process.exit(1);

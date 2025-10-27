@@ -1,0 +1,31 @@
+import { Node, NodeProxy, NodeTable, WebsocketPack } from "../interface";
+import * as ws from 'ws';
+export declare class WebsocketManager {
+    targets: Array<WebsocketPack>;
+    newConnect: Function;
+    disconnect: Function;
+    onAnalysis: Function;
+    proxy: NodeProxy;
+    private messager_log;
+    constructor(_newConnect: Function, _disconnect: Function, _onAnalysis: Function, _messager_log: Function, _proxy: NodeProxy);
+    server_start: (url: string, id: string) => WebSocket | ws.WebSocket | undefined;
+    server_stop: (uuid: string, reason?: string) => void;
+    server_update: () => Array<NodeTable>;
+    server_record: (ns: Array<Node>) => void;
+    shell_open: (uuid: string) => void;
+    shell_enter: (uuid: string, text: string) => void;
+    shell_close: (uuid: string) => void;
+    shell_folder: (uuid: string, path: string) => void;
+    private serverconnect;
+    private analysis;
+    private socket_analysis;
+    private sendUpdate;
+    private removeByUUID;
+    private update;
+    private shell_reply;
+    private shell_folder_reply;
+    private system_info;
+    private node_info;
+    private pong;
+    private plugin_info_reply;
+}

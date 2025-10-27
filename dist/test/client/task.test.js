@@ -28,7 +28,7 @@ describe("Express Test", () => {
             description: "This is a test task",
             setupjob: false,
             cronjob: cronjob ? true : false,
-            cronjobKey: cronjob !== null && cronjob !== void 0 ? cronjob : "",
+            cronjobKey: cronjob ?? "",
             multi: false,
             multiKey: "",
             properties: property,

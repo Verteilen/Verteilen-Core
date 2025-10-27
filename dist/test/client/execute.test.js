@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const job_execute_1 = require("../../src/client/job_execute");
 const interface_1 = require("../../src/interface");
@@ -17,7 +8,7 @@ describe("Client Execute Test", () => {
     afterAll(() => {
         execute = undefined;
     });
-    test("Testing condition (OS when path not exist)", () => __awaiter(void 0, void 0, void 0, function* () {
+    test("Testing condition (OS when path not exist)", async () => {
         job = {
             index: 0,
             uuid: "UUID",
@@ -31,9 +22,9 @@ describe("Client Execute Test", () => {
             id_args: [],
         };
         execute = new job_execute_1.ClientJobExecute((str) => console.log(str), (str) => console.log(str), job, undefined, { plugins: [] });
-        yield expect(execute.execute()).rejects.toBeDefined();
-    }));
-    test("Testing condition (OS when path exist)", () => __awaiter(void 0, void 0, void 0, function* () {
+        await expect(execute.execute()).rejects.toBeDefined();
+    });
+    test("Testing condition (OS when path exist)", async () => {
         job = {
             index: 0,
             uuid: "UUID",
@@ -47,6 +38,6 @@ describe("Client Execute Test", () => {
             id_args: [],
         };
         execute = new job_execute_1.ClientJobExecute((str) => console.log(str), (str) => console.log(str), job, undefined, { plugins: [] });
-        yield expect(execute.execute()).resolves.toBeDefined();
-    }));
+        await expect(execute.execute()).resolves.toBeDefined();
+    });
 });
