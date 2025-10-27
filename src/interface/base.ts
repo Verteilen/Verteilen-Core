@@ -79,6 +79,11 @@ export interface Job {
      */
     index?:number
     /**
+     * **Extra data**\
+     * The extra metadata, just in case
+     */
+    meta?:any
+    /**
      * **Job ID**\
      * Contains 36 characters
      */

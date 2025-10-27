@@ -418,6 +418,7 @@ export declare const i18nDefaultData: {
             no: string;
             next: string;
             previous: string;
+            goback: string;
         };
         zh_TW: {
             login: {
@@ -831,6 +832,7 @@ export declare const i18nDefaultData: {
             no: string;
             next: string;
             previous: string;
+            goback: string;
         };
     };
 };
@@ -1247,6 +1249,7 @@ export declare const i18n: import("vue-i18n").I18n<{
         no: string;
         next: string;
         previous: string;
+        goback: string;
     };
     zh_TW: {
         login: {
@@ -1660,6 +1663,7 @@ export declare const i18n: import("vue-i18n").I18n<{
         no: string;
         next: string;
         previous: string;
+        goback: string;
     };
 }, {}, {}, string, true>;
 export declare const raw_i18n: I18n;

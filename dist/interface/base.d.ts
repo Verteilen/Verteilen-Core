@@ -26,6 +26,7 @@ export interface Database {
 }
 export interface Job {
     index?: number;
+    meta?: any;
     uuid: string;
     runtime_uuid?: string;
     category: number;
