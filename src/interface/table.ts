@@ -7,9 +7,19 @@
  * Value override for some base value\
  * The data structure that use in Vue
  */
-import { Node, Database, Project, Task } from './base'
+import { Node, Database, Project, Task, Job } from './base'
 import { Plugin, SystemLoad } from './struct'
 
+/**
+ * **UI Database Table Data Structure**\
+ * For display the data on the database page
+ */
+export interface JobTable extends Job {
+    /**
+     * **Select State**
+     */
+    s?: boolean
+}
 /**
  * **UI Database Table Data Structure**\
  * For display the data on the database page

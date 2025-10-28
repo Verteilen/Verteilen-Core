@@ -43,8 +43,8 @@ export const GetCurrentPlugin = async (loader:RecordIOBase):Promise<PluginPageDa
             plugins: [],
             templates: []
         }
-        const root = loader.join(loader.root, 'plugin')
-        const root2 = loader.join(loader.root, 'template')
+        const root = loader.join(loader.root, 'template')
+        const root2 = loader.join(loader.root, 'plugin')
         if(!loader.exists(root)) await loader.mkdir(root)
         if(!loader.exists(root2)) await loader.mkdir(root2)
 
