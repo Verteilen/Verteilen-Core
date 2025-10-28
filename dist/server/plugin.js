@@ -7,8 +7,8 @@ const GetCurrentPlugin = async (loader) => {
             plugins: [],
             templates: []
         };
-        const root = loader.join(loader.root, 'template');
-        const root2 = loader.join(loader.root, 'plugin');
+        const root = loader.join(loader.root, 'plugin');
+        const root2 = loader.join(loader.root, 'template');
         if (!loader.exists(root))
             await loader.mkdir(root);
         if (!loader.exists(root2))
@@ -37,7 +37,7 @@ const GetCurrentPlugin = async (loader) => {
                 url: config.url
             });
         }
-        const files2 = (await loader.read_dir_dir(root2)).filter(x => x.endsWith('.json'));
+        const files2 = (await loader.read_dir_file(root2)).filter(x => x.endsWith('.json'));
         const p_config2 = files2.map(file => {
             return loader.read_string(loader.join(root2, file), { encoding: 'utf-8' });
         });
