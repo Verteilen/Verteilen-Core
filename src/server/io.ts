@@ -1,3 +1,8 @@
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
 import { 
     Project, 
     RecordType, 
@@ -6,10 +11,15 @@ import {
     Library,
     ExecutionLog,
     Node,
+    Task,
+    Job,
+    DataHeader,
 } from "../interface"
 
 export interface MemoryData {
     projects: Array<Project>
+    tasks: Array<Task>
+    jobs: Array<Job>
     database: Array<Database>
     nodes: Array<Node>
     logs: Array<ExecutionLog>
@@ -33,6 +43,8 @@ export interface RecordIOLoader {
 
 export interface RecordLoader {
     project: RecordIOLoader
+    task: RecordIOLoader
+    job: RecordIOLoader
     database: RecordIOLoader
     node: RecordIOLoader
     log: RecordIOLoader
@@ -56,7 +68,10 @@ export interface RecordIOBase {
     rm: (path:string) => Promise<void>
     cp: (path:string, newpath:string) => Promise<void>
 }
-
+/**
+ * **Mongo Function Interface**\
+ * Use for access the MongoDB store function
+ */
 export interface RecordMongoBase {
 
 }
@@ -73,7 +88,9 @@ export const _CreateRecordMemoryLoader = (loader:MemoryData, type:RecordType):Re
         switch(type){
             default:
             case RecordType.PROJECT: return loader.projects
-            case RecordType.Database: return loader.database
+            case RecordType.TASK: return loader.tasks
+            case RecordType.JOB: return loader.jobs
+            case RecordType.DATABASE: return loader.database
             case RecordType.NODE: return loader.nodes
             case RecordType.LOG: return loader.logs
             case RecordType.LIB: return loader.libs
@@ -127,7 +144,9 @@ export const _CreateRecordIOLoader = (loader:RecordIOBase, memory:MemoryData, ty
         switch(type){
             default:
             case RecordType.PROJECT: return memory.projects
-            case RecordType.Database: return memory.database
+            case RecordType.TASK: return memory.tasks
+            case RecordType.JOB: return memory.jobs
+            case RecordType.DATABASE: return memory.database
             case RecordType.NODE: return memory.nodes
             case RecordType.LOG: return memory.logs
             case RecordType.LIB: return memory.libs
@@ -213,7 +232,9 @@ export const _CreateRecordIOLoader = (loader:RecordIOBase, memory:MemoryData, ty
 export const CreateRecordMemoryLoader = (loader:MemoryData):RecordLoader => {
     return {
         project: _CreateRecordMemoryLoader(loader, RecordType.PROJECT),
-        database: _CreateRecordMemoryLoader(loader, RecordType.Database),
+        task: _CreateRecordMemoryLoader(loader, RecordType.TASK),
+        job: _CreateRecordMemoryLoader(loader, RecordType.JOB),
+        database: _CreateRecordMemoryLoader(loader, RecordType.DATABASE),
         node: _CreateRecordMemoryLoader(loader, RecordType.NODE),
         log: _CreateRecordMemoryLoader(loader, RecordType.LOG),
         lib: _CreateRecordMemoryLoader(loader, RecordType.LIB),
@@ -229,8 +250,10 @@ export const CreateRecordMemoryLoader = (loader:MemoryData):RecordLoader => {
  */
 export const CreateRecordIOLoader = (loader:RecordIOBase, memory:MemoryData):RecordLoader => {
     return {
-        project: _CreateRecordIOLoader(loader, memory, RecordType.PROJECT, "record"),
-        database: _CreateRecordIOLoader(loader, memory, RecordType.Database, "database"),
+        project: _CreateRecordIOLoader(loader, memory, RecordType.PROJECT, "project"),
+        task: _CreateRecordIOLoader(loader, memory, RecordType.TASK, "task"),
+        job: _CreateRecordIOLoader(loader, memory, RecordType.JOB, "job"),
+        database: _CreateRecordIOLoader(loader, memory, RecordType.DATABASE, "database"),
         node: _CreateRecordIOLoader(loader, memory, RecordType.NODE, "node"),
         log: _CreateRecordIOLoader(loader, memory, RecordType.LOG, "log"),
         lib: _CreateRecordIOLoader(loader, memory, RecordType.LIB, "lib", ""),

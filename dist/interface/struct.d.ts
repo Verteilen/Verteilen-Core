@@ -1,6 +1,6 @@
 import { DatabaseContainer, Project } from "./base";
 import ws from 'ws';
-import { ServiceMode } from "./enum";
+import { ServiceMode, TaskLogicType } from "./enum";
 import { ACLType, LocalPermission } from "./server";
 type ProjectCall = (p: Project) => Project;
 type DatabaseCall = () => Array<DatabaseContainer>;
@@ -185,5 +185,13 @@ export interface BuildinAssets {
 }
 export interface ServiceConfig {
     mode: ServiceMode;
+}
+export interface TaskLogicUnit {
+    type: TaskLogicType;
+    job: string;
+    children: Array<TaskLogicUnit>;
+}
+export interface TaskLogic {
+    group: Array<TaskLogicUnit>;
 }
 export {};

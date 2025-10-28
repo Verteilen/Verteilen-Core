@@ -1,3 +1,8 @@
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
 import { v6 as uuidv6 } from 'uuid'
 import { 
     BusAnalysis,
@@ -459,7 +464,7 @@ export class ServerDetail {
                 if(target.record!.project_index < 0){
                     target.record!.project_index = 0
                 }
-                target.record!.task_state = target.record!.projects[target.record!.project_index].task.map(x => {
+                target.record!.task_state = target.record!.projects[target.record!.project_index].tasks.map(x => {
                     return {
                         uuid: x.uuid,
                         state: ExecuteState.NONE
@@ -467,7 +472,7 @@ export class ServerDetail {
                 })
                 target.record!.task_detail = []
                 const p = target.record!.projects[target.record!.project_index]
-                const t = p.task[target.record!.task_index]
+                const t = p.tasks[target.record!.task_index]
                 const count = target.manager!.get_task_state_count(t)
                 for(let i = 0; i < count; i++){
                     target.record!.task_detail.push({
@@ -493,7 +498,7 @@ export class ServerDetail {
                 else if (!forward) target.record!.task_state[target.record!.task_index].state = ExecuteState.RUNNING
                 target.record!.task_detail = []
                 const p = target.record!.projects[target.record!.project_index]
-                const t = p.task[target.record!.task_index]
+                const t = p.tasks[target.record!.task_index]
                 const count = target.manager!.get_task_state_count(t)
                 for(let i = 0; i < count; i++){
                     target.record!.task_detail.push({

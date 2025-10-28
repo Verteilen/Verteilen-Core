@@ -8,14 +8,8 @@ class ExecuteManager_Base {
     uuid;
     name;
     record;
-    current_t = undefined;
-    current_p = undefined;
     current_projects = [];
     current_nodes = [];
-    current_cron = [];
-    current_job = [];
-    current_multithread = 1;
-    current_task_count = -1;
     state = interface_1.ExecuteState.NONE;
     t_state = interface_1.ExecuteState.NONE;
     jobstack = 0;
@@ -25,12 +19,31 @@ class ExecuteManager_Base {
     localPara = undefined;
     websocket_manager;
     messager_log;
+    runner;
     constructor(_name, _websocket_manager, _messager_log, _record) {
         this.name = _name;
         this.uuid = (0, uuid_1.v6)();
         this.record = _record;
         this.websocket_manager = _websocket_manager;
         this.messager_log = _messager_log;
+    }
+    get current_p() {
+        return this.runner?.project;
+    }
+    get current_t() {
+        return this.runner?.runner?.task;
+    }
+    get current_multithread() {
+        return this.runner?.runner?.multithread ?? 1;
+    }
+    get current_task_count() {
+        return this.runner?.runner?.task_count ?? 0;
+    }
+    get current_cron() {
+        return this.runner?.runner?.cron ?? [];
+    }
+    get current_job() {
+        return this.runner?.runner?.job ?? [];
     }
     sync_local_para = (target) => {
         this.current_nodes.forEach(x => this.sync_para(target, x));
@@ -76,7 +89,7 @@ class ExecuteManager_Base {
             return false;
         }
         projects.forEach(x => {
-            x.task.forEach(t => {
+            x.tasks.forEach(t => {
                 if (t.cronjob) {
                     const index = x.database?.containers.findIndex(x => x.name == t.cronjobKey && x.type == interface_1.DataType.Number) ?? -1;
                     if (index == -1) {
@@ -110,7 +123,7 @@ class ExecuteManager_Base {
     filter_lib = (projects, lib) => {
         const r = { libs: [] };
         projects.forEach(x => {
-            x.task.forEach(y => {
+            x.tasks.forEach(y => {
                 y.jobs.forEach(z => {
                     let code = -1;
                     if ((z.category == interface_1.JobCategory.Execution && z.type == interface_1.JobType.JAVASCRIPT) || (z.category == interface_1.JobCategory.Condition && z.type == interface_1.JobType2.JAVASCRIPT))

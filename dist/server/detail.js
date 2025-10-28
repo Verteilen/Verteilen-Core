@@ -371,7 +371,7 @@ class ServerDetail {
                 if (target.record.project_index < 0) {
                     target.record.project_index = 0;
                 }
-                target.record.task_state = target.record.projects[target.record.project_index].task.map(x => {
+                target.record.task_state = target.record.projects[target.record.project_index].tasks.map(x => {
                     return {
                         uuid: x.uuid,
                         state: interface_1.ExecuteState.NONE
@@ -379,7 +379,7 @@ class ServerDetail {
                 });
                 target.record.task_detail = [];
                 const p = target.record.projects[target.record.project_index];
-                const t = p.task[target.record.task_index];
+                const t = p.tasks[target.record.task_index];
                 const count = target.manager.get_task_state_count(t);
                 for (let i = 0; i < count; i++) {
                     target.record.task_detail.push({
@@ -410,7 +410,7 @@ class ServerDetail {
                     target.record.task_state[target.record.task_index].state = interface_1.ExecuteState.RUNNING;
                 target.record.task_detail = [];
                 const p = target.record.projects[target.record.project_index];
-                const t = p.task[target.record.task_index];
+                const t = p.tasks[target.record.task_index];
                 const count = target.manager.get_task_state_count(t);
                 for (let i = 0; i < count; i++) {
                     target.record.task_detail.push({

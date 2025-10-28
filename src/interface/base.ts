@@ -6,12 +6,24 @@
 /**
  * Defined the basic compute use data structure
  */
-import { DataType, DataTypeBase, JobType, JobType2 } from "./enum"
+import { DataType, DataTypeBase, JobType, JobType2, ServiceMode } from "./enum"
 import { ACLType, LocalPermission as LocalPermission } from "./server"
+import { TaskLogic } from "./struct"
 
 export interface DatabaseConfigTrigger {
     types: Array<DataTypeBase>
 }
+/**
+ * Storable Data Header
+ */
+export interface DataHeader{
+    /**
+     * **ID**\
+     * Contains 36 characters
+     */
+    uuid: string
+}
+
 /**
  * **Database Context**\
  */
@@ -24,6 +36,7 @@ export interface DatabaseContainer {
     runtimeOnly: boolean
     value: any
 }
+
 /**
  * **Task Property**\
  * Use to in local task region field\
@@ -49,11 +62,66 @@ export interface Property {
     deep?: number
 }
 /**
+ * **Background Service Container**
+ */
+export interface Service extends DataHeader {
+    /**
+     * **Service Name**\
+     * The name of the task
+     */
+    title: string
+    /**
+     * **Service Description**\
+     * The description of the task
+     */
+    description: string
+    /**
+     * **Extra Data**
+     */
+    meta: any
+    /**
+     * **Service Mode**\
+     * Define how does this service run
+     */
+    type: ServiceMode
+    /**
+     * **Timer**\
+     * The format is like github schedule\
+     * minute, hour, day, month, week\
+     * Reference: https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows
+     * @example
+     * "5 * * * *" means every 5 minutes
+     * 
+     * @example
+     * "0 0 0 1 *" means the first day of every month at midnight"
+     * 
+     * @example
+     * "0 0 * * 0" means every Sunday at midnight
+     */
+    timer: string
+    /**
+     * **Target Project ID**\
+     * What project does it run through
+     */
+    project: string
+    /**
+     * **Local Permission**\
+     * Client-side only permission field\
+     * Server will check user token and defined its permission level\
+     * And modify this field and send back to user
+     */
+    permission?: LocalPermission
+    /**
+     * **Accessibility**\
+     * Could be public, protected, private
+     */
+    acl?: ACLType
+}
+/**
  * **Data Database Bank**\
  * Store the data which will be reference in the execute stage
  */
-export interface Database {
-    uuid: string
+export interface Database extends DataHeader {
     title: string
     canWrite: boolean
     containers: Array<DatabaseContainer>
@@ -70,7 +138,7 @@ export interface Database {
  * Specifed the command, which show how does user want these compute to do\
  * Contains different arguments list, which could reference to database value
  */
-export interface Job {
+export interface Job extends DataHeader {
     /**
      * **Order**\
      * Define the order in the list\
@@ -83,11 +151,6 @@ export interface Job {
      * The extra metadata, just in case
      */
     meta?:any
-    /**
-     * **Job ID**\
-     * Contains 36 characters
-     */
-    uuid: string
     /**
      * **Execute Runtime ID**\
      * This getting generate during the execute stage\
@@ -140,20 +203,20 @@ export interface Job {
      * **Local Permission**\
      * Client-side only permission field\
      * Server will check user token and defined its permission level\
-     * And modify this field and send back to user\
+     * And modify this field and send back to user
      */
     permission?: LocalPermission
+    /**
+     * **Accessibility**\
+     * Could be public, protected, private
+     */
+    acl?: ACLType
 }
 /**
  * **Task Container**\
  * Specified different stage of the compute process
  */
-export interface Task {
-    /**
-     * **Task ID**\
-     * Contains 36 characters
-     */
-    uuid: string
+export interface Task extends DataHeader {
     /**
      * **Task Name**\
      * The name of the task
@@ -202,11 +265,21 @@ export interface Task {
      */
     properties: Array<Property>
     /**
-     * **Jobs Context**\
+     * **Task Logic**\
+     * Describe the logic flow of the task
+     */
+    logic?: TaskLogic
+    /**
+     * **Execute Jobs Context**\
      * A list of jobs, define the context of the task\
      * Base on the flags, task can run it in a different way
      */
     jobs: Array<Job>
+    /**
+     * **Jobs ID**\
+     * Store in disk
+     */
+    jobs_uuid: Array<string>
     /**
      * **Local Permission**\
      * Client-side only permission field\
@@ -214,13 +287,18 @@ export interface Task {
      * And modify this field and send back to user
      */
     permission?: LocalPermission
+    /**
+     * **Accessibility**\
+     * Could be public, protected, private
+     */
+    acl?: ACLType
 }
 /**
  * **Compute Structure Container**\
  * It has reference to database And contains multiple task\
  * We grab this container structure to execute queue to execute one by one
  */
-export interface Project {
+export interface Project extends DataHeader {
     /**
      * **User ID**\
      * Who own this project\
@@ -228,11 +306,6 @@ export interface Project {
      * This will getting detect before {@link Project.acl}
      */
     owner?: string
-    /**
-     * **Project ID**\
-     * Contains 36 characters
-     */
-    uuid: string
     /**
      * **Project Name**\
      * The name of the project
@@ -254,11 +327,16 @@ export interface Project {
      */
     database?: Database
     /**
-     * **Tasks**\
+     * **Execute Tasks Context**\
      * The context of this project\
      * Store all the tasks and jobs in here
      */
-    task: Array<Task>
+    tasks: Array<Task>
+    /**
+     * **Tasks ID**\
+     * Store in disk
+     */
+    tasks_uuid: Array<string>
     /**
      * **Local Permission**\
      * Client-side only permission field\
@@ -277,18 +355,13 @@ export interface Project {
  * In the execute stage, it will needs nodes to compute the task\
  * Which specified in this type of structure
  */
-export interface Node {
+export interface Node extends DataHeader {
     /**
      * **Cluster Mode**\
      * Check if the node is cluster\
      * This mean it does not have compute ability
      */
     cluster: boolean
-    /**
-     * **ID**\
-     * The UUID of the compute node
-     */
-    uuid: string
     /**
      * **The parent cluster**
      * The node parent url

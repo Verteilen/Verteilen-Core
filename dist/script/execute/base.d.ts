@@ -1,18 +1,13 @@
 import { CronJobState, ExecuteProxy, ExecuteState, Job, Libraries, Messager, Database, Project, Record, Task, WebsocketPack, WorkState } from "../../interface";
 import { WebsocketManager } from "../socket_manager";
 import { Util_Parser } from './util_parser';
+import { Region_Project } from './region_project';
 export declare class ExecuteManager_Base {
     uuid: string;
     name: string;
     record: Record;
-    current_t: Task | undefined;
-    current_p: Project | undefined;
     current_projects: Array<Project>;
     current_nodes: Array<WebsocketPack>;
-    current_cron: Array<CronJobState>;
-    current_job: Array<WorkState>;
-    current_multithread: number;
-    current_task_count: number;
     state: ExecuteState;
     t_state: ExecuteState;
     jobstack: number;
@@ -22,7 +17,14 @@ export declare class ExecuteManager_Base {
     localPara: Database | undefined;
     websocket_manager: WebsocketManager;
     messager_log: Messager;
+    runner: Region_Project | undefined;
     constructor(_name: string, _websocket_manager: WebsocketManager, _messager_log: Messager, _record: Record);
+    get current_p(): Project | undefined;
+    get current_t(): Task | undefined;
+    get current_multithread(): number;
+    get current_task_count(): number;
+    get current_cron(): Array<CronJobState>;
+    get current_job(): Array<WorkState>;
     protected sync_local_para: (target: Database) => void;
     protected sync_para: (target: Database, source: WebsocketPack) => void;
     protected release: (source: WebsocketPack) => void;

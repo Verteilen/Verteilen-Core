@@ -1,7 +1,11 @@
-import { DataType, DataTypeBase } from "./enum";
+import { DataType, DataTypeBase, ServiceMode } from "./enum";
 import { ACLType, LocalPermission as LocalPermission } from "./server";
+import { TaskLogic } from "./struct";
 export interface DatabaseConfigTrigger {
     types: Array<DataTypeBase>;
+}
+export interface DataHeader {
+    uuid: string;
 }
 export interface DatabaseContainer {
     name: string;
@@ -17,17 +21,25 @@ export interface Property {
     expression: string;
     deep?: number;
 }
-export interface Database {
-    uuid: string;
+export interface Service extends DataHeader {
+    title: string;
+    description: string;
+    meta: any;
+    type: ServiceMode;
+    timer: string;
+    project: string;
+    permission?: LocalPermission;
+    acl?: ACLType;
+}
+export interface Database extends DataHeader {
     title: string;
     canWrite: boolean;
     containers: Array<DatabaseContainer>;
     permission?: LocalPermission;
 }
-export interface Job {
+export interface Job extends DataHeader {
     index?: number;
     meta?: any;
-    uuid: string;
     runtime_uuid?: string;
     category: number;
     type: number;
@@ -37,9 +49,9 @@ export interface Job {
     boolean_args: Array<boolean>;
     id_args: Array<boolean>;
     permission?: LocalPermission;
+    acl?: ACLType;
 }
-export interface Task {
-    uuid: string;
+export interface Task extends DataHeader {
     title: string;
     description: string;
     setupjob: boolean;
@@ -48,23 +60,25 @@ export interface Task {
     multi: boolean;
     multiKey: string;
     properties: Array<Property>;
+    logic?: TaskLogic;
     jobs: Array<Job>;
+    jobs_uuid: Array<string>;
     permission?: LocalPermission;
+    acl?: ACLType;
 }
-export interface Project {
+export interface Project extends DataHeader {
     owner?: string;
-    uuid: string;
     title: string;
     description?: string;
     database_uuid: string;
     database?: Database;
-    task: Array<Task>;
+    tasks: Array<Task>;
+    tasks_uuid: Array<string>;
     permission?: LocalPermission;
     acl?: ACLType;
 }
-export interface Node {
+export interface Node extends DataHeader {
     cluster: boolean;
-    uuid: string;
     parent?: string;
     url: string;
     permission?: LocalPermission;

@@ -1,6 +1,8 @@
-import { Project, RecordType, Database, UserProfile, Library, ExecutionLog, Node } from "../interface";
+import { Project, RecordType, Database, UserProfile, Library, ExecutionLog, Node, Task, Job } from "../interface";
 export interface MemoryData {
     projects: Array<Project>;
+    tasks: Array<Task>;
+    jobs: Array<Job>;
     database: Array<Database>;
     nodes: Array<Node>;
     logs: Array<ExecutionLog>;
@@ -18,6 +20,8 @@ export interface RecordIOLoader {
 }
 export interface RecordLoader {
     project: RecordIOLoader;
+    task: RecordIOLoader;
+    job: RecordIOLoader;
     database: RecordIOLoader;
     node: RecordIOLoader;
     log: RecordIOLoader;

@@ -50,7 +50,7 @@ export class Util_Server_Log_Proxy {
             start_timer: Date.now(),
             database: d[0].database!,
             end_timer: 0,
-            logs: target.task.map(x => {
+            logs: target.tasks.map(x => {
                 return {
                     start_timer: 0,
                     end_timer: 0,
@@ -74,13 +74,13 @@ export class Util_Server_Log_Proxy {
     
     execute_task_start = (d:[Task, number]) => {
         if(this.target_log == undefined) return
-        const index = this.target_log!.project.task.findIndex(x => x.uuid == d[0].uuid)
+        const index = this.target_log!.project.tasks.findIndex(x => x.uuid == d[0].uuid)
         if(index == -1) return
         this.task_index = index
         this.target_log!.logs[this.task_index].task_detail = []
     
         const p = this.model.record!.projects[this.model.record!.project_index]
-        const t = p.task[this.task_index]
+        const t = p.tasks[this.task_index]
         const count = this.model.manager!.get_task_state_count(t)
         
         for(let i = 0; i < count; i++){
@@ -140,7 +140,7 @@ export class Util_Server_Log_Proxy {
         if(this.target_log == undefined) return
         if (d[3] == 1){
             const currentLog = this.target_log!
-            const task = currentLog.project.task[this.task_index]
+            const task = currentLog.project.tasks[this.task_index]
             const index = task.jobs.findIndex(x => x.uuid == d[0].uuid)
             if(index != -1 && task.jobs[index].category == JobCategory.Condition){
                 const cr:ConditionResult = task.jobs[index].number_args[0] as ConditionResult

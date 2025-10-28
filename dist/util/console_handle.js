@@ -21,7 +21,7 @@ class Util_Server_Console {
         model.record.project_index = pass;
         model.record.project = record.projects[pass].uuid;
         model.record.task_index = 0;
-        model.record.task_state = model.record.projects[0].task.map(x => {
+        model.record.task_state = model.record.projects[0].tasks.map(x => {
             return {
                 uuid: x.uuid,
                 state: interface_1.ExecuteState.NONE
@@ -29,7 +29,7 @@ class Util_Server_Console {
         });
         model.record.task_state[0].state = interface_1.ExecuteState.RUNNING;
         model.record.task_detail = [];
-        const task = model.record.projects[model.record.project_index]?.task[model.record.task_index];
+        const task = model.record.projects[model.record.project_index]?.tasks[model.record.task_index];
         const count = task.cronjob ? (task?.jobs.length ?? 0) : 1;
         for (let i = 0; i < count; i++) {
             model.record.task_detail.push({
@@ -72,14 +72,14 @@ class Util_Server_Console_Proxy {
         this.model.record.project = d[0].uuid;
         this.model.record.project_index = index;
         this.model.record.project_state[index].state = interface_1.ExecuteState.RUNNING;
-        this.model.record.task_state = this.model.record.projects[index].task.map(x => {
+        this.model.record.task_state = this.model.record.projects[index].tasks.map(x => {
             return {
                 uuid: x.uuid,
                 state: interface_1.ExecuteState.NONE
             };
         });
         this.model.record.task_detail = [];
-        const task = this.model.record.projects[this.model.record.project_index]?.task[this.model.record.task_index];
+        const task = this.model.record.projects[this.model.record.project_index]?.tasks[this.model.record.task_index];
         const count = task.cronjob ? (task?.jobs.length ?? 0) : 1;
         for (let i = 0; i < count; i++) {
             this.model.record.task_detail.push({
@@ -111,7 +111,7 @@ class Util_Server_Console_Proxy {
     execute_task_start = (d) => {
         if (this.model.record.project_index == -1)
             return;
-        const index = this.model.record.projects[this.model.record.project_index].task.findIndex(x => x.uuid == d[0].uuid);
+        const index = this.model.record.projects[this.model.record.project_index].tasks.findIndex(x => x.uuid == d[0].uuid);
         if (index == -1)
             return;
         this.model.record.useCron = d[0].cronjob;
@@ -124,7 +124,7 @@ class Util_Server_Console_Proxy {
             this.model.record.task_state[i].state = interface_1.ExecuteState.NONE;
         this.model.record.task_detail = [];
         const p = this.model.record.projects[this.model.record.project_index];
-        const t = p.task[this.model.record.task_index];
+        const t = p.tasks[this.model.record.task_index];
         const count = this.model.manager.get_task_state_count(t);
         for (let i = 0; i < count; i++) {
             this.model.record.task_detail.push({
@@ -142,7 +142,7 @@ class Util_Server_Console_Proxy {
         }
         if (this.model.record.project_index == -1)
             return;
-        const index = this.model.record.projects[this.model.record.project_index].task.findIndex(x => x.uuid == d.uuid);
+        const index = this.model.record.projects[this.model.record.project_index].tasks.findIndex(x => x.uuid == d.uuid);
         if (index == -1)
             return;
         this.model.record.useCron = false;
@@ -187,7 +187,7 @@ class Util_Server_Console_Proxy {
     };
     execute_job_finish = (d) => {
         if (d[3] == 1) {
-            const task = this.model.record.projects[this.model.record.project_index].task[this.model.record.task_index];
+            const task = this.model.record.projects[this.model.record.project_index].tasks[this.model.record.task_index];
             const index = task.jobs.findIndex(x => x.uuid == d[0].uuid);
             if (index != -1 && task.jobs[index].category == interface_1.JobCategory.Condition) {
                 const cr = task.jobs[index].number_args[0];

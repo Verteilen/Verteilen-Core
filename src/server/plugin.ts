@@ -1,3 +1,8 @@
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
 import { RecordIOBase } from "./io";
 import { 
     Header,
@@ -19,6 +24,10 @@ import { PluginFeedback } from "./server";
 
 export type SocketGetter = (uuid:string) => WebsocketPack | undefined
 
+/**
+ * **Plugin Function Interface**\
+ * Use for access the plugin store function
+ */
 export interface PluginLoader {
     load_all: () => Promise<PluginPageData>
     get_project: (group:string, filename:string) => string | undefined

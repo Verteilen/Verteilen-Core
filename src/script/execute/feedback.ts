@@ -10,7 +10,7 @@ import { ExecuteManager_Base } from "./base"
  * Recevied the information from the nodes\
  * This include job feedback and error feedback and pong and other stuff
  */
-export class ExecuteManager_Feedback extends ExecuteManager_Base{
+export class ExecuteManager_Feedback extends ExecuteManager_Base {
     /**
      * The analysis method for decoding the information where the nodes is sending
      * @param d Package info
@@ -37,7 +37,6 @@ export class ExecuteManager_Feedback extends ExecuteManager_Base{
         }
     }
 
-    //#region Feedback
     /**
      * Print information, sended by the node worker
      * @param data feedback data, any type
@@ -208,5 +207,4 @@ export class ExecuteManager_Feedback extends ExecuteManager_Base{
         }
         return [cron, work]
     }
-    //#endregion
 }

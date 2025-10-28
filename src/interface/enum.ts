@@ -7,6 +7,10 @@
  * Enum library, including translation which will be use in Vue
  */
 
+export enum TaskLogicType {
+    GROUP, ADD, OR
+}
+
 /**
  * **Socket Type**\
  * This exists because reference to ws or buildin socket will sometime cause error\
@@ -145,7 +149,7 @@ export enum RenderUpdateType {
  * **Database Table Type**
  */
 export enum RecordType {
-    PROJECT, Database, NODE, LOG, LIB, USER,
+    PROJECT, TASK, JOB, DATABASE, NODE, LOG, LIB, USER,
 }
 /**
  * **Lib Import Type**\
@@ -167,7 +171,7 @@ export enum ServiceMode {
     /**
      * Do it once, and shutdown
      */
-    ONCE, 
+    ONCE,
     /**
      * Schedule setup, or a time cycle
      */

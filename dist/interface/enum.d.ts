@@ -1,3 +1,8 @@
+export declare enum TaskLogicType {
+    GROUP = 0,
+    ADD = 1,
+    OR = 2
+}
 export declare enum SocketState {
     CONNECTING = 0,
     OPEN = 1,
@@ -95,11 +100,13 @@ export declare enum RenderUpdateType {
 }
 export declare enum RecordType {
     PROJECT = 0,
-    Database = 1,
-    NODE = 2,
-    LOG = 3,
-    LIB = 4,
-    USER = 5
+    TASK = 1,
+    JOB = 2,
+    DATABASE = 3,
+    NODE = 4,
+    LOG = 5,
+    LIB = 6,
+    USER = 7
 }
 export declare enum JavascriptLib {
     ALL = 127,

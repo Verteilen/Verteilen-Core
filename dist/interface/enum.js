@@ -1,6 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DatabaseTemplateText = exports.ProjectTemplateText = exports.JobType2Text = exports.JobTypeText = exports.JobResultText = exports.ConnectionText = exports.JobCategoryText = exports.ExecuteStateText = exports.DataTypeText = exports.ServiceMode = exports.JavascriptLib = exports.RecordType = exports.RenderUpdateType = exports.ExecuteState = exports.DatabaseTemplate = exports.ProjectTemplate = exports.JobType2 = exports.JobType = exports.ConditionResult = exports.JobCategory = exports.FrontendUpdate = exports.ResourceType = exports.DataTypeBase = exports.BackendType = exports.DataType = exports.SocketState = void 0;
+exports.DatabaseTemplateText = exports.ProjectTemplateText = exports.JobType2Text = exports.JobTypeText = exports.JobResultText = exports.ConnectionText = exports.JobCategoryText = exports.ExecuteStateText = exports.DataTypeText = exports.ServiceMode = exports.JavascriptLib = exports.RecordType = exports.RenderUpdateType = exports.ExecuteState = exports.DatabaseTemplate = exports.ProjectTemplate = exports.JobType2 = exports.JobType = exports.ConditionResult = exports.JobCategory = exports.FrontendUpdate = exports.ResourceType = exports.DataTypeBase = exports.BackendType = exports.DataType = exports.SocketState = exports.TaskLogicType = void 0;
+var TaskLogicType;
+(function (TaskLogicType) {
+    TaskLogicType[TaskLogicType["GROUP"] = 0] = "GROUP";
+    TaskLogicType[TaskLogicType["ADD"] = 1] = "ADD";
+    TaskLogicType[TaskLogicType["OR"] = 2] = "OR";
+})(TaskLogicType || (exports.TaskLogicType = TaskLogicType = {}));
 var SocketState;
 (function (SocketState) {
     SocketState[SocketState["CONNECTING"] = 0] = "CONNECTING";
@@ -113,11 +119,13 @@ var RenderUpdateType;
 var RecordType;
 (function (RecordType) {
     RecordType[RecordType["PROJECT"] = 0] = "PROJECT";
-    RecordType[RecordType["Database"] = 1] = "Database";
-    RecordType[RecordType["NODE"] = 2] = "NODE";
-    RecordType[RecordType["LOG"] = 3] = "LOG";
-    RecordType[RecordType["LIB"] = 4] = "LIB";
-    RecordType[RecordType["USER"] = 5] = "USER";
+    RecordType[RecordType["TASK"] = 1] = "TASK";
+    RecordType[RecordType["JOB"] = 2] = "JOB";
+    RecordType[RecordType["DATABASE"] = 3] = "DATABASE";
+    RecordType[RecordType["NODE"] = 4] = "NODE";
+    RecordType[RecordType["LOG"] = 5] = "LOG";
+    RecordType[RecordType["LIB"] = 6] = "LIB";
+    RecordType[RecordType["USER"] = 7] = "USER";
 })(RecordType || (exports.RecordType = RecordType = {}));
 var JavascriptLib;
 (function (JavascriptLib) {

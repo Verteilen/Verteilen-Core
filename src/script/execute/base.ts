@@ -7,6 +7,7 @@ import { v6 as uuid6 } from 'uuid';
 import { CronJobState, DataType, ExecuteProxy, ExecuteState, Header, Job, JobCategory, JobType, JobType2, Libraries, Messager, Database, Project, Record, Task, WebsocketPack, WorkState } from "../../interface";
 import { WebsocketManager } from "../socket_manager";
 import { Util_Parser } from './util_parser';
+import { Region_Project } from './region_project';
 
 /**
  * The base class of task scheduler, contain some basic funcationality
@@ -23,20 +24,6 @@ export class ExecuteManager_Base {
      */
     record: Record
     /**
-     * Current select task\
-     * If it's undefined, it means:
-     * * It's finish the current task
-     * * It has not start processing yet
-     */
-    current_t:Task | undefined = undefined
-    /**
-     * Current select project\
-     * If it's undefined, it means:
-     * * It's finish the current project
-     * * It has not start processing yet
-     */
-    current_p:Project | undefined = undefined
-    /**
      * The list of projects you want to process\
      * Each project UUID should be unique by now\
      * Prevent findIndex error, When there is repeat project source
@@ -46,19 +33,6 @@ export class ExecuteManager_Base {
      * The connection nodes list
      */
     current_nodes:Array<WebsocketPack> = []
-    /**
-     * Cron job type execute record
-     */
-    current_cron:Array<CronJobState> = []
-    /**
-     * Single job type execute record
-     */
-    current_job:Array<WorkState> = []
-    /**
-     * Current execute task use multithread setting
-     */
-    current_multithread = 1
-    current_task_count = -1
     /**
      * * NONE: Not yet start
      * * RUNNING: In the processing stage
@@ -79,6 +53,7 @@ export class ExecuteManager_Base {
 
     websocket_manager:WebsocketManager
     messager_log:Messager
+    runner:Region_Project | undefined
 
     constructor(_name:string, _websocket_manager:WebsocketManager, _messager_log:Messager, _record:Record) {
         this.name = _name
@@ -87,6 +62,47 @@ export class ExecuteManager_Base {
         this.websocket_manager = _websocket_manager
         this.messager_log = _messager_log
     }
+
+    /**
+     * Current select project\
+     * If it's undefined, it means:
+     * * It's finish the current project
+     * * It has not start processing yet
+     */
+    public get current_p() : Project | undefined {
+        return this.runner?.project
+    }
+    /**
+     * Current select task\
+     * If it's undefined, it means:
+     * * It's finish the current task
+     * * It has not start processing yet
+     */
+    public get current_t() : Task | undefined {
+        return this.runner?.runner?.task
+    }
+    /**
+     * Current execute task use multithread setting
+     */
+    public get current_multithread() : number {
+        return this.runner?.runner?.multithread ?? 1
+    }
+    public get current_task_count() : number {
+        return this.runner?.runner?.task_count ?? 0
+    }
+    /**
+     * Cron job type execute record
+     */
+    public get current_cron() : Array<CronJobState> {
+        return this.runner?.runner?.cron ?? []
+    }
+    /**
+     * Single job type execute record
+     */
+    public get current_job() : Array<WorkState> {
+        return this.runner?.runner?.job ?? []
+    }
+    
 
     /**
      * This will let nodes update the database and lib
@@ -156,7 +172,7 @@ export class ExecuteManager_Base {
             return false
         }
         projects.forEach(x => {
-            x.task.forEach(t => {
+            x.tasks.forEach(t => {
                 if(t.cronjob){
                     const index = x.database?.containers.findIndex(x => x.name == t.cronjobKey && x.type == DataType.Number) ?? -1
                     if(index == -1){
@@ -190,7 +206,7 @@ export class ExecuteManager_Base {
     protected filter_lib = (projects:Array<Project>, lib:Libraries):Libraries => {
         const r:Libraries = { libs: [] }
         projects.forEach(x => {
-            x.task.forEach(y => {
+            x.tasks.forEach(y => {
                 y.jobs.forEach(z => {
                     let code = -1
                     if((z.category == JobCategory.Execution && z.type == JobType.JAVASCRIPT) || (z.category == JobCategory.Condition && z.type == JobType2.JAVASCRIPT)) code = 0
