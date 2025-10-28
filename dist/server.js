@@ -18,3 +18,5 @@ __exportStar(require("./server/detail"), exports);
 __exportStar(require("./server/io"), exports);
 __exportStar(require("./server/plugin"), exports);
 __exportStar(require("./server/server"), exports);
+__exportStar(require("./server/module/project"), exports);
+__exportStar(require("./server/module/service"), exports);
