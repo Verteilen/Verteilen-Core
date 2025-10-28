@@ -1,7 +1,6 @@
 import { BusAnalysis, Execute_SocketManager, ExecutePair, ExecuteProxy, ExecuteRecord, ExecuteState, Messager, Preference, Record, ShellFolder, Single, UtilServer_Console, WebsocketPack } from "../interface";
 import { PluginFeedback } from "./server";
 import { MemoryData, RecordIOBase } from './io';
-export type Translate = (key: string) => string;
 export interface BackendAction {
     memory: MemoryData;
     GetPreference: (uuid?: string) => Preference;
@@ -39,10 +38,9 @@ export declare class ServerDetail {
     feedback: PluginFeedback;
     message: Messager;
     messager_log: Function;
-    t: Translate;
     updatehandle: any;
     re: Array<any>;
-    constructor(loader: RecordIOBase | undefined, backend: BackendAction, feedback: PluginFeedback, message: Messager, messager_log: Function, t: Translate);
+    constructor(loader: RecordIOBase | undefined, backend: BackendAction, feedback: PluginFeedback, message: Messager, messager_log: Function);
     get events(): ServerDetailEvent;
     NewConnection: (x: WebsocketPack) => void;
     DisConnection: (x: WebsocketPack) => void;

@@ -15,16 +15,14 @@ class ServerDetail {
     feedback;
     message;
     messager_log;
-    t;
     updatehandle;
     re = [];
-    constructor(loader, backend, feedback, message, messager_log, t) {
+    constructor(loader, backend, feedback, message, messager_log) {
         this.loader = loader;
         this.backend = backend;
         this.feedback = feedback;
         this.message = message;
         this.messager_log = messager_log;
-        this.t = t;
         const n = {
             shellReply: this.shellReply,
             folderReply: this.folderReply
@@ -61,9 +59,9 @@ class ServerDetail {
     }
     NewConnection = (x) => {
         const p = {
-            title: this.t('toast.connection-create-title'),
+            title: "New Connection Established",
             type: 'success',
-            message: `${this.t('toast.connection-create-des')}: ${x.websocket.url} \n${x.uuid}`
+            message: `${x.websocket.url} \n${x.uuid}`
         };
         if (this.feedback.electron) {
             this.feedback.electron('makeToast', p);
@@ -77,9 +75,9 @@ class ServerDetail {
     };
     DisConnection = (x) => {
         const p = {
-            title: this.t('toast.connection-remove-title'),
+            title: "Network Disconnected",
             type: 'error',
-            message: `${this.t('toast.connection-remove-des')}: ${x.websocket.url} \n${x.uuid}`
+            message: `${x.websocket.url} \n${x.uuid}`
         };
         if (this.feedback.electron) {
             this.feedback.electron('makeToast', p);

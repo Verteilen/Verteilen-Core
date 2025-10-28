@@ -1,7 +1,6 @@
 import { v6 as uuidv6 } from 'uuid'
 import { 
     BusAnalysis,
-    DATA_FOLDER,
     Execute_ExecuteManager,
     Execute_SocketManager, 
     ExecutePair, 
@@ -28,8 +27,6 @@ import { PluginFeedback } from "./server"
 import { MemoryData, RecordIOBase } from './io'
 import { Util_Server_Console_Proxy } from '../util/console_handle'
 import { Util_Server_Log_Proxy } from '../util/log_handle'
-
-export type Translate = (key:string) => string
 
 export interface BackendAction {
     memory: MemoryData
@@ -75,10 +72,6 @@ export class ServerDetail {
     feedback: PluginFeedback
     message:Messager
     messager_log:Function
-    /**
-     * i18n language translate function
-     */
-    t:Translate
     updatehandle: any
     /**
      * **A simple message queue**\
@@ -91,15 +84,13 @@ export class ServerDetail {
         backend:BackendAction, 
         feedback:PluginFeedback, 
         message:Messager,
-        messager_log:Function, 
-        t:Translate)
+        messager_log:Function)
     {
         this.loader = loader
         this.backend = backend
         this.feedback = feedback
         this.message = message
         this.messager_log = messager_log
-        this.t = t 
         const n:NodeProxy = {
             shellReply: this.shellReply,
             folderReply: this.folderReply
@@ -140,9 +131,9 @@ export class ServerDetail {
 
     NewConnection = (x:WebsocketPack) => {
         const p = {
-            title: this.t('toast.connection-create-title'),
+            title: "New Connection Established",
             type: 'success',
-            message: `${this.t('toast.connection-create-des')}: ${x.websocket.url} \n${x.uuid}`
+            message: `${x.websocket.url} \n${x.uuid}`
         }
         if(this.feedback.electron){
             this.feedback.electron('makeToast', p)
@@ -157,9 +148,9 @@ export class ServerDetail {
 
     DisConnection = (x:WebsocketPack) => {
         const p = {
-            title: this.t('toast.connection-remove-title'),
+            title: "Network Disconnected",
             type: 'error',
-            message: `${this.t('toast.connection-remove-des')}: ${x.websocket.url} \n${x.uuid}`
+            message: `${x.websocket.url} \n${x.uuid}`
         }
         if(this.feedback.electron){
             this.feedback.electron('makeToast', p)
