@@ -39,6 +39,7 @@ class ServerDetail {
         return {
             resource_start: this.resource_start,
             resource_end: this.resource_end,
+            plugin_info: this.plugin_info,
             shell_enter: this.shell_enter,
             shell_open: this.shell_open,
             shell_close: this.shell_close,
@@ -182,6 +183,11 @@ class ServerDetail {
         const d = { name: 'resource_end', data: 0 };
         p?.websocket.send(JSON.stringify(d));
     };
+    plugin_info = (socket, uuid) => {
+        const p = this.websocket_manager.targets.find(x => x.uuid == uuid);
+        const d = { name: 'plugin_info', data: 0 };
+        p?.websocket.send(JSON.stringify(d));
+    };
     shell_enter = (socket, uuid, value) => {
         this.websocket_manager.shell_enter(uuid, value);
     };
@@ -281,7 +287,7 @@ class ServerDetail {
         target.record.stop = true;
         target.manager.Stop();
     };
-    console_add = (socket, name, record, preference) => {
+    console_add = (socket, name, record, uuid) => {
         record.projects.forEach(x => x.uuid = (0, uuid_1.v6)());
         const em = new interface_1.Execute_ExecuteManager.ExecuteManager(name, this.websocket_manager, this.message, JSON.parse(JSON.stringify(record)));
         const er = {
@@ -305,7 +311,7 @@ class ServerDetail {
         em.libs = { libs: this.backend.memory.libs };
         const p = { manager: em, record: er };
         const uscp = new console_handle_1.Util_Server_Console_Proxy(p);
-        const uslp = new log_handle_1.Util_Server_Log_Proxy(p, { logs: this.backend.memory.logs }, preference);
+        const uslp = new log_handle_1.Util_Server_Log_Proxy(p, { logs: this.backend.memory.logs }, this.backend.GetPreference(uuid));
         em.proxy = this.CombineProxy([uscp.execute_proxy, uslp.execute_proxy]);
         const r = this.console.receivedPack(p, record);
         if (r)

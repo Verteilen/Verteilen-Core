@@ -40,6 +40,7 @@ export interface BackendAction {
 export interface ServerDetailEvent {
     resource_start: (socket:any, uuid:string) => void
     resource_end: (socket:any, uuid:string) => void
+    plugin_info: (socket:any, uuid:string) => void
     shell_enter: (socket:any, uuid:string, value:string) => void
     shell_open: (socket:any, uuid:string) => void
     shell_close: (socket:any, uuid:string) => void
@@ -55,7 +56,7 @@ export interface ServerDetailEvent {
     console_clean: (socket:any, uuid:string) => void
     console_skip: (socket:any, uuid:string, forward:boolean, type:number, state:ExecuteState) => void
     console_skip2: (socket:any, uuid:string, v:number) => void
-    console_add: (socket:any, name:string, record:Record, preference:Preference) => void
+    console_add: (socket:any, name:string, record:Record, uuid:string | undefined) => void
     console_update: (socket:any, ) => void
 }
 
@@ -115,6 +116,7 @@ export class ServerDetail {
         return {
             resource_start: this.resource_start,
             resource_end: this.resource_end,
+            plugin_info: this.plugin_info,
             shell_enter: this.shell_enter,
             shell_open: this.shell_open,
             shell_close: this.shell_close,
@@ -273,6 +275,13 @@ export class ServerDetail {
         const d:Header = { name: 'resource_end', data: 0 }
         p?.websocket.send(JSON.stringify(d))
     }
+
+    plugin_info = (socket:any, uuid:string) => {
+        const p = this.websocket_manager!.targets.find(x => x.uuid == uuid)
+        const d:Header = { name: 'plugin_info', data: 0 }
+        p?.websocket.send(JSON.stringify(d))
+    }
+
     shell_enter = (socket:any, uuid: string, value:string) => {
         this.websocket_manager!.shell_enter(uuid, value)
     }
@@ -369,7 +378,7 @@ export class ServerDetail {
         target.record!.stop = true
         target.manager!.Stop()
     }
-    console_add = (socket:any, name:string, record:Record, preference:Preference) => {
+    console_add = (socket:any, name:string, record:Record, uuid:string | undefined) => {
         record.projects.forEach(x => x.uuid = uuidv6())
         const em:Execute_ExecuteManager.ExecuteManager = new Execute_ExecuteManager.ExecuteManager(
             name,
@@ -399,7 +408,7 @@ export class ServerDetail {
         
         const p:ExecutePair = { manager: em, record: er }
         const uscp:Util_Server_Console_Proxy = new Util_Server_Console_Proxy(p)
-        const uslp:Util_Server_Log_Proxy = new Util_Server_Log_Proxy(p, { logs: this.backend.memory.logs }, preference!)
+        const uslp:Util_Server_Log_Proxy = new Util_Server_Log_Proxy(p, { logs: this.backend.memory.logs }, this.backend.GetPreference(uuid)!)
         em.proxy = this.CombineProxy([uscp.execute_proxy, uslp.execute_proxy])
         const r = this.console.receivedPack(p, record)
         if(r) this.execute_manager.push(p)

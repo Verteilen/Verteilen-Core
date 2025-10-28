@@ -10,6 +10,7 @@ export interface BackendAction {
 export interface ServerDetailEvent {
     resource_start: (socket: any, uuid: string) => void;
     resource_end: (socket: any, uuid: string) => void;
+    plugin_info: (socket: any, uuid: string) => void;
     shell_enter: (socket: any, uuid: string, value: string) => void;
     shell_open: (socket: any, uuid: string) => void;
     shell_close: (socket: any, uuid: string) => void;
@@ -25,7 +26,7 @@ export interface ServerDetailEvent {
     console_clean: (socket: any, uuid: string) => void;
     console_skip: (socket: any, uuid: string, forward: boolean, type: number, state: ExecuteState) => void;
     console_skip2: (socket: any, uuid: string, v: number) => void;
-    console_add: (socket: any, name: string, record: Record, preference: Preference) => void;
+    console_add: (socket: any, name: string, record: Record, uuid: string | undefined) => void;
     console_update: (socket: any) => void;
 }
 export declare class ServerDetail {
@@ -51,6 +52,7 @@ export declare class ServerDetail {
     console_update: () => any[];
     resource_start: (socket: any, uuid: string) => void;
     resource_end: (socket: any, uuid: string) => void;
+    plugin_info: (socket: any, uuid: string) => void;
     shell_enter: (socket: any, uuid: string, value: string) => void;
     shell_open: (socket: any, uuid: string) => void;
     shell_close: (socket: any, uuid: string) => void;
@@ -63,7 +65,7 @@ export declare class ServerDetail {
     console_record: (socket: any, uuid: string) => string;
     console_execute: (socket: any, uuid: string, type: number) => void;
     console_stop: (socket: any, uuid: string) => void;
-    console_add: (socket: any, name: string, record: Record, preference: Preference) => ExecuteRecord | undefined;
+    console_add: (socket: any, name: string, record: Record, uuid: string | undefined) => ExecuteRecord | undefined;
     console_update_call: () => void;
     console_clean: (socket: any, uuid: string) => void;
     console_skip: (socket: any, uuid: string, forward: boolean, type: number, state?: ExecuteState) => void;
