@@ -23,7 +23,7 @@ export interface PluginLoader {
     load_all: () => Promise<PluginPageData>
     get_project: (group:string, filename:string) => string | undefined
     get_database: (group:string, filename:string) => string | undefined
-    get_plugin: () => Promise<Array<PluginList>>
+    get_plugin: () => Promise<PluginPageData>
     import_template: (name:string, url:string, token:string) => Promise<PluginPageData>
     import_plugin: (name:string, url:string, token:string) => Promise<PluginPageData>
     delete_template: (name:string) => Promise<void>
@@ -128,8 +128,8 @@ export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, s
             }
             return result
         },
-        get_plugin: async ():Promise<Array<PluginList>> => {
-            return memory.plugins
+        get_plugin: async ():Promise<PluginPageData> => {
+            return memory
         },
         import_template: async (name:string, url:string, token:string):Promise<PluginPageData> => {
             const root = loader.join(loader.root, 'template')

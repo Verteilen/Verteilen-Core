@@ -93,7 +93,7 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
             return result;
         },
         get_plugin: async () => {
-            return memory.plugins;
+            return memory;
         },
         import_template: async (name, url, token) => {
             const root = loader.join(loader.root, 'template');

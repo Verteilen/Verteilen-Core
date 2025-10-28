@@ -140,7 +140,7 @@ export const _CreateRecordIOLoader = (loader:RecordIOBase, memory:MemoryData, ty
             if(!loader.exists(root)) await loader.mkdir(root)
             const files = await loader.read_dir_file(root)
             const r:Array<Promise<string>> = files.map(x => 
-                loader.read_string(x, { encoding: 'utf8', flag: 'r' })
+                loader.read_string(loader.join(root, x), { encoding: 'utf8', flag: 'r' })
             )
             const p = await Promise.all(r)
             const arr = get_array(type)

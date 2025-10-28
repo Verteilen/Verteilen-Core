@@ -18,7 +18,7 @@ export interface DatabaseTable extends Database {
     /**
      * **Select State**
      */
-    s: boolean
+    s?: boolean
 }
 /**
  * **UI Node Table Data Structure**\
@@ -28,8 +28,8 @@ export interface NodeTable extends Node {
     /**
      * **Select State**
      */
-    s: boolean
-    state: number
+    s?: boolean
+    state?: number
     connection_rate?: number
     plugins?: Array<Plugin>
     system?: SystemLoad
@@ -38,7 +38,7 @@ export interface TaskTable extends Task {
     /**
      * **Select State**
      */
-    s: boolean
+    s?: boolean
     /**
      * **Compute Job Count**\
      * Show how many jobs the task have
@@ -49,7 +49,7 @@ export interface ProjectTable extends Project {
     /**
      * **Select State**
      */
-    s: boolean
+    s?: boolean
     /**
      * **Compute Task Count**\
      * Show how many tasks the project have

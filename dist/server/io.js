@@ -71,7 +71,7 @@ const _CreateRecordIOLoader = (loader, memory, type, folder, ext = ".json") => {
             if (!loader.exists(root))
                 await loader.mkdir(root);
             const files = await loader.read_dir_file(root);
-            const r = files.map(x => loader.read_string(x, { encoding: 'utf8', flag: 'r' }));
+            const r = files.map(x => loader.read_string(loader.join(root, x), { encoding: 'utf8', flag: 'r' }));
             const p = await Promise.all(r);
             const arr = get_array(type);
             arr.splice(0, arr.length);
