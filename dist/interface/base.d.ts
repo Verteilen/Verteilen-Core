@@ -63,6 +63,7 @@ export interface Project {
     acl?: ACLType;
 }
 export interface Node {
+    cluster: boolean;
     uuid: string;
     parent?: string;
     url: string;

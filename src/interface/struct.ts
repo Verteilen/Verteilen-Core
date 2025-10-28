@@ -10,6 +10,7 @@
 import { DatabaseContainer, Project } from "./base"
 import ws from 'ws'
 import { ServiceMode } from "./enum"
+import { ACLType, LocalPermission } from "./server"
 
 type ProjectCall = (p:Project) => Project
 type DatabaseCall = () => Array<DatabaseContainer>
@@ -243,9 +244,22 @@ export interface PluginWithToken extends Plugin {
 }
 
 export interface PluginList {
+    owner?: string
     title?: string
     url?: string
     plugins: Array<Plugin>
+    /**
+     * **Local Permission**\
+     * Client-side only permission field\
+     * Server will check user token and defined its permission level\
+     * And modify this field and send back to user
+     */
+    permission?: LocalPermission
+    /**
+     * **Accessibility**\
+     * Could be public, protected, private
+     */
+    acl?: ACLType
 }
 
 export interface PluginState {
@@ -256,10 +270,23 @@ export interface PluginState {
 }
 
 export interface PluginPageTemplate {
+    owner?: string
     name: string
     project: Array<TemplateGroup>
     database: Array<TemplateGroup2>
     url?: string
+    /**
+     * **Local Permission**\
+     * Client-side only permission field\
+     * Server will check user token and defined its permission level\
+     * And modify this field and send back to user
+     */
+    permission?: LocalPermission
+    /**
+     * **Accessibility**\
+     * Could be public, protected, private
+     */
+    acl?: ACLType
 }
 
 export interface PluginPageData {

@@ -1,6 +1,7 @@
 import { DatabaseContainer, Project } from "./base";
 import ws from 'ws';
 import { ServiceMode } from "./enum";
+import { ACLType, LocalPermission } from "./server";
 type ProjectCall = (p: Project) => Project;
 type DatabaseCall = () => Array<DatabaseContainer>;
 export interface WebsocketPack {
@@ -133,9 +134,12 @@ export interface PluginWithToken extends Plugin {
     token: Array<string>;
 }
 export interface PluginList {
+    owner?: string;
     title?: string;
     url?: string;
     plugins: Array<Plugin>;
+    permission?: LocalPermission;
+    acl?: ACLType;
 }
 export interface PluginState {
     name: string;
@@ -144,10 +148,13 @@ export interface PluginState {
     supported: boolean;
 }
 export interface PluginPageTemplate {
+    owner?: string;
     name: string;
     project: Array<TemplateGroup>;
     database: Array<TemplateGroup2>;
     url?: string;
+    permission?: LocalPermission;
+    acl?: ACLType;
 }
 export interface PluginPageData {
     plugins: Array<PluginList>;

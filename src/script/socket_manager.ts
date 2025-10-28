@@ -232,7 +232,7 @@ export class WebsocketManager {
         const data:Array<Node> = []
         this.targets.forEach(x => {
             if(x.websocket.readyState == SocketState.CLOSED){
-                data.push({uuid: x.uuid, url: x.websocket.url})
+                data.push({cluster: false, uuid: x.uuid, url: x.websocket.url})
             }
         })
         data.forEach(d => this.removeByUUID(d.uuid))
@@ -243,6 +243,7 @@ export class WebsocketManager {
         result = this.targets.map(x => {
             return {
                 s: false,
+                cluster: false,
                 uuid: x.uuid,
                 state: x.websocket.readyState,
                 url: x.websocket.url,

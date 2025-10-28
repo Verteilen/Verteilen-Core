@@ -196,7 +196,7 @@ class WebsocketManager {
         const data = [];
         this.targets.forEach(x => {
             if (x.websocket.readyState == interface_1.SocketState.CLOSED) {
-                data.push({ uuid: x.uuid, url: x.websocket.url });
+                data.push({ cluster: false, uuid: x.uuid, url: x.websocket.url });
             }
         });
         data.forEach(d => this.removeByUUID(d.uuid));
@@ -206,6 +206,7 @@ class WebsocketManager {
         result = this.targets.map(x => {
             return {
                 s: false,
+                cluster: false,
                 uuid: x.uuid,
                 state: x.websocket.readyState,
                 url: x.websocket.url,

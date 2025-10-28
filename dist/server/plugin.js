@@ -133,7 +133,7 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
                 const p = { title: "Import Failed", type: "error", message: `Cannot find the json from url ${url}, or maybe just the wrong token` };
                 const h = { name: "makeToast", data: JSON.stringify(p) };
                 if (feedback.electron) {
-                    feedback.electron("makeToast", JSON.stringify(p));
+                    feedback.electron()?.send("makeToast", JSON.stringify(p));
                 }
                 if (feedback.socket) {
                     feedback.socket(JSON.stringify(h));
@@ -189,7 +189,7 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
                 const p = { title: x[0], type: "error", message: x[1] };
                 const h = { name: "makeToast", data: JSON.stringify(p) };
                 if (feedback.electron) {
-                    feedback.electron("makeToast", JSON.stringify(p));
+                    feedback.electron()?.send("makeToast", JSON.stringify(p));
                 }
                 if (feedback.socket) {
                     feedback.socket(JSON.stringify(h));
@@ -237,7 +237,7 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
                 const p = { title: "Import Failed", type: "error", message: `Cannot find the json from url ${url}, or maybe just the wrong token` };
                 const h = { name: "makeToast", data: JSON.stringify(p) };
                 if (feedback.electron) {
-                    feedback.electron("makeToast", JSON.stringify(p));
+                    feedback.electron()?.send("makeToast", JSON.stringify(p));
                 }
                 if (feedback.socket) {
                     feedback.socket(JSON.stringify(h));

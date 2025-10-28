@@ -279,6 +279,12 @@ export interface Project {
  */
 export interface Node {
     /**
+     * **Cluster Mode**\
+     * Check if the node is cluster\
+     * This mean it does not have compute ability
+     */
+    cluster: boolean
+    /**
      * **ID**\
      * The UUID of the compute node
      */

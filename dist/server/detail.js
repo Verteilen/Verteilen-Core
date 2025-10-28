@@ -64,7 +64,7 @@ class ServerDetail {
             message: `${x.websocket.url} \n${x.uuid}`
         };
         if (this.feedback.electron) {
-            this.feedback.electron('makeToast', p);
+            this.feedback.electron()?.send('makeToast', p);
         }
         if (this.feedback.socket && this.backend.Boradcasting) {
             this.backend.Boradcasting('makeToast', p);
@@ -80,7 +80,7 @@ class ServerDetail {
             message: `${x.websocket.url} \n${x.uuid}`
         };
         if (this.feedback.electron) {
-            this.feedback.electron('makeToast', p);
+            this.feedback.electron()?.send('makeToast', p);
         }
         if (this.feedback.socket && this.backend.Boradcasting) {
             this.backend.Boradcasting('makeToast', p);
@@ -94,7 +94,7 @@ class ServerDetail {
     };
     shellReply = (data, p) => {
         if (this.feedback.electron) {
-            this.feedback.electron("shellReply", data);
+            this.feedback.electron()?.send("shellReply", data);
         }
         if (this.feedback.socket) {
             if (p == undefined)
@@ -110,7 +110,7 @@ class ServerDetail {
     };
     folderReply = (data, p) => {
         if (this.feedback.electron) {
-            this.feedback.electron("folderReply", data);
+            this.feedback.electron()?.send("folderReply", data);
         }
         if (this.feedback.socket) {
             if (p == undefined)
@@ -191,21 +191,25 @@ class ServerDetail {
     };
     shell_open = (socket, uuid) => {
         this.websocket_manager.shell_open(uuid);
-        if (this.shellBind.has(uuid)) {
-            this.shellBind.get(uuid).push(this.feedback.socket);
-        }
-        else {
-            this.shellBind.set(uuid, [this.feedback.socket]);
+        if (this.feedback.socket) {
+            if (this.shellBind.has(uuid)) {
+                this.shellBind.get(uuid).push(this.feedback.socket);
+            }
+            else {
+                this.shellBind.set(uuid, [this.feedback.socket]);
+            }
         }
     };
     shell_close = (socket, uuid) => {
         this.websocket_manager.shell_close(uuid);
-        if (this.shellBind.has(uuid)) {
-            const p = this.shellBind.get(uuid);
-            const index = p.findIndex(x => x == this.feedback.socket);
-            if (index != -1)
-                p.splice(index, 1);
-            this.shellBind.set(uuid, p);
+        if (this.feedback.socket) {
+            if (this.shellBind.has(uuid)) {
+                const p = this.shellBind.get(uuid);
+                const index = p.findIndex(x => x == this.feedback.socket);
+                if (index != -1)
+                    p.splice(index, 1);
+                this.shellBind.set(uuid, p);
+            }
         }
     };
     shell_folder = (socket, uuid, path) => {
@@ -213,33 +217,33 @@ class ServerDetail {
     };
     node_list = (socket) => {
         const p = this.websocket_manager?.targets;
-        if (socket != undefined) {
+        if (this.feedback.socket != undefined) {
             const h = {
                 name: "node_list-feedback",
                 data: this.websocket_manager?.targets
             };
-            socket.send(JSON.stringify(h));
+            this.feedback.socket(JSON.stringify(h));
         }
         return p;
     };
     node_add = (socket, url, id) => {
         const p = this.websocket_manager.server_start(url, id);
-        if (socket != undefined) {
+        if (this.feedback.socket != undefined) {
             const h = {
                 name: "node_add-feedback",
                 data: p
             };
-            socket.send(JSON.stringify(h));
+            this.feedback.socket(JSON.stringify(h));
         }
     };
     node_update = (socket) => {
         const p = this.websocket_manager?.server_update();
-        if (socket != undefined) {
+        if (this.feedback.socket != undefined) {
             const h = {
                 name: "node_update-feedback",
                 data: [p]
             };
-            socket.send(JSON.stringify(h));
+            this.feedback.socket(JSON.stringify(h));
         }
         return p;
     };
