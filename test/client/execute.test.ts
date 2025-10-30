@@ -19,7 +19,8 @@ describe("Client Execute Test", () => {
             script: "",
             string_args: ["Not Exist"],
             number_args: [],
-            boolean_args: []
+            boolean_args: [],
+            id_args: [],
         }
         execute = new ClientJobExecute(
             (str) => console.log(str),
@@ -40,7 +41,8 @@ describe("Client Execute Test", () => {
             script: "",
             string_args: [process.cwd()],
             number_args: [],
-            boolean_args: []
+            boolean_args: [],
+            id_args: [],
         }
         execute = new ClientJobExecute(
             (str) => console.log(str),

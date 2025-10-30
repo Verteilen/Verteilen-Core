@@ -7,7 +7,7 @@ import * as path from 'path';
 import { check } from 'tcp-port-used';
 import { WebSocket } from 'ws';
 import * as ws from 'ws';
-import { CLIENT_UPDATETICK, DATA_FOLDER, Header, Messager, Messager_log, Plugin, PluginList, PORT } from '../interface';
+import { CLIENT_UPDATETICK, DATA_FOLDER, Header, Messager, Messager_log, PluginList, PORT } from '../interface';
 import { ClientAnalysis } from './analysis';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import * as os from 'os'
@@ -15,6 +15,7 @@ import * as pem from 'pem'
 import * as https from 'https'
 
 /**
+ * **Compute Client**\
  * The calculation node worker
  */
 export class Client {

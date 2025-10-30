@@ -4,10 +4,10 @@
 //                           
 // ========================
 import { formula, init } from "expressionparser";
-import { DataType, ENV_CHARACTER, IGNORE_CHARACTER, KeyValue, Parameter, ParameterContainer } from "../../interface";
+import { DataType, ENV_CHARACTER, IGNORE_CHARACTER, KeyValue, Database, DatabaseContainer } from "../../interface";
 
 /**
- * The worker which helps parsing parameter variables into argument\
+ * The worker which helps parsing database variables into argument\
  * Including expression executing
  */
 export class Util_Parser {
@@ -27,12 +27,12 @@ export class Util_Parser {
     }
 
     /**
-     * Turn parameter into a list of keyvalue structure\
+     * Turn database into a list of keyvalue structure\
      * Exclude the expression datatype
-     * @param p Target parameter instance
+     * @param p Target database instance
      * @returns The list of keyvalue
      */
-    static to_keyvalue = (p:Parameter):Array<KeyValue> => {
+    static to_keyvalue = (p:Database):Array<KeyValue> => {
         return [
             ...this._to_keyvalue(p.containers)
         ]
@@ -64,9 +64,9 @@ export class Util_Parser {
     }
 
     /**
-     * Parameter containers into keyvalue list
+     * Database containers into keyvalue list
      */
-    static _to_keyvalue = (p:Array<ParameterContainer>):Array<KeyValue> => {
+    static _to_keyvalue = (p:Array<DatabaseContainer>):Array<KeyValue> => {
         const r:Array<KeyValue> = []
         r.push(...p.filter(x => x.type == DataType.Boolean || x.type == DataType.String || x.type == DataType.Textarea || x.type == DataType.Number || x.type == DataType.Expression).map(x => { return { key: x.name, value: x.value.toString() } }))
         const objs = p.filter(x => x.type == DataType.Object)

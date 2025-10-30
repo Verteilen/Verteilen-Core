@@ -4,7 +4,7 @@
 //                           
 // ========================
 import { ExecuteManager } from "./../script/execute_manager"
-import { Node, Parameter, Project } from "./base"
+import { Node, Database, Project } from "./base"
 import { ExecuteState } from "./enum"
 
 export interface ExecuteData {
@@ -25,7 +25,7 @@ export interface ExecutionLog {
     output?: boolean
     filename: string
     project: Project
-    parameter: Parameter
+    database: Database
     start_timer: number
     end_timer: number
     state: ExecuteState
@@ -65,7 +65,7 @@ export interface ExecuteRecord extends Record {
      * * 2: SIngle task through
      */
     process_type: number
-    para: Parameter | undefined
+    para: Database | undefined
     command: Array<Array<any>>
     project: string
     useCron: boolean
@@ -87,6 +87,11 @@ export interface Preference_Recover {
     nodes: Array<string | null>
 }
 
+/**
+ * **User Preference**\
+ * Store the user preference setting\
+ * This could store for any kinds of backend
+ */
 export interface Preference {
     /**
      * Language setting
@@ -106,9 +111,13 @@ export interface Preference {
     plugin_token: Array<PluginToken>
     animation: boolean
     recover?: Preference_Recover
+
+    mode?: number
+    url?: string
 }
 
 export interface Library {
+    uuid: string
     name: string
     load: boolean
     content: string
@@ -122,12 +131,6 @@ export interface FileState {
     name: string,
     size: number
     time: Date
-}
-
-export interface ExecutePair {
-    manager?: ExecuteManager
-    record?: ExecuteRecord
-    meta?: any
 }
 
 export const CreatePreference = ():Preference => ({

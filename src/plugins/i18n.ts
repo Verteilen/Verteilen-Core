@@ -4,6 +4,7 @@
 //                           
 // ========================
 import { createI18n } from 'vue-i18n'
+import { I18n } from "i18n-js"
 import en from './../lan/en.json'
 import zh_TW from './../lan/zh_TW.json'
 
@@ -35,3 +36,14 @@ export const i18nDefaultData = {
  * This apply the default config
  */
 export const i18n = createI18n(i18nDefaultData)
+/**
+ * The raw language module which translate key into setup text string\
+ * This apply the default config
+ */
+export const raw_i18n = new I18n({
+    en: en,
+    zh_TW: zh_TW
+}, { defaultLocale: 'en', 
+    locale: 'en', 
+    enableFallback: true 
+})

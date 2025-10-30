@@ -3,13 +3,29 @@
 //      Share Codebase     
 //                           
 // ========================
+/**
+ * Enum library, including translation which will be use in Vue
+ */
+
+export enum TaskLogicType {
+    GROUP, ADD, OR
+}
+
+/**
+ * **Socket Type**\
+ * This exists because reference to ws or buildin socket will sometime cause error\
+ * So we will need to create one for ourselves
+ */
 export enum SocketState {
     CONNECTING = 0,
     OPEN = 1,
     CLOSING = 2,
     CLOSED = 3
 }
-
+/**
+ * **Data Type**\
+ * The support data type for database
+ */
 export enum DataType {
     Boolean, 
     Number, 
@@ -20,13 +36,31 @@ export enum DataType {
     Select,
     List,
 }
-
+/**
+ * **Express Server Type**\
+ * For checking the express server type
+ */
+export enum BackendType {
+    NONE,
+    SERVER,
+    CLUSTER,
+    NODE,
+}
+/**
+ * **Data Type Base**\
+ * The support data type for calculation\
+ * Proerty or expression calculation will use this
+ */
 export enum DataTypeBase {
     Boolean, 
     Number, 
     String,
 }
-
+/**
+ * **Resource Query Type**\
+ * Client resource type\
+ * Use in when server query system information from node
+ */
 export enum ResourceType {
     ALL = ~(~0 << 10),
     SYSTEM = 1 << 0,
@@ -39,18 +73,30 @@ export enum ResourceType {
     DISK = 1 << 7,
     NETWORK = 1 << 8,
 }
-
+/**
+ * **Vue Update Type**
+ */
 export enum FrontendUpdate {
     ALL = ~(~0 << 10),
     PROJECT = 1 << 0,
-    PARAMETER = 1 << 1,
+    TASK = 1 << 1,
+    JOB = 1 << 2,
+    DATABASE = 1 << 3,
+    NODE = 1 << 4,
+    SERVICE = 1 << 5,
+    LOG = 1 << 6,
 }
-
+/**
+ * **Job Category Type**
+ */
 export enum JobCategory {
     Condition,
     Execution
 }
-
+/**
+ * **Condition Error Handle Result**\
+ * Determine the action after receive error
+ */
 export enum ConditionResult {
     None,
     SkipProject,
@@ -59,7 +105,9 @@ export enum ConditionResult {
     ThrowTask,
     Pause,
 }
-
+/**
+ * **Job SubType: Execution**
+ */
 export enum JobType {
     COPY_FILE,
     COPY_DIR,
@@ -72,7 +120,9 @@ export enum JobType {
     COMMAND,
     LIB_COMMAND,
 }
-
+/**
+ * **Job SubType: Condition**
+ */
 export enum JobType2 {
     CHECK_PATH,
     JAVASCRIPT,
@@ -86,21 +136,23 @@ export enum ProjectTemplate {
     AfterEffect = 200,
 }
 
-export enum ParameterTemplate {
+export enum DatabaseTemplate {
     DEFAULT = 0
 }
 
 export enum ExecuteState {
     NONE, RUNNING, FINISH, ERROR, SKIP
 }
-
-export enum RenderUpdateType {
-    All= ~(~0 << 7),
-    Project = 1 << 0, 
-    Node = 1 << 1, 
-    Parameter = 1 << 2
+/**
+ * **Database Table Type**
+ */
+export enum RecordType {
+    PROJECT, TASK, JOB, DATABASE, NODE, LOG, LIB, USER,
 }
-
+/**
+ * **Lib Import Type**\
+ * For client-side javascript vm library import options
+ */
 export enum JavascriptLib {
     ALL = ~(~0 << 7),
     OS = 1 << 0, 
@@ -109,7 +161,26 @@ export enum JavascriptLib {
     HTTP = 1 << 3,
     PATH = 1 << 4,
 }
+/**
+ * **Service Activate Mode**\
+ * Determine what cost service turn on
+ */
+export enum ServiceMode {
+    /**
+     * Do it once, and shutdown
+     */
+    ONCE,
+    /**
+     * Schedule setup, or a time cycle
+     */
+    CYCLE, 
+    /**
+     * API event trigger, or other service trigger
+     */
+    EVENT
+}
 
+//#region Translation
 export const DataTypeText: { [key:number]:string } = {
     0: 'types.boolean',
     1: 'types.number',
@@ -176,6 +247,7 @@ export const ProjectTemplateText: { [key:number]:string } = {
     200: 'enum.project.aftereffect',
 }
 
-export const ParameterTemplateText: { [key:number]:string } = {
-    0: 'enum.parameter.default'
+export const DatabaseTemplateText: { [key:number]:string } = {
+    0: 'enum.database.default'
 }
+//#endregion

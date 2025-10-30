@@ -1,0 +1,35 @@
+import { WebSocket } from 'ws';
+import { Header, Messager, Messager_log } from "../interface";
+import { Client } from './client';
+export declare class ClientAnalysis {
+    private messager;
+    private messager_log;
+    private client;
+    private exec;
+    private shell;
+    private resource_wanter;
+    private resource_thread;
+    private resource_cache;
+    constructor(_messager: Messager, _messager_log: Messager_log, _client: Client);
+    analysis: (h: Header | undefined, source: WebSocket) => 0 | 1 | 2;
+    private execute_job;
+    private release;
+    private set_database;
+    private set_libs;
+    private exec_checker;
+    private pong;
+    private plugin_info;
+    private get_releases;
+    private filterout;
+    private write_plugin;
+    private finish_plugin;
+    private plugin_download;
+    private plugin_remove;
+    private resource_start;
+    private resource_end;
+    update: (client: Client) => void;
+    disconnect: (source: WebSocket) => void;
+    stop_all: () => void;
+    destroy: () => void;
+    private resource_require;
+}

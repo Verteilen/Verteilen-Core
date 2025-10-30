@@ -4,8 +4,8 @@
 //                           
 // ========================
 import * as vm from 'vm';
-import { DATA_FOLDER, DataType, JavascriptLib, Job, Libraries, Messager, Messager_log, Parameter, ParameterContainer } from '../interface';
-import { ClientJobParameter } from './job_parameter';
+import { DATA_FOLDER, DataType, JavascriptLib, Job, Libraries, Messager, Messager_log, Database, DatabaseContainer } from '../interface';
+import { ClientJobDatabase } from './job_database';
 import { ClientOS } from './os';
 import * as path from 'path';
 import * as os from 'os'
@@ -36,7 +36,7 @@ export const safeEval = (code:string, context?:any, opts?:vm.RunningCodeInNewCon
 }
 
 type Getlib = () => Libraries | undefined
-type Getpara = () => Parameter | undefined
+type Getpara = () => Database | undefined
 type Getjob = () => Job | undefined
 type DatatypeChecker = (s:DataType) => boolean
 
@@ -46,7 +46,7 @@ let getjob:Getjob | undefined = undefined
 let messager: Messager
 let messager_log: Messager_log
 let clientos:ClientOS | undefined
-let para:ClientJobParameter | undefined = undefined
+let para:ClientJobDatabase | undefined = undefined
 let waiting : number = 0
 
 const tag = () => getjob!?.()?.uuid ?? 'unknown'
@@ -112,7 +112,7 @@ function getselectlendth(key:string){
     if(s?.meta == undefined) return undefined
     return s.meta.length
 }
-function _set(key:string, checker?:DatatypeChecker, created:boolean = true):ParameterContainer | undefined{
+function _set(key:string, checker?:DatatypeChecker, created:boolean = true):DatabaseContainer | undefined{
     const p = getpara?.() ?? undefined
     if(p == undefined) return undefined
     if(!p.canWrite) return undefined
@@ -285,12 +285,12 @@ export class ClientJavascript {
      * @param _messager Message habndle
      * @param _messager_log Message habndle with print on screen feature
      * @param _clientos OS worker
-     * @param _para Parameter worker
+     * @param _para Database worker
      * @param _getlib library getter method
-     * @param _getpara Parameter getter method
+     * @param _getpara Database getter method
      * @param _getjob Job getter method
      */
-    static Init = (_messager: Messager, _messager_log: Messager, _clientos:ClientOS, _para:ClientJobParameter, _getlib:Getlib, _getpara:Getpara, _getjob:Getjob) => {
+    static Init = (_messager: Messager, _messager_log: Messager, _clientos:ClientOS, _para:ClientJobDatabase, _getlib:Getlib, _getpara:Getpara, _getjob:Getjob) => {
         messager = _messager
         messager_log = _messager_log
         clientos = _clientos
@@ -500,7 +500,7 @@ export class ClientJavascript {
     private readfile(path:string){
         return clientos?.file_read({path:path})
     }
-    //#region Parameters
+    //#region Databases
     private async wait(time:number){
         return new Promise((resolve) => setTimeout(resolve, time * 1000))
     }

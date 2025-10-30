@@ -1,20 +1,20 @@
-import { ClientJobParameter } from '../../src/client/job_parameter';
+import { ClientJobDatabase } from '../../src/client/job_database';
 import { ClientJavascript } from '../../src/client/javascript';
 import { ClientOS } from '../../src/client/os';
-import { DataType, Libraries, Parameter } from '../../src/interface';
+import { DataType, Libraries, Database } from '../../src/interface';
 
 
 describe("JS Test", () => {
     let js:ClientJavascript | undefined = undefined
     let os:ClientOS | undefined = undefined
-    let para:ClientJobParameter | undefined = undefined
-    let parameter:Parameter | undefined = undefined
+    let para:ClientJobDatabase | undefined = undefined
+    let database:Database | undefined = undefined
     let lib:Libraries | undefined = undefined
 
     beforeAll(() => {
         os = new ClientOS(() => "", () => "", (str) => console.log(str), (str) => console.log(str))
-        para = new ClientJobParameter()
-        parameter = {
+        para = new ClientJobDatabase()
+        database = {
             uuid: "",
             title: "",
             canWrite: true,
@@ -36,7 +36,7 @@ describe("JS Test", () => {
             os!,
             para!,
             () => lib,
-            () => parameter,
+            () => database,
             () => undefined
         )
     })
@@ -44,7 +44,7 @@ describe("JS Test", () => {
         js = undefined
         os = undefined
         para = undefined
-        parameter = undefined
+        database = undefined
         lib = undefined
     })
     test("Env test getter", async () => {

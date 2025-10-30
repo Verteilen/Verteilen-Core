@@ -71,7 +71,7 @@ export class WebsocketManager {
     server_update = ():Array<NodeTable> => this.sendUpdate()
     server_record = (ns:Array<Node>) => {
         ns.forEach(x => {
-            this.serverconnect(x.url, x.ID)
+            this.serverconnect(x.url, x.uuid)
         })
     }
 
@@ -232,17 +232,19 @@ export class WebsocketManager {
         const data:Array<Node> = []
         this.targets.forEach(x => {
             if(x.websocket.readyState == SocketState.CLOSED){
-                data.push({ID: x.uuid, url: x.websocket.url})
+                data.push({cluster: false, uuid: x.uuid, url: x.websocket.url})
             }
         })
-        data.forEach(d => this.removeByUUID(d.ID))
+        data.forEach(d => this.removeByUUID(d.uuid))
         data.forEach(d => {
-            this.serverconnect(d.url, d.ID)
+            this.serverconnect(d.url, d.uuid)
         })
 
         result = this.targets.map(x => {
             return {
-                ID: x.uuid,
+                s: false,
+                cluster: false,
+                uuid: x.uuid,
                 state: x.websocket.readyState,
                 url: x.websocket.url,
                 connection_rate: x.ms,

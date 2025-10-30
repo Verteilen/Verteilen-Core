@@ -1,2 +1,1 @@
-export * from './src/computed'
-export * from './src/interface'
+export * from "./dist/index"

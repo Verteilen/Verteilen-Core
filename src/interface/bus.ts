@@ -3,33 +3,54 @@
 //      Share Codebase     
 //                           
 // ========================
-import { Job, Parameter, Project, Task } from "./base"
+/**
+ * Event bus related type and interface
+ */
+import { Job, Database, Project, Task } from "./base"
 import { ExecuteState } from "./enum"
 import { ExecutionLog, Log, Preference } from "./record"
+import { Login } from "./server"
 import { FeedBack, Header, Setter, ShellFolder, Single, WebsocketPack } from "./struct"
-import { NodeTable } from "./table"
+import { DatabaseTable, NodeTable, ProjectTable } from "./table"
 import { ToastData } from "./ui"
 
 type Handler<T = unknown> = (event: T) => void
 export type Messager = (msg:string, tag?:string) => void
 export type Messager_log = (msg:string, tag?:string, meta?:string) => void
 
+/**
+ * **Server Received Node Client Packet Data Structure**\
+ * A standard format for received data format from node client
+ */
 export interface BusAnalysis {
+    /**
+     * **Header Name**\
+     * The string can be found in {@link h.name} as well\
+     * We put it here for convenient
+     */
     name:string
+    /**
+     * **Header Data**\
+     * The data packet content
+     */
     h:Header
+    /**
+     * **Received Weboscket Instance**\
+     * Client node websocket assign by analyzer
+     */
     c:WebsocketPack | undefined
 }
 
+/**
+ * **Websocket Data Format: Rename**
+ */
 export interface Rename {
     oldname: string
     newname: string
 }
-
-export interface Login {
-    username: string
-    password: string
-}
-
+/**
+ * **Websocket Data Format: Raw Data Send**
+ */
 export interface RawSend {
     name: string
     token?: string
@@ -43,6 +64,7 @@ export interface EmitterProxy<T> {
 }
 
 /**
+ * **Execute Event Proxy**\
  * The middleware for task scheduler worker with singal sender
  */
 export interface ExecuteProxy {
@@ -81,33 +103,46 @@ export interface ExecuteProxy {
      */
     executeJobFinish: (data:[Job, number, string, number]) => void
     feedbackMessage: (data:FeedBack) => void
-    updateParameter: (data:Parameter) => void
+    updateDatabase: (data:Database) => void
 }
 
+/**
+ * **Node Reply handler**\
+ * Handle the message received from node\
+ * In this case, for shell only type of action
+ */
 export interface NodeProxy { 
     shellReply: (data:Single, w?:WebsocketPack) => void
     folderReply: (data:ShellFolder, w?:WebsocketPack) => void
 }
 
 /**
+ * **Vue Event Bus Type**\
  * Emitter events container for Primary use
  */
 export type BusType = {
+    /**
+     * Setting dialog popup event
+     */
     setting: void
+    /**
+     * Guide link click event
+     */
     guide: void
     makeToast: ToastData
     modeSelect: boolean
     createProject: void
     updateProject: void
-    recoverProject: Project
-    recoverParameter: Parameter
+    recoverProject: ProjectTable
+    recoverDatabase: DatabaseTable
     relogin: void
     loginGuest: void
-    login: Setter
+    login: Login
+    logout: void
     updateTask: void
     updateJob: void
-    updateParameter: void
-    selectParameter: string
+    updateDatabase: void
+    selectDatabase: string
     updateLocate: void
     updateNode: Array<NodeTable>
     updateCurrent: ExecutionLog,

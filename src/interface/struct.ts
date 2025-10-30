@@ -3,11 +3,17 @@
 //      Share Codebase     
 //                           
 // ========================
-import { ParameterContainer, Project } from "./base"
+/**
+ * All kinds of data structure
+ * It's a mess, i know
+ */
+import { DatabaseContainer, Project } from "./base"
 import ws from 'ws'
+import { ServiceMode, TaskLogicType } from "./enum"
+import { ACLType, LocalPermission } from "./server"
 
 type ProjectCall = (p:Project) => Project
-type ParameterCall = () => Array<ParameterContainer>
+type DatabaseCall = () => Array<DatabaseContainer>
 
 /**
  * The websocket instance with extra information
@@ -112,7 +118,6 @@ export interface FeedBack {
     message: string
 }
 
-
 export interface KeyValue {
     key: any
     value: any
@@ -216,7 +221,7 @@ export interface TemplateGroup2 {
     group: string
     title?: string
     filename?: string
-    template?: ParameterCall
+    template?: DatabaseCall
 }
 
 export interface PluginContent {
@@ -239,9 +244,22 @@ export interface PluginWithToken extends Plugin {
 }
 
 export interface PluginList {
+    owner?: string
     title?: string
     url?: string
     plugins: Array<Plugin>
+    /**
+     * **Local Permission**\
+     * Client-side only permission field\
+     * Server will check user token and defined its permission level\
+     * And modify this field and send back to user
+     */
+    permission?: LocalPermission
+    /**
+     * **Accessibility**\
+     * Could be public, protected, private
+     */
+    acl?: ACLType
 }
 
 export interface PluginState {
@@ -252,10 +270,23 @@ export interface PluginState {
 }
 
 export interface PluginPageTemplate {
+    owner?: string
     name: string
     project: Array<TemplateGroup>
-    parameter: Array<TemplateGroup2>
+    database: Array<TemplateGroup2>
     url?: string
+    /**
+     * **Local Permission**\
+     * Client-side only permission field\
+     * Server will check user token and defined its permission level\
+     * And modify this field and send back to user
+     */
+    permission?: LocalPermission
+    /**
+     * **Accessibility**\
+     * Could be public, protected, private
+     */
+    acl?: ACLType
 }
 
 export interface PluginPageData {
@@ -269,7 +300,7 @@ export interface TemplateDataProject {
     group: string
 }
 
-export interface TemplateDataParameter {
+export interface TemplateDataDatabase {
     title: string
     filename: string
     group: string
@@ -278,7 +309,7 @@ export interface TemplateDataParameter {
 export interface TemplateData {
     url?: string
     projects: Array<TemplateDataProject>
-    parameters: Array<TemplateDataParameter>
+    databases: Array<TemplateDataDatabase>
 }
 
 export interface BuildinAssetsContent {
@@ -289,4 +320,18 @@ export interface BuildinAssetsContent {
 
 export interface BuildinAssets {
     data: Array<BuildinAssetsContent>
+}
+
+export interface ServiceConfig {
+    mode: ServiceMode
+}
+
+export interface TaskLogicUnit {
+    type: TaskLogicType
+    job: string
+    children: Array<TaskLogicUnit>
+}
+
+export interface TaskLogic {
+    group: Array<TaskLogicUnit>
 }

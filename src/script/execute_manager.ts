@@ -4,6 +4,8 @@
 //                           
 // ========================
 import { ExecuteState, Header, Libraries, WebsocketPack } from "../interface";
+import { Region_Project } from "./execute/region_project";
+import { Region_Task } from "./execute/region_task";
 import { ExecuteManager_Runner } from "./execute/runner";
 
 /**
@@ -17,15 +19,15 @@ export class ExecuteManager extends ExecuteManager_Runner {
     Update = () => {
         // Only works when state is set to running
         if(this.state != ExecuteState.RUNNING) return
-        else if(this.current_p == undefined && this.current_projects.length > 0){
-            this.current_p = this.current_projects[0]
-            this.messager_log(`[Execute] Project Start ${this.current_p.uuid}`)
-            this.proxy?.executeProjectStart([this.current_p, 0])
-            this.SyncParameter(this.current_p)
+        else if(this.runner == undefined && this.current_projects.length > 0){
+            this.runner = new Region_Project(this, this.current_projects[0])
+            this.messager_log(`[Execute] Project Start ${this.runner.project.uuid}`)
+            this.proxy?.executeProjectStart([this.runner.project, 0])
+            this.SyncDatabase(this.runner.project)
         }
-        else if (this.current_p != undefined){
+        else if (this.runner != undefined){
             if(this.first) this.first = false
-            this.ExecuteProject(this.current_p)
+            this.runner.RUN()
         }
     }
 
@@ -55,7 +57,7 @@ export class ExecuteManager extends ExecuteManager_Runner {
         this.current_projects = this.record.projects
         this.current_nodes = []
         this.record.nodes.forEach(x => {
-            const n = this.websocket_manager.targets.find(y => y.uuid == x.ID)
+            const n = this.websocket_manager.targets.find(y => y.uuid == x.uuid)
             if(n != undefined) this.current_nodes.push(n)
         })
         this.messager_log(`[Execute] Start executing, Project count: ${this.current_projects.length}, Node count: ${this.current_nodes.length}`)
@@ -67,7 +69,7 @@ export class ExecuteManager extends ExecuteManager_Runner {
             this.messager_log(`[Execute] Node count should be bigger than one`)
             return -1
         }
-        if(this.current_projects.map(x => x.task.length).reduce((acc, cur) => acc + cur, 0) == 0){
+        if(this.current_projects.map(x => x.tasks.length).reduce((acc, cur) => acc + cur, 0) == 0){
             this.messager_log(`[Execute] No task can be executing`)
             return -1
         }
@@ -83,7 +85,7 @@ export class ExecuteManager extends ExecuteManager_Runner {
         
         let i = 0
         for(const x of this.current_projects){
-            if(x.task.length > 0){
+            if(x.tasks.length > 0){
                 break;
             }else{
                 i++
@@ -97,17 +99,13 @@ export class ExecuteManager extends ExecuteManager_Runner {
      */
     Clean = () => {
         this.current_projects = []
-        this.current_p = undefined
-        this.current_t = undefined
-        this.current_cron = []
-        this.current_job = []
+        this.runner = undefined
         this.current_nodes = []
-        this.current_multithread = 1
         this.state = ExecuteState.NONE
     }
 
     /**
-     * Tell clients release lib and parameter data
+     * Tell clients release lib and database data
      */
     Release = () => {
         this.current_nodes.forEach(x => this.release(x))
@@ -150,7 +148,7 @@ export class ExecuteManager extends ExecuteManager_Runner {
         if(this.current_p == undefined) return
         if(this.current_t == undefined) return
         if(this.current_job.length > 0){
-            this.current_job = []
+            if(this.runner?.runner) this.runner.runner.job = []
             this.proxy?.executeSubtaskUpdate([this.current_t!, 0, '', ExecuteState.NONE])
         }else if (this.current_cron.length > 0){
             const target = this.current_cron[task_index]
@@ -241,9 +239,9 @@ export class ExecuteManager extends ExecuteManager_Runner {
     }
 
     private skipProjectFirst = ():number => {
-        this.current_p = this.current_projects[1]
-        this.proxy?.executeProjectStart([this.current_p, 1])
-        this.SyncParameter(this.current_p)
+        this.runner = new Region_Project(this, this.current_projects[1])
+        this.proxy?.executeProjectStart([this.current_p!, 1])
+        this.SyncDatabase(this.current_p!)
         this.state = ExecuteState.RUNNING
         return 1
     }
@@ -255,42 +253,39 @@ export class ExecuteManager extends ExecuteManager_Runner {
         if (atend){
             // If it's last project
             if(forward){
-                this.current_p = undefined
-                this.current_t = undefined
+                this.runner = undefined
                 this.state = ExecuteState.FINISH
                 this.messager_log(`[Execute] Skip project to Finish !`)
             }else{
-                this.current_p = this.current_projects[0]
-                this.current_t = undefined
+                this.runner = new Region_Project(this, this.current_projects[0])
                 this.state = ExecuteState.RUNNING
                 this.messager_log(`[Execute] Previous project to Begining !`)
             }
             return -1
         } else {
             const next = forward ? this.current_projects[index + 1] : this.current_projects[index - 1]
-            this.current_p = next
-            this.current_t = undefined
+            this.runner = new Region_Project(this, next)
             this.state = ExecuteState.RUNNING
             if(forward){
-                this.messager_log(`[Execute] Skip project ${index}. ${this.current_p.uuid}`)
+                this.messager_log(`[Execute] Skip project ${index}. ${this.current_p!.uuid}`)
             }else{
-                this.messager_log(`[Execute] Previous project ${index}. ${this.current_p.uuid}`)
+                this.messager_log(`[Execute] Previous project ${index}. ${this.current_p!.uuid}`)
             }
-            this.proxy?.executeProjectStart([this.current_p, index + (forward ? 1 : -1)])
-            this.SyncParameter(this.current_p)
+            this.proxy?.executeProjectStart([this.current_p!, index + (forward ? 1 : -1)])
+            this.SyncDatabase(this.current_p!)
             return index
         }
     }
 
     private skipTaskFirst = ():number => {
-        if(this.current_p!.task.length > 0){
-            this.current_t = this.current_p!.task[0]
-            const taskCount = this.get_task_state_count(this.current_t)
-            if(this.current_t.cronjob){
-                this.Init_CronContainer(this.current_t, taskCount)
+        if(this.current_p!.tasks.length > 0 && this.runner != undefined){
+            this.runner.runner = new Region_Task(this, this.current_p!.tasks[0])
+            const taskCount = this.get_task_state_count(this.current_t!)
+            if(this.current_t?.cronjob){
+                this.runner.runner?.Init_CronContainer(taskCount)
             }
             this.t_state = ExecuteState.NONE
-            this.proxy?.executeTaskStart([this.current_t, taskCount])
+            this.proxy?.executeTaskStart([this.current_t!, taskCount])
             return 0
         }else{
             console.error("Project has no task, Skip failed")
@@ -300,49 +295,54 @@ export class ExecuteManager extends ExecuteManager_Runner {
 
     private previousTaskFirst = ():number => {
         const index = this.current_projects.findIndex(x => x.uuid == this.current_p!.uuid)
-        if (index == 0){
+        if (index == 0 && this.runner != undefined){
             // If it's first task and first project
-            this.current_t = undefined
+            this.runner.runner = undefined
         } else {
-            this.current_p = this.current_projects[index - 1]
-            this.messager_log(`[Execute] Previous task ${index}. Jump Project: ${this.current_p.uuid}`)
+            this.runner = new Region_Project(this, this.current_projects[index - 1])
+            this.messager_log(`[Execute] Previous task ${index}. Jump Project: ${this.current_p?.uuid}`)
         }
-        this.current_job = []
+        if(this.runner?.runner) this.runner.runner.job = []
         this.t_state = ExecuteState.NONE
         return index
     }
 
     private skipTask = ():number => {
-        const index = this.current_p!.task.findIndex(x => x.uuid == this.current_t!.uuid)
-        if (index == this.current_p!.task.length - 1){
-            // If it's last task
-            this.proxy?.executeTaskFinish(this.current_t!)
-            this.current_t = undefined
-            this.messager_log(`[Execute] Skip task to Finish !`)
-        } else {
-            this.proxy?.executeTaskFinish(this.current_t!)
-            this.current_t = this.current_p!.task[index + 1]
-            this.messager_log(`[Execute] Skip task ${index}. ${this.current_t.uuid}`)
-            const taskCount = this.get_task_state_count(this.current_t)
-            if(this.current_t.cronjob){
-                this.Init_CronContainer(this.current_t, taskCount)
+        const index = this.current_p!.tasks.findIndex(x => x.uuid == this.current_t!.uuid)
+
+        if(this.runner){
+            if (index == this.current_p!.tasks.length - 1){
+                // If it's last task
+                this.proxy?.executeTaskFinish(this.current_t!)
+                this.runner.runner = undefined
+                this.messager_log(`[Execute] Skip task to Finish !`)
+            } else {
+                this.proxy?.executeTaskFinish(this.current_t!)
+                this.runner.runner = new Region_Task(this, this.current_p!.tasks[index + 1])
+                this.messager_log(`[Execute] Skip task ${index}. ${this.current_t!.uuid}`)
+                const taskCount = this.get_task_state_count(this.current_t!)
+                if(this.current_t!.cronjob){
+                    this.runner.runner.Init_CronContainer(taskCount)
+                }
+                this.proxy?.executeTaskStart([this.current_t!, taskCount])
             }
-            this.proxy?.executeTaskStart([this.current_t, taskCount])
         }
-        this.current_job = []
+        if(this.runner?.runner) this.runner.runner.job = []
         this.t_state = ExecuteState.NONE
         return index
     }
 
     private previousTask = ():number => {
-        const index = this.current_p!.task.findIndex(x => x.uuid == this.current_t!.uuid)
-        this.current_t = this.current_p!.task[index - 1]
-        const taskCount = this.get_task_state_count(this.current_t)
-        if(this.current_t.cronjob){
-            this.Init_CronContainer(this.current_t, taskCount)
+        const index = this.current_p!.tasks.findIndex(x => x.uuid == this.current_t!.uuid)
+        if(this.runner?.runner){
+            this.runner.runner = new Region_Task(this, this.current_p!.tasks[index - 1])
+            const taskCount = this.get_task_state_count(this.current_t!)
+            if(this.current_t!.cronjob){
+                this.runner.runner.Init_CronContainer(taskCount)
+            }
+            this.t_state = ExecuteState.NONE
+            this.proxy?.executeTaskStart([this.current_t!, taskCount])
         }
-        this.t_state = ExecuteState.NONE
-        this.proxy?.executeTaskStart([this.current_t, taskCount])
         return 0
     }
 }

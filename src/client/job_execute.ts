@@ -4,10 +4,10 @@
 //                           
 // ========================
 import WebSocket from "ws";
-import { Job, JobCategory, JobType, JobType2, JobType2Text, JobTypeText, Libraries, Messager, Messager_log, OnePath, Parameter, PluginList, TwoPath } from "../interface";
+import { Job, JobCategory, JobType, JobType2, JobType2Text, JobTypeText, Libraries, Messager, Messager_log, OnePath, Database, PluginList, TwoPath } from "../interface";
 import { i18n } from "../plugins/i18n";
 import { ClientJavascript } from "./javascript";
-import { ClientJobParameter } from "./job_parameter";
+import { ClientJobDatabase } from "./job_database";
 import { ClientOS } from "./os";
 
 /**
@@ -16,9 +16,9 @@ import { ClientOS } from "./os";
  */
 export class ClientJobExecute {
     /**
-     * Project parameters for references
+     * Project databases for references
      */
-    parameter:Parameter | undefined
+    database:Database | undefined
     /**
      * User library for scripts
      */
@@ -34,7 +34,7 @@ export class ClientJobExecute {
     private messager_log:Messager_log
     private javascript:ClientJavascript
     private os:ClientOS
-    private para:ClientJobParameter
+    private para:ClientJobDatabase
     private job:Job
     private plugin:PluginList
 
@@ -45,15 +45,15 @@ export class ClientJobExecute {
         this.runtime = _job.runtime_uuid || ''
         this.job = _job
         this.plugin = _plugin
-        this.para = new ClientJobParameter()
+        this.para = new ClientJobDatabase()
         this.os = new ClientOS(() => this.tag, () => this.job.runtime_uuid || '', _messager, _messager_log)
         this.javascript = new ClientJavascript(_messager, _messager_log, () => this.job)
-        this.parameter = process.env.parameter != undefined ? JSON.parse(process.env.parameter) : undefined
+        this.database = process.env.database != undefined ? JSON.parse(process.env.database) : undefined
         this.libraries = process.env.libraries != undefined ? JSON.parse(process.env.libraries) : undefined
 
         ClientJavascript.Init(_messager, _messager_log, this.os, this.para, 
             () => this.libraries,
-            () => this.parameter,
+            () => this.database,
             () => this.job
         )
     }
