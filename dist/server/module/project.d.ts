@@ -1,4 +1,4 @@
-import { Project, Task } from "../../interface";
+import { Job, Project, Task } from "../../interface";
 import { MemoryData, RecordLoader } from "../io";
 import { Server } from "../server";
 export declare class Project_Module {
@@ -9,6 +9,9 @@ export declare class Project_Module {
     ProjectJobCount(uuid: string): number;
     PopulateProject(uuid: string): Project | undefined;
     PopulateTask(uuid: string): Task | undefined;
-    CascadeDeleteProject(uuid: string): void;
+    GetProjectRelatedTask(uuid: string): Array<Task>;
+    GetTaskRelatedJob(uuid: string): Array<Job>;
+    CascadeDeleteProject(uuid: string, bind: boolean): void;
     CascadeDeleteTask(uuid: string): void;
+    Delete_Database_Idle(uuid: string): Promise<void>;
 }

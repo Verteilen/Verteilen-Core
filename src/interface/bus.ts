@@ -11,7 +11,7 @@ import { ExecuteState } from "./enum"
 import { ExecutionLog, Log, Preference } from "./record"
 import { Login } from "./server"
 import { FeedBack, Header, Setter, ShellFolder, Single, WebsocketPack } from "./struct"
-import { NodeTable } from "./table"
+import { DatabaseTable, NodeTable, ProjectTable } from "./table"
 import { ToastData } from "./ui"
 
 type Handler<T = unknown> = (event: T) => void
@@ -133,8 +133,8 @@ export type BusType = {
     modeSelect: boolean
     createProject: void
     updateProject: void
-    recoverProject: Project
-    recoverDatabase: Database
+    recoverProject: ProjectTable
+    recoverDatabase: DatabaseTable
     relogin: void
     loginGuest: void
     login: Login

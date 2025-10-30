@@ -36,6 +36,7 @@ export interface Database extends DataHeader {
     canWrite: boolean;
     containers: Array<DatabaseContainer>;
     permission?: LocalPermission;
+    acl?: ACLType;
 }
 export interface Job extends DataHeader {
     index?: number;

@@ -111,6 +111,15 @@ export interface ServerSetting {
     open_guest: boolean
 }
 
+export const CreateRootLocalPermission = ():LocalPermission => {
+    return {
+        view: true,
+        create: true,
+        edit: true,
+        delete: true,
+    }
+}
+
 export const CreateRootPermission = ():GlobalPermission => {
     const perl:LocalPermission = {
         view: true,

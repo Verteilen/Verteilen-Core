@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DatabaseTemplateText = exports.ProjectTemplateText = exports.JobType2Text = exports.JobTypeText = exports.JobResultText = exports.ConnectionText = exports.JobCategoryText = exports.ExecuteStateText = exports.DataTypeText = exports.ServiceMode = exports.JavascriptLib = exports.RecordType = exports.RenderUpdateType = exports.ExecuteState = exports.DatabaseTemplate = exports.ProjectTemplate = exports.JobType2 = exports.JobType = exports.ConditionResult = exports.JobCategory = exports.FrontendUpdate = exports.ResourceType = exports.DataTypeBase = exports.BackendType = exports.DataType = exports.SocketState = exports.TaskLogicType = void 0;
+exports.DatabaseTemplateText = exports.ProjectTemplateText = exports.JobType2Text = exports.JobTypeText = exports.JobResultText = exports.ConnectionText = exports.JobCategoryText = exports.ExecuteStateText = exports.DataTypeText = exports.ServiceMode = exports.JavascriptLib = exports.RecordType = exports.ExecuteState = exports.DatabaseTemplate = exports.ProjectTemplate = exports.JobType2 = exports.JobType = exports.ConditionResult = exports.JobCategory = exports.FrontendUpdate = exports.ResourceType = exports.DataTypeBase = exports.BackendType = exports.DataType = exports.SocketState = exports.TaskLogicType = void 0;
 var TaskLogicType;
 (function (TaskLogicType) {
     TaskLogicType[TaskLogicType["GROUP"] = 0] = "GROUP";
@@ -55,7 +55,12 @@ var FrontendUpdate;
 (function (FrontendUpdate) {
     FrontendUpdate[FrontendUpdate["ALL"] = 1023] = "ALL";
     FrontendUpdate[FrontendUpdate["PROJECT"] = 1] = "PROJECT";
-    FrontendUpdate[FrontendUpdate["PARAMETER"] = 2] = "PARAMETER";
+    FrontendUpdate[FrontendUpdate["TASK"] = 2] = "TASK";
+    FrontendUpdate[FrontendUpdate["JOB"] = 4] = "JOB";
+    FrontendUpdate[FrontendUpdate["DATABASE"] = 8] = "DATABASE";
+    FrontendUpdate[FrontendUpdate["NODE"] = 16] = "NODE";
+    FrontendUpdate[FrontendUpdate["SERVICE"] = 32] = "SERVICE";
+    FrontendUpdate[FrontendUpdate["LOG"] = 64] = "LOG";
 })(FrontendUpdate || (exports.FrontendUpdate = FrontendUpdate = {}));
 var JobCategory;
 (function (JobCategory) {
@@ -109,13 +114,6 @@ var ExecuteState;
     ExecuteState[ExecuteState["ERROR"] = 3] = "ERROR";
     ExecuteState[ExecuteState["SKIP"] = 4] = "SKIP";
 })(ExecuteState || (exports.ExecuteState = ExecuteState = {}));
-var RenderUpdateType;
-(function (RenderUpdateType) {
-    RenderUpdateType[RenderUpdateType["All"] = 127] = "All";
-    RenderUpdateType[RenderUpdateType["Project"] = 1] = "Project";
-    RenderUpdateType[RenderUpdateType["Node"] = 2] = "Node";
-    RenderUpdateType[RenderUpdateType["Database"] = 4] = "Database";
-})(RenderUpdateType || (exports.RenderUpdateType = RenderUpdateType = {}));
 var RecordType;
 (function (RecordType) {
     RecordType[RecordType["PROJECT"] = 0] = "PROJECT";

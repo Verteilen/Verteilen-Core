@@ -45,7 +45,12 @@ export declare enum ResourceType {
 export declare enum FrontendUpdate {
     ALL = 1023,
     PROJECT = 1,
-    PARAMETER = 2
+    TASK = 2,
+    JOB = 4,
+    DATABASE = 8,
+    NODE = 16,
+    SERVICE = 32,
+    LOG = 64
 }
 export declare enum JobCategory {
     Condition = 0,
@@ -91,12 +96,6 @@ export declare enum ExecuteState {
     FINISH = 2,
     ERROR = 3,
     SKIP = 4
-}
-export declare enum RenderUpdateType {
-    All = 127,
-    Project = 1,
-    Node = 2,
-    Database = 4
 }
 export declare enum RecordType {
     PROJECT = 0,

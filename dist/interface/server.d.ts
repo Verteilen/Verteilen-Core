@@ -72,5 +72,6 @@ export interface UserProfileClient {
 export interface ServerSetting {
     open_guest: boolean;
 }
+export declare const CreateRootLocalPermission: () => LocalPermission;
 export declare const CreateRootPermission: () => GlobalPermission;
 export declare const CreateRootUser: () => UserProfile;

@@ -42,14 +42,35 @@ class Project_Module {
         }
         return buffer;
     }
-    CascadeDeleteProject(uuid) {
+    GetProjectRelatedTask(uuid) {
+        const p = this.memory.projects.find(x => x.uuid == uuid);
+        if (!p)
+            return [];
+        const r = p.tasks_uuid.map(x => {
+            return this.memory.tasks.find(y => y.uuid == x);
+        }).filter(x => x != undefined);
+        return r;
+    }
+    GetTaskRelatedJob(uuid) {
+        const p = this.memory.tasks.find(x => x.uuid == uuid);
+        if (!p)
+            return [];
+        const r = p.jobs_uuid.map(x => {
+            return this.memory.jobs.find(y => y.uuid == x);
+        }).filter(x => x != undefined);
+        return r;
+    }
+    CascadeDeleteProject(uuid, bind) {
         const p = this.memory.projects.find(p => p.uuid == uuid);
         if (!p)
             return;
         p.tasks_uuid.forEach(t_uuid => {
             this.CascadeDeleteTask(t_uuid);
         });
+        const db = p.database_uuid;
         this.loader.project.delete(p.uuid);
+        if (bind)
+            this.Delete_Database_Idle(db);
     }
     CascadeDeleteTask(uuid) {
         const p = this.memory.tasks.find(p => p.uuid == uuid);
@@ -59,6 +80,14 @@ class Project_Module {
             this.loader.job.delete(j_uuid);
         });
         this.loader.task.delete(p.uuid);
+    }
+    async Delete_Database_Idle(uuid) {
+        return this.loader.project.load_all().then(() => {
+            const f = this.memory.projects.find(x => x.database_uuid == uuid);
+            if (f == undefined) {
+                this.loader.database.delete(uuid);
+            }
+        });
     }
 }
 exports.Project_Module = Project_Module;

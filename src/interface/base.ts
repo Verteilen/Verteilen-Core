@@ -132,6 +132,11 @@ export interface Database extends DataHeader {
      * And modify this field and send back to user
      */
     permission?: LocalPermission
+    /**
+     * **Accessibility**\
+     * Could be public, protected, private
+     */
+    acl?: ACLType
 }
 /**
  * **Compute Instruction Container**\

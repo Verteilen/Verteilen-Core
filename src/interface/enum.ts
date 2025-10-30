@@ -79,7 +79,12 @@ export enum ResourceType {
 export enum FrontendUpdate {
     ALL = ~(~0 << 10),
     PROJECT = 1 << 0,
-    PARAMETER = 1 << 1,
+    TASK = 1 << 1,
+    JOB = 1 << 2,
+    DATABASE = 1 << 3,
+    NODE = 1 << 4,
+    SERVICE = 1 << 5,
+    LOG = 1 << 6,
 }
 /**
  * **Job Category Type**
@@ -137,13 +142,6 @@ export enum DatabaseTemplate {
 
 export enum ExecuteState {
     NONE, RUNNING, FINISH, ERROR, SKIP
-}
-
-export enum RenderUpdateType {
-    All= ~(~0 << 7),
-    Project = 1 << 0, 
-    Node = 1 << 1, 
-    Database = 1 << 2
 }
 /**
  * **Database Table Type**

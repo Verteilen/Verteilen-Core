@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateRootUser = exports.CreateRootPermission = exports.PermissionType = exports.UserType = exports.ACLType = void 0;
+exports.CreateRootUser = exports.CreateRootPermission = exports.CreateRootLocalPermission = exports.PermissionType = exports.UserType = exports.ACLType = void 0;
 const uuid_1 = require("uuid");
 var ACLType;
 (function (ACLType) {
@@ -27,6 +27,15 @@ var PermissionType;
     PermissionType[PermissionType["LIB"] = 7] = "LIB";
     PermissionType[PermissionType["LOG"] = 8] = "LOG";
 })(PermissionType || (exports.PermissionType = PermissionType = {}));
+const CreateRootLocalPermission = () => {
+    return {
+        view: true,
+        create: true,
+        edit: true,
+        delete: true,
+    };
+};
+exports.CreateRootLocalPermission = CreateRootLocalPermission;
 const CreateRootPermission = () => {
     const perl = {
         view: true,

@@ -13,7 +13,6 @@ import {
     Node,
     Task,
     Job,
-    DataHeader,
 } from "../interface"
 
 export interface MemoryData {
@@ -40,7 +39,10 @@ export interface RecordIOLoader {
     rename: (name:string, newname:string) => Promise<void>
     delete: (name:string) => Promise<void>
 }
-
+/**
+ * **IO Loader Worker**\
+ * Fetch data from storage space, could be disk or mongoDB
+ */
 export interface RecordLoader {
     project: RecordIOLoader
     task: RecordIOLoader
@@ -190,15 +192,17 @@ export const _CreateRecordIOLoader = (loader:RecordIOBase, memory:MemoryData, ty
             else arr[b] = JSON.parse(data)
         },
         load: async (name:string, cache: boolean):Promise<string> => {
+            const arr = get_array(type)
             if(cache){
-                const arr = get_array(type)
                 const b = arr.findIndex(x => x.uuid == name)
                 if(b != -1) return arr[b]
             }
             const root = loader.join(loader.root, folder)
             if(!loader.exists(root)) await loader.mkdir(root)
             const file = loader.join(root, name + ext)
-            return loader.read_string(file)
+            const a = await loader.read_string(file)
+            if(cache) arr.push(JSON.parse(a))
+            return a
         },
         rename: async (name:string, newname:string):Promise<void> => {
             const root = loader.join(loader.root, folder)

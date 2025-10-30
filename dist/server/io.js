@@ -110,8 +110,8 @@ const _CreateRecordIOLoader = (loader, memory, type, folder, ext = ".json") => {
                 arr[b] = JSON.parse(data);
         },
         load: async (name, cache) => {
+            const arr = get_array(type);
             if (cache) {
-                const arr = get_array(type);
                 const b = arr.findIndex(x => x.uuid == name);
                 if (b != -1)
                     return arr[b];
@@ -120,7 +120,10 @@ const _CreateRecordIOLoader = (loader, memory, type, folder, ext = ".json") => {
             if (!loader.exists(root))
                 await loader.mkdir(root);
             const file = loader.join(root, name + ext);
-            return loader.read_string(file);
+            const a = await loader.read_string(file);
+            if (cache)
+                arr.push(JSON.parse(a));
+            return a;
         },
         rename: async (name, newname) => {
             const root = loader.join(loader.root, folder);
