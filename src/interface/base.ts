@@ -6,9 +6,10 @@
 /**
  * Defined the basic compute use data structure
  */
-import { DataType, DataTypeBase, JobType, JobType2, ServiceMode } from "./enum"
+import { DataType, DataTypeBase, JobCategory, JobType, JobType2, ServiceMode } from "./enum"
 import { ACLType, LocalPermission as LocalPermission } from "./server"
 import { TaskLogic } from "./struct"
+import { v6 as uuidv6 } from 'uuid'
 
 export interface DatabaseConfigTrigger {
     types: Array<DataTypeBase>
@@ -389,4 +390,45 @@ export interface Node extends DataHeader {
      * Could be public, protected, private
      */
     acl?: ACLType
+}
+
+
+export const CreateDefaultProject = () : Project => {
+    return {
+        uuid: uuidv6(),
+        title: "",
+        description: "",
+        tasks: [],
+        tasks_uuid: [],
+        database_uuid: ""
+    }
+}
+
+export const CreateDefaultTask = () : Task => {
+    return {
+        uuid: uuidv6(),
+        title: "Default",
+        description: "",
+        setupjob: false,
+        cronjob: false,
+        cronjobKey: "",
+        multi: false,
+        multiKey: "",
+        properties: [],
+        jobs: [],
+        jobs_uuid: [],
+    }
+}
+
+export const CreateDefaultJob = () : Job => {
+    return {
+        uuid: uuidv6(),
+        category: JobCategory.Execution,
+        type: JobType.JAVASCRIPT,
+        script: "",
+        string_args: [],
+        number_args: [],
+        boolean_args: [],
+        id_args: [],
+    }
 }

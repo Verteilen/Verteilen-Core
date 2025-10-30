@@ -85,3 +85,6 @@ export interface Node extends DataHeader {
     permission?: LocalPermission;
     acl?: ACLType;
 }
+export declare const CreateDefaultProject: () => Project;
+export declare const CreateDefaultTask: () => Task;
+export declare const CreateDefaultJob: () => Job;

@@ -9,9 +9,13 @@ export declare class Project_Module {
     ProjectJobCount(uuid: string): number;
     PopulateProject(uuid: string): Project | undefined;
     PopulateTask(uuid: string): Task | undefined;
-    GetProjectRelatedTask(uuid: string): Array<Task>;
-    GetTaskRelatedJob(uuid: string): Array<Job>;
-    CascadeDeleteProject(uuid: string, bind: boolean): void;
-    CascadeDeleteTask(uuid: string): void;
+    GetProjectRelatedTask(uuid: string): Promise<Array<Task>>;
+    GetTaskRelatedJob(uuid: string): Promise<Array<Job>>;
+    CloneProjects(uuids: Array<string>): Promise<Array<string>>;
+    CloneTasks(uuids: Array<string>): Promise<Array<string>>;
+    CloneJobs(uuids: Array<string>): Promise<Array<string>>;
+    CascadeDeleteProject(uuid: string, bind: boolean): Promise<void>;
+    CascadeDeleteTask(uuid: string): Promise<void>;
+    CascadeDeleteJob(uuid: string): Promise<void>;
     Delete_Database_Idle(uuid: string): Promise<void>;
 }

@@ -134,7 +134,9 @@
         "delete-plugin-confirm": "Are you sure delete plugin you selected",
         "delete-template-confirm": "Are you sure delete template you selected",
         "delete-job": "Delete Job",
-        "delete-job-confirm": "Are you sure you want to delete this job?"
+        "delete-job-confirm": "Are you sure you want to delete this job?",
+        "delete-task": "Delete Task",
+        "delete-task-confirm": "Are you sure you want to delete these tasks?"
     },
     "toolbar": {
         "server": "Server",

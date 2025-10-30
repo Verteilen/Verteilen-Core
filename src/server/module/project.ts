@@ -61,26 +61,32 @@ export class Project_Module {
      * @param uuid Project UUID
      * @returns Related Tasks
      */
-    GetProjectRelatedTask(uuid:string):Array<Task> {
+    async GetProjectRelatedTask(uuid:string):Promise<Array<Task>> {
+        await this.loader.project.load(uuid, true)
         const p = this.memory.projects.find(x => x.uuid == uuid)
         if(!p) return []
         const r = p.tasks_uuid.map(x => {
-            return this.memory.tasks.find(y => y.uuid == x)
-        }).filter(x => x != undefined)
-        return r
+            return this.loader.task.load(x, true)
+        })
+        await Promise.all(r)
+        const tasks = p.tasks_uuid.map(x => this.memory.tasks.find(y => y.uuid == x)).filter(x => x != undefined)
+        return tasks
     }
     /**
      * Get jobs from task related
      * @param uuid Task UUID
      * @returns Related Jobs
      */
-    GetTaskRelatedJob(uuid:string):Array<Job> {
+    async GetTaskRelatedJob(uuid:string):Promise<Array<Job>> {
+        await this.loader.task.load(uuid, true)
         const p = this.memory.tasks.find(x => x.uuid == uuid)
         if(!p) return []
         const r = p.jobs_uuid.map(x => {
-            return this.memory.jobs.find(y => y.uuid == x)
-        }).filter(x => x != undefined)
-        return r
+            return this.loader.job.load(x, true)
+        })
+        await Promise.all(r)
+        const jobs = p.jobs_uuid.map(x => this.memory.jobs.find(y => y.uuid == x)).filter(x => x != undefined)
+        return jobs
     }
     /**
      * Clone Project Container
@@ -91,7 +97,7 @@ export class Project_Module {
         const p = uuids.map(x => this.loader.project.load(x, true))
         const ps = await Promise.all(p)
         const projects:Array<Project> = ps.map(x => JSON.parse(x))
-        projects.forEach(x => x.uuid = uuidv6())
+        projects.forEach((x, i) => x.uuid = uuidv6({}, undefined, i))
         const jus = projects.map(x => this.CloneTasks(x.tasks_uuid))
         const ju = await Promise.all(jus)
         projects.forEach((t, index) => {
@@ -110,7 +116,7 @@ export class Project_Module {
         const p = uuids.map(x => this.loader.task.load(x, true))
         const ps = await Promise.all(p)
         const tasks:Array<Task> = ps.map(x => JSON.parse(x))
-        tasks.forEach(x => x.uuid = uuidv6())
+        tasks.forEach((x, i) => x.uuid = uuidv6({}, undefined, 2500 + i))
         const jus = tasks.map(x => this.CloneJobs(x.jobs_uuid))
         const ju = await Promise.all(jus)
         tasks.forEach((t, index) => {
@@ -129,7 +135,7 @@ export class Project_Module {
         const p = uuids.map(x => this.loader.job.load(x, true))
         const ps = await Promise.all(p)
         const jobs:Array<Job> = ps.map(x => JSON.parse(x))
-        jobs.forEach(x => x.uuid = uuidv6())
+        jobs.forEach((x, i) => x.uuid = uuidv6({}, undefined, 5000 + i))
         const js = jobs.map(x => this.loader.job.save(x.uuid, JSON.stringify(x)))
         await Promise.all(js)
         return jobs.map(x => x.uuid)
@@ -138,27 +144,44 @@ export class Project_Module {
      * Delete project related data and project itself
      * @param uuid Project UUID
      */
-    CascadeDeleteProject(uuid:string, bind:boolean){
-        const p:Project | undefined = this.memory.projects.find(p=> p.uuid == uuid)
+    async CascadeDeleteProject(uuid:string, bind:boolean):Promise<void>{
+        await this.loader.project.load(uuid, true)
+        const p:Project = this.memory.projects.find(p=> p.uuid == uuid)!
         if(!p) return
-        p.tasks_uuid.forEach(t_uuid => {
-            this.CascadeDeleteTask(t_uuid)
-        })
+        const ps = p.tasks_uuid.map(t_uuid => this.CascadeDeleteTask(t_uuid))
+        await Promise.all(ps)
         const db = p.database_uuid
-        this.loader.project.delete(p.uuid)
-        if(bind) this.Delete_Database_Idle(db)
+        await this.loader.project.delete(uuid)
+        if(bind) await this.Delete_Database_Idle(db)
     }
     /**
      * Delete Task related data and project itself
      * @param uuid Task UUID
      */
-    CascadeDeleteTask(uuid:string){
-        const p:Task | undefined = this.memory.tasks.find(p=> p.uuid == uuid)
+    async CascadeDeleteTask(uuid:string):Promise<void>{
+        await this.loader.task.load(uuid, true)
+        const p:Task = this.memory.tasks.find(p=> p.uuid == uuid)!
         if(!p) return
-        p.jobs_uuid.forEach(j_uuid => {
-            this.loader.job.delete(j_uuid)
-        })
-        this.loader.task.delete(p.uuid)
+        const ps = p.jobs_uuid.map(j_uuid => this.loader.job.delete(j_uuid))
+        await Promise.all(ps)
+        await this.loader.task.delete(uuid)
+        const ps2 = this.memory.projects.filter(x => x.tasks_uuid.includes(uuid)).map(x => x.uuid)
+        for(let u of ps2){
+            const index = this.memory.projects.findIndex(x => x.uuid == u)
+            if(index != -1) this.memory.projects.splice(index, 1)
+        }
+    }
+    /**
+     * Delete Task related data and project itself
+     * @param uuid Task UUID
+     */
+    async CascadeDeleteJob(uuid:string):Promise<void>{
+        await this.loader.job.delete(uuid)
+        const ps2 = this.memory.tasks.filter(x => x.jobs_uuid.includes(uuid)).map(x => x.uuid)
+        for(let u of ps2){
+            const index = this.memory.tasks.findIndex(x => x.uuid == u)
+            if(index != -1) this.memory.tasks.splice(index, 1)
+        }
     }
     /**
      * Delete idle database

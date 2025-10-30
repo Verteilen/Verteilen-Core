@@ -181,47 +181,54 @@ export const _CreateRecordIOLoader = (loader:RecordIOBase, memory:MemoryData, ty
             if(!loader.exists(root)) await loader.mkdir(root)
             return loader.read_dir_file(root)
         },
-        save: async (name:string, data:string):Promise<void> => {
+        save: async (uuid:string, data:string):Promise<void> => {
             const root = loader.join(loader.root, folder)
             if(!loader.exists(root)) await loader.mkdir(root)
-            const file = loader.join(root, name + ext)
+            const file = loader.join(root, uuid + ext)
             await loader.write_string(file, data)
             const arr = get_array(type)
-            const b = arr.findIndex(x => x.uuid == name)
-            if(b != -1) arr.push(JSON.parse(data))
-            else arr[b] = JSON.parse(data)
+            const b = arr.findIndex(x => x.uuid == uuid)
+            if(b != -1) arr[b] = JSON.parse(data)
+            else arr.push(JSON.parse(data))
         },
-        load: async (name:string, cache: boolean):Promise<string> => {
-            const arr = get_array(type)
+        load: async (uuid:string, cache: boolean):Promise<string> => {
+            const arr:Array<any> = get_array(type)
             if(cache){
-                const b = arr.findIndex(x => x.uuid == name)
-                if(b != -1) return arr[b]
+                const b = arr.findIndex(x => x.uuid == uuid)
+                if(b != -1) return JSON.stringify(arr[b])
             }
             const root = loader.join(loader.root, folder)
             if(!loader.exists(root)) await loader.mkdir(root)
-            const file = loader.join(root, name + ext)
+            const file = loader.join(root, uuid + ext)
+            if(!loader.exists(file)){
+                const b = arr.findIndex(x => x.uuid == uuid)
+                if(b != -1) arr.splice(b, 1)
+                return ""
+            }
             const a = await loader.read_string(file)
             if(cache) arr.push(JSON.parse(a))
             return a
         },
-        rename: async (name:string, newname:string):Promise<void> => {
+        rename: async (uuid:string, newuuid:string):Promise<void> => {
             const root = loader.join(loader.root, folder)
             if(!loader.exists(root)) await loader.mkdir(root)
-            const oldfile = loader.join(root, name + ext)
-            const newfile = loader.join(root, newname + ext)
+            const oldfile = loader.join(root, uuid + ext)
+            const newfile = loader.join(root, newuuid + ext)
             await loader.cp(oldfile, newfile)
             await loader.rm(oldfile)
             const arr = get_array(type)
-            const b = arr.findIndex(x => x.uuid == name)
-            if(b != -1) arr[b].uuid = newname
+            const b = arr.findIndex(x => x.uuid == uuid)
+            if(b != -1) arr[b].uuid = newuuid
         },
-        delete: async (name:string):Promise<void> => {
+        delete: async (uuid:string):Promise<void> => {
             const root = loader.join(loader.root, folder)
             if(!loader.exists(root)) await loader.mkdir(root)
-            const file = loader.join(root, name + ext)
-            await loader.rm(file)
+            const file = loader.join(root, uuid + ext)
+            if(loader.exists(file)){
+                await loader.rm(file)
+            }
             const arr = get_array(type)
-            const b = arr.findIndex(x => x.uuid == name)
+            const b = arr.findIndex(x => x.uuid == uuid)
             if(b != -1) arr.splice(b, 1)
         }
     }
