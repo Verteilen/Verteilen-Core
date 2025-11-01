@@ -23,6 +23,8 @@ export interface DataHeader{
      * Contains 36 characters
      */
     uuid: string
+    createDate?: string
+    updateDate?: string
 }
 
 /**
@@ -152,6 +154,8 @@ export interface Job extends DataHeader {
      * Database will store in the array.
      */
     index?:number
+    title: string
+    description: string
     /**
      * **Extra data**\
      * The extra metadata, just in case
@@ -219,10 +223,40 @@ export interface Job extends DataHeader {
     acl?: ACLType
 }
 /**
- * **Task Container**\
- * Specified different stage of the compute process
+ * **Task Base Container**\
+ * For different view to submit task update data
  */
-export interface Task extends DataHeader {
+export interface TaskBase {
+    /**
+     * **Task Properties**\
+     * You could use properties to defined local region field
+     * And reference in the job execute context\
+     * **NOTICE: Order Matter**\
+     * The properties will generate base on the order in the list
+     */
+    properties: Array<Property>
+    /**
+     * **Task Logic**\
+     * Describe the logic flow of the task
+     */
+    logic?: TaskLogic
+    /**
+     * **Execute Jobs Context**\
+     * A list of jobs, define the context of the task\
+     * Base on the flags, task can run it in a different way
+     */
+    jobs: Array<Job>
+    /**
+     * **Jobs ID**\
+     * Store in disk
+     */
+    jobs_uuid: Array<string>
+}
+/**
+ * **Task Header Container**\
+ * For different view to submit task update data
+ */
+export interface TaskOption {
     /**
      * **Task Name**\
      * The name of the task
@@ -262,30 +296,12 @@ export interface Task extends DataHeader {
      * Reference a database number in database
      */
     multiKey: string
-    /**
-     * **Task Properties**\
-     * You could use properties to defined local region field
-     * And reference in the job execute context\
-     * **NOTICE: Order Matter**\
-     * The properties will generate base on the order in the list
-     */
-    properties: Array<Property>
-    /**
-     * **Task Logic**\
-     * Describe the logic flow of the task
-     */
-    logic?: TaskLogic
-    /**
-     * **Execute Jobs Context**\
-     * A list of jobs, define the context of the task\
-     * Base on the flags, task can run it in a different way
-     */
-    jobs: Array<Job>
-    /**
-     * **Jobs ID**\
-     * Store in disk
-     */
-    jobs_uuid: Array<string>
+}
+/**
+ * **Task Container**\
+ * Specified different stage of the compute process
+ */
+export interface Task extends DataHeader, TaskBase, TaskOption {
     /**
      * **Local Permission**\
      * Client-side only permission field\
@@ -423,6 +439,8 @@ export const CreateDefaultTask = () : Task => {
 export const CreateDefaultJob = () : Job => {
     return {
         uuid: uuidv6(),
+        title: "",
+        description: "",
         category: JobCategory.Execution,
         type: JobType.JAVASCRIPT,
         script: "",

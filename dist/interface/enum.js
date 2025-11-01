@@ -4,8 +4,11 @@ exports.DatabaseTemplateText = exports.ProjectTemplateText = exports.JobType2Tex
 var TaskLogicType;
 (function (TaskLogicType) {
     TaskLogicType[TaskLogicType["GROUP"] = 0] = "GROUP";
-    TaskLogicType[TaskLogicType["ADD"] = 1] = "ADD";
-    TaskLogicType[TaskLogicType["OR"] = 2] = "OR";
+    TaskLogicType[TaskLogicType["CONDITION"] = 1] = "CONDITION";
+    TaskLogicType[TaskLogicType["EXECUTION"] = 2] = "EXECUTION";
+    TaskLogicType[TaskLogicType["Single"] = 3] = "Single";
+    TaskLogicType[TaskLogicType["ADD"] = 4] = "ADD";
+    TaskLogicType[TaskLogicType["OR"] = 5] = "OR";
 })(TaskLogicType || (exports.TaskLogicType = TaskLogicType = {}));
 var SocketState;
 (function (SocketState) {

@@ -7,7 +7,7 @@
  * All kinds of data structure
  * It's a mess, i know
  */
-import { DatabaseContainer, Project } from "./base"
+import { DatabaseContainer, Job, Project } from "./base"
 import ws from 'ws'
 import { ServiceMode, TaskLogicType } from "./enum"
 import { ACLType, LocalPermission } from "./server"
@@ -328,10 +328,48 @@ export interface ServiceConfig {
 
 export interface TaskLogicUnit {
     type: TaskLogicType
-    job: string
+    /**
+     * **Attach Job ID**
+     */
+    job_uuid?: string
+    /**
+     * **Attach Job Container (Runtime)**
+     */
+    job?: Job
+    /**
+     * **Common Logic Group**
+     */
     children: Array<TaskLogicUnit>
+    /**
+     * **False Logic Group**
+     * - Group
+     *   - Condition
+     *   - Execution (True)
+     *   - Execution (False) <- This part
+     */
+    children2?: Array<TaskLogicUnit>
 }
 
+/**
+ * **Job Logic Container**\
+ * The strategy pattern for a single subtask to use\
+ * For example:
+ * - Group
+ *   - Condition
+ *     - Add
+ *       - Or
+ *         - Single
+ *         - Single
+ *       - Or
+ *         - Single
+ *         - Single
+ *   - Execution (True)
+ *     - Single
+ *     - Single
+ *   - Execution (False)
+ *     - Single
+ *     - Single
+ */
 export interface TaskLogic {
     group: Array<TaskLogicUnit>
 }

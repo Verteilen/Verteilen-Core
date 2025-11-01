@@ -1,4 +1,4 @@
-import { DatabaseContainer, Project } from "./base";
+import { DatabaseContainer, Job, Project } from "./base";
 import ws from 'ws';
 import { ServiceMode, TaskLogicType } from "./enum";
 import { ACLType, LocalPermission } from "./server";
@@ -188,8 +188,10 @@ export interface ServiceConfig {
 }
 export interface TaskLogicUnit {
     type: TaskLogicType;
-    job: string;
+    job_uuid?: string;
+    job?: Job;
     children: Array<TaskLogicUnit>;
+    children2?: Array<TaskLogicUnit>;
 }
 export interface TaskLogic {
     group: Array<TaskLogicUnit>;

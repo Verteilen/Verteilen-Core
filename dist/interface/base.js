@@ -33,6 +33,8 @@ exports.CreateDefaultTask = CreateDefaultTask;
 const CreateDefaultJob = () => {
     return {
         uuid: (0, uuid_1.v6)(),
+        title: "",
+        description: "",
         category: enum_1.JobCategory.Execution,
         type: enum_1.JobType.JAVASCRIPT,
         script: "",

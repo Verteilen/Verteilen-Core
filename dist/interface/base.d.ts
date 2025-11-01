@@ -6,6 +6,8 @@ export interface DatabaseConfigTrigger {
 }
 export interface DataHeader {
     uuid: string;
+    createDate?: string;
+    updateDate?: string;
 }
 export interface DatabaseContainer {
     name: string;
@@ -40,6 +42,8 @@ export interface Database extends DataHeader {
 }
 export interface Job extends DataHeader {
     index?: number;
+    title: string;
+    description: string;
     meta?: any;
     runtime_uuid?: string;
     category: number;
@@ -52,7 +56,13 @@ export interface Job extends DataHeader {
     permission?: LocalPermission;
     acl?: ACLType;
 }
-export interface Task extends DataHeader {
+export interface TaskBase {
+    properties: Array<Property>;
+    logic?: TaskLogic;
+    jobs: Array<Job>;
+    jobs_uuid: Array<string>;
+}
+export interface TaskOption {
     title: string;
     description: string;
     setupjob: boolean;
@@ -60,10 +70,8 @@ export interface Task extends DataHeader {
     cronjobKey: string;
     multi: boolean;
     multiKey: string;
-    properties: Array<Property>;
-    logic?: TaskLogic;
-    jobs: Array<Job>;
-    jobs_uuid: Array<string>;
+}
+export interface Task extends DataHeader, TaskBase, TaskOption {
     permission?: LocalPermission;
     acl?: ACLType;
 }

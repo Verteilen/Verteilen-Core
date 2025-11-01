@@ -412,5 +412,8 @@
     "no": "No",
     "next": "Next",
     "previous": "Previous",
-    "goback": "Go Back"
+    "goback": "Go Back",
+    "logic": "Logic",
+    "use_logic": "Use Logic",
+    "remove_logic": "Remove Logic"
 }
