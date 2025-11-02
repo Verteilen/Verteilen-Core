@@ -133,6 +133,8 @@
         "delete-template": "刪除樣板",
         "delete-plugin-confirm": "確定刪除選取的插件嗎?",
         "delete-template-confirm": "確定刪除選取的樣板嗎?",
+        "job-title": "工作標題",
+        "job-description": "工作敘述",
         "delete-job": "刪除工作",
         "delete-job-confirm": "確定刪除選取的工作嗎?",
         "delete-task": "刪除流程",

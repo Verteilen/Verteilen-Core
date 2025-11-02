@@ -9,7 +9,8 @@ class Project_Module {
     }
     get memory() { return this.server.memory; }
     get loader() { return this.server.current_loader; }
-    ProjectJobCount(uuid) {
+    async ProjectJobCount(uuid) {
+        await this.loader.project.load(uuid, true);
         const p = this.memory.projects.find(p => p.uuid == uuid);
         if (!p)
             return 0;
@@ -17,30 +18,35 @@ class Project_Module {
         const counts = t.map(x => x.jobs_uuid.length);
         return counts.reduce((a, b) => a + b, 0);
     }
-    PopulateProject(uuid) {
+    async ReOrderProjectTask(uuid, uuids) {
+        await this.loader.project.load(uuid, true);
+        const p = this.memory.projects.find(p => p.uuid == uuid);
+        if (!p)
+            return;
+        p.tasks_uuid = uuids;
+        this.loader.project.save(uuid, JSON.stringify(p, null, 4));
+    }
+    async PopulateProject(uuid) {
+        await this.loader.project.load(uuid, true);
         const p = this.memory.projects.find(p => p.uuid == uuid);
         if (!p)
             return undefined;
         const buffer = Object.assign({}, p);
-        for (var x of buffer.tasks_uuid) {
-            const t = this.PopulateTask(x);
-            if (!t)
-                return undefined;
-            buffer.tasks.push(t);
-        }
+        const ts = buffer.tasks_uuid.map(x => this.PopulateTask(x));
+        buffer.tasks = (await Promise.all(ts)).filter(x => x != undefined);
         return buffer;
     }
-    PopulateTask(uuid) {
+    async PopulateTask(uuid) {
+        await this.loader.task.load(uuid, true);
         const p = this.memory.tasks.find(p => p.uuid == uuid);
         if (!p)
             return undefined;
         const buffer = Object.assign({}, p);
-        for (var x of buffer.jobs_uuid) {
-            const t = this.memory.jobs.find(t => t.uuid == x);
-            if (!t)
-                return undefined;
-            buffer.jobs.push(t);
-        }
+        const js = buffer.jobs_uuid.map(async (x) => {
+            await this.loader.job.load(uuid, true);
+            return this.memory.jobs.find(t => t.uuid == x);
+        });
+        buffer.jobs = (await Promise.all(js)).filter(x => x != undefined);
         return buffer;
     }
     async GetProjectRelatedTask(uuid) {

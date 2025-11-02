@@ -141,6 +141,8 @@ export declare const i18nDefaultData: {
                 "delete-template": string;
                 "delete-plugin-confirm": string;
                 "delete-template-confirm": string;
+                "job-title": string;
+                "job-description": string;
                 "delete-job": string;
                 "delete-job-confirm": string;
                 "delete-task": string;
@@ -560,6 +562,8 @@ export declare const i18nDefaultData: {
                 "delete-template": string;
                 "delete-plugin-confirm": string;
                 "delete-template-confirm": string;
+                "job-title": string;
+                "job-description": string;
                 "delete-job": string;
                 "delete-job-confirm": string;
                 "delete-task": string;
@@ -982,6 +986,8 @@ export declare const i18n: import("vue-i18n").I18n<{
             "delete-template": string;
             "delete-plugin-confirm": string;
             "delete-template-confirm": string;
+            "job-title": string;
+            "job-description": string;
             "delete-job": string;
             "delete-job-confirm": string;
             "delete-task": string;
@@ -1401,6 +1407,8 @@ export declare const i18n: import("vue-i18n").I18n<{
             "delete-template": string;
             "delete-plugin-confirm": string;
             "delete-template-confirm": string;
+            "job-title": string;
+            "job-description": string;
             "delete-job": string;
             "delete-job-confirm": string;
             "delete-task": string;

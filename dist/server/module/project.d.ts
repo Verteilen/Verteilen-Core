@@ -6,9 +6,10 @@ export declare class Project_Module {
     constructor(memory: Server);
     get memory(): MemoryData;
     get loader(): RecordLoader;
-    ProjectJobCount(uuid: string): number;
-    PopulateProject(uuid: string): Project | undefined;
-    PopulateTask(uuid: string): Task | undefined;
+    ProjectJobCount(uuid: string): Promise<number>;
+    ReOrderProjectTask(uuid: string, uuids: Array<string>): Promise<void>;
+    PopulateProject(uuid: string): Promise<Project | undefined>;
+    PopulateTask(uuid: string): Promise<Task | undefined>;
     GetProjectRelatedTask(uuid: string): Promise<Array<Task>>;
     GetTaskRelatedJob(uuid: string): Promise<Array<Job>>;
     CloneProjects(uuids: Array<string>): Promise<Array<string>>;
