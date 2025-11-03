@@ -272,7 +272,9 @@
         "multi": "多核心",
         "cronjob": "分散運算",
         "task-count": "流程數",
-        "job-count": "工作數"
+        "job-count": "工作數",
+        "hidden": "隱藏",
+        "runtime": "執行生成"
     },
     "codehint": {
         "v_path": "Path module",
@@ -383,8 +385,9 @@
     "export": "匯出",
     "import": "匯入",
     "useTemplate": "使用樣板",
-    "useExistParameter": "使用資料庫組",
+    "useExistDatabase": "使用資料庫組",
     "execute-keep": "執行 (保留)",
+    "select": "選擇",
     "database-setting": "資料庫設定",
     "database-select": "資料庫選擇",
     "is-running": "是否執行中",
