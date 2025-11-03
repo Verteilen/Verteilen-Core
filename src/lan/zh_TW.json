@@ -274,7 +274,8 @@
         "task-count": "流程數",
         "job-count": "工作數",
         "hidden": "隱藏",
-        "runtime": "執行生成"
+        "runtime": "執行生成",
+        "value": "數值"
     },
     "codehint": {
         "v_path": "Path module",

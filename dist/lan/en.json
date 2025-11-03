@@ -272,7 +272,10 @@
         "multi": "Multi",
         "cronjob": "Distribute",
         "task-count": "Task Count",
-        "job-count": "Job Count"
+        "job-count": "Job Count",
+        "hidden": "Hidden",
+        "runtime": "Runtime",
+        "value": "Value"
     },
     "codehint": {
         "v_path": "Path module",
@@ -385,6 +388,7 @@
     "useTemplate": "Use Template",
     "useExistDatabase": "Use Exist Database",
     "execute-keep": "Execute (Keep)",
+    "select": "Select",
     "database-setting": "Database Setting",
     "database-select": "Database Select",
     "is-running": "Is Running",

@@ -274,7 +274,8 @@
         "task-count": "Task Count",
         "job-count": "Job Count",
         "hidden": "Hidden",
-        "runtime": "Runtime"
+        "runtime": "Runtime",
+        "value": "Value"
     },
     "codehint": {
         "v_path": "Path module",

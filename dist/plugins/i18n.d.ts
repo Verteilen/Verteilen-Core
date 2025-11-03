@@ -281,6 +281,9 @@ export declare const i18nDefaultData: {
                 cronjob: string;
                 "task-count": string;
                 "job-count": string;
+                hidden: string;
+                runtime: string;
+                value: string;
             };
             codehint: {
                 v_path: string;
@@ -393,6 +396,7 @@ export declare const i18nDefaultData: {
             useTemplate: string;
             useExistDatabase: string;
             "execute-keep": string;
+            select: string;
             "database-setting": string;
             "database-select": string;
             "is-running": string;
@@ -702,6 +706,9 @@ export declare const i18nDefaultData: {
                 cronjob: string;
                 "task-count": string;
                 "job-count": string;
+                hidden: string;
+                runtime: string;
+                value: string;
             };
             codehint: {
                 v_path: string;
@@ -812,8 +819,9 @@ export declare const i18nDefaultData: {
             export: string;
             import: string;
             useTemplate: string;
-            useExistParameter: string;
+            useExistDatabase: string;
             "execute-keep": string;
+            select: string;
             "database-setting": string;
             "database-select": string;
             "is-running": string;
@@ -1126,6 +1134,9 @@ export declare const i18n: import("vue-i18n").I18n<{
             cronjob: string;
             "task-count": string;
             "job-count": string;
+            hidden: string;
+            runtime: string;
+            value: string;
         };
         codehint: {
             v_path: string;
@@ -1238,6 +1249,7 @@ export declare const i18n: import("vue-i18n").I18n<{
         useTemplate: string;
         useExistDatabase: string;
         "execute-keep": string;
+        select: string;
         "database-setting": string;
         "database-select": string;
         "is-running": string;
@@ -1547,6 +1559,9 @@ export declare const i18n: import("vue-i18n").I18n<{
             cronjob: string;
             "task-count": string;
             "job-count": string;
+            hidden: string;
+            runtime: string;
+            value: string;
         };
         codehint: {
             v_path: string;
@@ -1657,8 +1672,9 @@ export declare const i18n: import("vue-i18n").I18n<{
         export: string;
         import: string;
         useTemplate: string;
-        useExistParameter: string;
+        useExistDatabase: string;
         "execute-keep": string;
+        select: string;
         "database-setting": string;
         "database-select": string;
         "is-running": string;
