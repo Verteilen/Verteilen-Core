@@ -37,44 +37,44 @@ class Project_Module {
         return buffer;
     }
     async PopulateTask(uuid) {
-        await this.loader.task.load(uuid, true);
+        await this.loader.task.load(uuid, false);
         const p = this.memory.tasks.find(p => p.uuid == uuid);
         if (!p)
             return undefined;
         const buffer = Object.assign({}, p);
         const js = buffer.jobs_uuid.map(async (x) => {
-            await this.loader.job.load(uuid, true);
+            await this.loader.job.load(uuid, false);
             return this.memory.jobs.find(t => t.uuid == x);
         });
         buffer.jobs = (await Promise.all(js)).filter(x => x != undefined);
         return buffer;
     }
     async GetProjectRelatedTask(uuid) {
-        await this.loader.project.load(uuid, true);
+        await this.loader.project.load(uuid, false);
         const p = this.memory.projects.find(x => x.uuid == uuid);
         if (!p)
             return [];
         const r = p.tasks_uuid.map(x => {
-            return this.loader.task.load(x, true);
+            return this.loader.task.load(x, false);
         });
         await Promise.all(r);
         const tasks = p.tasks_uuid.map(x => this.memory.tasks.find(y => y.uuid == x)).filter(x => x != undefined);
         return tasks;
     }
     async GetTaskRelatedJob(uuid) {
-        await this.loader.task.load(uuid, true);
+        await this.loader.task.load(uuid, false);
         const p = this.memory.tasks.find(x => x.uuid == uuid);
         if (!p)
             return [];
         const r = p.jobs_uuid.map(x => {
-            return this.loader.job.load(x, true);
+            return this.loader.job.load(x, false);
         });
         await Promise.all(r);
         const jobs = p.jobs_uuid.map(x => this.memory.jobs.find(y => y.uuid == x)).filter(x => x != undefined);
         return jobs;
     }
     async CloneProjects(uuids) {
-        const p = uuids.map(x => this.loader.project.load(x, true));
+        const p = uuids.map(x => this.loader.project.load(x, false));
         const ps = await Promise.all(p);
         const projects = ps.map(x => JSON.parse(x));
         projects.forEach((x, i) => x.uuid = (0, uuid_1.v6)({}, undefined, i));
@@ -88,7 +88,7 @@ class Project_Module {
         return projects.map(x => x.uuid);
     }
     async CloneTasks(uuids) {
-        const p = uuids.map(x => this.loader.task.load(x, true));
+        const p = uuids.map(x => this.loader.task.load(x, false));
         const ps = await Promise.all(p);
         const tasks = ps.map(x => JSON.parse(x));
         tasks.forEach((x, i) => x.uuid = (0, uuid_1.v6)({}, undefined, 2500 + i));
@@ -102,7 +102,7 @@ class Project_Module {
         return tasks.map(x => x.uuid);
     }
     async CloneJobs(uuids) {
-        const p = uuids.map(x => this.loader.job.load(x, true));
+        const p = uuids.map(x => this.loader.job.load(x, false));
         const ps = await Promise.all(p);
         const jobs = ps.map(x => JSON.parse(x));
         jobs.forEach((x, i) => x.uuid = (0, uuid_1.v6)({}, undefined, 5000 + i));
@@ -111,7 +111,7 @@ class Project_Module {
         return jobs.map(x => x.uuid);
     }
     async CascadeDeleteProject(uuid, bind) {
-        await this.loader.project.load(uuid, true);
+        await this.loader.project.load(uuid, false);
         const p = this.memory.projects.find(p => p.uuid == uuid);
         if (!p)
             return;
@@ -123,7 +123,7 @@ class Project_Module {
             await this.Delete_Database_Idle(db);
     }
     async CascadeDeleteTask(uuid) {
-        await this.loader.task.load(uuid, true);
+        await this.loader.task.load(uuid, false);
         const p = this.memory.tasks.find(p => p.uuid == uuid);
         if (!p)
             return;
