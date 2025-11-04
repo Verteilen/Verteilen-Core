@@ -27,5 +27,5 @@ export * as Execute_ConsoleServerManager from './script/console_server_manager';
 export * as Execute_ExecuteManager from './script/execute_manager';
 export * as Execute_SocketManager from './script/socket_manager';
 export * as Execute_WebhookManager from './script/webhook_manager';
-export * as UtilServer_Console from './util/console_handle';
-export * as UtilServer_Log from './util/log_handle';
+export * as UtilServer_Console from './server/detail/console_handle';
+export * as UtilServer_Log from './server/detail/log_handle';

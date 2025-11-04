@@ -3,8 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ServerDetail = void 0;
 const uuid_1 = require("uuid");
 const interface_1 = require("../interface");
-const console_handle_1 = require("../util/console_handle");
-const log_handle_1 = require("../util/log_handle");
+const console_handle_1 = require("./detail/console_handle");
+const log_handle_1 = require("./detail/log_handle");
+const execute_manager_1 = require("../script/execute_manager");
+const socket_manager_1 = require("../script/socket_manager");
 class ServerDetail {
     execute_manager = [];
     console;
@@ -27,8 +29,8 @@ class ServerDetail {
             shellReply: this.shellReply,
             folderReply: this.folderReply
         };
-        this.websocket_manager = new interface_1.Execute_SocketManager.WebsocketManager(this.NewConnection, this.DisConnection, this.Analysis, messager_log, n);
-        this.console = new interface_1.UtilServer_Console.Util_Server_Console();
+        this.websocket_manager = new socket_manager_1.WebsocketManager(this.NewConnection, this.DisConnection, this.Analysis, messager_log, n);
+        this.console = new console_handle_1.Console_Handler();
         this.updatehandle = setInterval(() => {
             this.re.push(...this.console_update());
         }, interface_1.RENDER_UPDATETICK);
@@ -246,7 +248,7 @@ class ServerDetail {
     };
     console_add = (socket, name, record, uuid) => {
         record.projects.forEach(x => x.uuid = (0, uuid_1.v6)());
-        const em = new interface_1.Execute_ExecuteManager.ExecuteManager(name, this.websocket_manager, this.message, JSON.parse(JSON.stringify(record)));
+        const em = new execute_manager_1.ExecuteManager(name, this.websocket_manager, this.message, JSON.parse(JSON.stringify(record)));
         const er = {
             ...record,
             uuid: em.uuid,
@@ -267,8 +269,8 @@ class ServerDetail {
         };
         em.libs = { libs: this.backend.memory.libs };
         const p = { manager: em, record: er };
-        const uscp = new console_handle_1.Util_Server_Console_Proxy(p);
-        const uslp = new log_handle_1.Util_Server_Log_Proxy(p, { logs: this.backend.memory.logs }, this.backend.GetPreference(uuid));
+        const uscp = new console_handle_1.Console_Proxy(p);
+        const uslp = new log_handle_1.Log_Proxy(p, { logs: this.backend.memory.logs }, this.backend.GetPreference(uuid));
         em.proxy = this.CombineProxy([uscp.execute_proxy, uslp.execute_proxy]);
         const r = this.console.receivedPack(p, record);
         if (r)

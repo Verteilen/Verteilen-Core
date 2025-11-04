@@ -147,6 +147,9 @@ export declare const i18nDefaultData: {
                 "delete-job-confirm": string;
                 "delete-task": string;
                 "delete-task-confirm": string;
+                "create-service": string;
+                "delete-service": string;
+                "delete-service-confirm": string;
             };
             toolbar: {
                 server: string;
@@ -360,6 +363,7 @@ export declare const i18nDefaultData: {
             selectall: string;
             unselectall: string;
             project: string;
+            service: string;
             task: string;
             job: string;
             database: string;
@@ -572,6 +576,9 @@ export declare const i18nDefaultData: {
                 "delete-job-confirm": string;
                 "delete-task": string;
                 "delete-task-confirm": string;
+                "create-service": string;
+                "delete-service": string;
+                "delete-service-confirm": string;
             };
             toolbar: {
                 server: string;
@@ -785,6 +792,7 @@ export declare const i18nDefaultData: {
             selectall: string;
             unselectall: string;
             project: string;
+            service: string;
             task: string;
             job: string;
             database: string;
@@ -1000,6 +1008,9 @@ export declare const i18n: import("vue-i18n").I18n<{
             "delete-job-confirm": string;
             "delete-task": string;
             "delete-task-confirm": string;
+            "create-service": string;
+            "delete-service": string;
+            "delete-service-confirm": string;
         };
         toolbar: {
             server: string;
@@ -1213,6 +1224,7 @@ export declare const i18n: import("vue-i18n").I18n<{
         selectall: string;
         unselectall: string;
         project: string;
+        service: string;
         task: string;
         job: string;
         database: string;
@@ -1425,6 +1437,9 @@ export declare const i18n: import("vue-i18n").I18n<{
             "delete-job-confirm": string;
             "delete-task": string;
             "delete-task-confirm": string;
+            "create-service": string;
+            "delete-service": string;
+            "delete-service-confirm": string;
         };
         toolbar: {
             server: string;
@@ -1638,6 +1653,7 @@ export declare const i18n: import("vue-i18n").I18n<{
         selectall: string;
         unselectall: string;
         project: string;
+        service: string;
         task: string;
         job: string;
         database: string;

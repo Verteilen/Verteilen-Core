@@ -6,8 +6,6 @@
 import { v6 as uuidv6 } from 'uuid'
 import { 
     BusAnalysis,
-    Execute_ExecuteManager,
-    Execute_SocketManager, 
     ExecutePair, 
     ExecuteProxy, 
     ExecuteRecord, 
@@ -25,13 +23,14 @@ import {
     ShellFolder, 
     Single, 
     Task, 
-    UtilServer_Console,
     WebsocketPack
 } from "../interface"
 import { PluginFeedback } from "./server"
 import { MemoryData, RecordIOBase } from './io'
-import { Util_Server_Console_Proxy } from '../util/console_handle'
-import { Util_Server_Log_Proxy } from '../util/log_handle'
+import { Console_Handler, Console_Proxy } from './detail/console_handle'
+import { Log_Proxy } from './detail/log_handle'
+import { ExecuteManager } from '../script/execute_manager'
+import { WebsocketManager } from '../script/socket_manager'
 
 /**
  * **Backend Interface**\
@@ -73,8 +72,8 @@ export interface ServerDetailEvent {
  */
 export class ServerDetail {
     execute_manager: Array<ExecutePair> = []
-    console:UtilServer_Console.Util_Server_Console
-    websocket_manager: Execute_SocketManager.WebsocketManager | undefined
+    console:Console_Handler
+    websocket_manager: WebsocketManager | undefined
 
     shellBind = new Map()
     loader: RecordIOBase | undefined
@@ -105,8 +104,8 @@ export class ServerDetail {
             shellReply: this.shellReply,
             folderReply: this.folderReply
         }
-        this.websocket_manager = new Execute_SocketManager.WebsocketManager(this.NewConnection, this.DisConnection, this.Analysis, messager_log, n)
-        this.console = new UtilServer_Console.Util_Server_Console()
+        this.websocket_manager = new WebsocketManager(this.NewConnection, this.DisConnection, this.Analysis, messager_log, n)
+        this.console = new Console_Handler()
         // Internal update clock
         this.updatehandle = setInterval(() => {
             this.re.push(...this.console_update())
@@ -353,7 +352,7 @@ export class ServerDetail {
     }
     console_add = (socket:any, name:string, record:Record, uuid:string | undefined) => {
         record.projects.forEach(x => x.uuid = uuidv6())
-        const em:Execute_ExecuteManager.ExecuteManager = new Execute_ExecuteManager.ExecuteManager(
+        const em:ExecuteManager = new ExecuteManager(
             name,
             this.websocket_manager!, 
             this.message, 
@@ -380,8 +379,8 @@ export class ServerDetail {
         em.libs = { libs: this.backend.memory.libs }
         
         const p:ExecutePair = { manager: em, record: er }
-        const uscp:Util_Server_Console_Proxy = new Util_Server_Console_Proxy(p)
-        const uslp:Util_Server_Log_Proxy = new Util_Server_Log_Proxy(p, { logs: this.backend.memory.logs }, this.backend.GetPreference(uuid)!)
+        const uscp:Console_Proxy = new Console_Proxy(p)
+        const uslp:Log_Proxy = new Log_Proxy(p, { logs: this.backend.memory.logs }, this.backend.GetPreference(uuid)!)
         em.proxy = this.CombineProxy([uscp.execute_proxy, uslp.execute_proxy])
         const r = this.console.receivedPack(p, record)
         if(r) this.execute_manager.push(p)

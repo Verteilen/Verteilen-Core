@@ -7,13 +7,10 @@
  * All kinds of data structure
  * It's a mess, i know
  */
-import { DatabaseContainer, Job, Project } from "./base"
+import { Job } from "./base"
 import ws from 'ws'
 import { ServiceMode, TaskLogicType } from "./enum"
 import { Plugin } from "./plugin"
-
-type ProjectCall = (p:Project) => Project
-type DatabaseCall = () => Array<DatabaseContainer>
 
 /**
  * The websocket instance with extra information
@@ -204,21 +201,6 @@ export interface ShellFolder {
     folders: Array<string>
 }
 
-export interface TemplateGroup {
-    value: number
-    group: string
-    title?: string
-    filename?: string
-    template?: ProjectCall
-}
-
-export interface TemplateGroup2 {
-    value: number
-    group: string
-    title?: string
-    filename?: string
-    template?: DatabaseCall
-}
 
 export interface BuildinAssetsContent {
     name: string

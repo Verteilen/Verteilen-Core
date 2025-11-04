@@ -1,6 +1,8 @@
-import { BusAnalysis, Execute_SocketManager, ExecutePair, ExecuteProxy, ExecuteRecord, ExecuteState, Messager, Preference, Record, ShellFolder, Single, UtilServer_Console, WebsocketPack } from "../interface";
+import { BusAnalysis, ExecutePair, ExecuteProxy, ExecuteRecord, ExecuteState, Messager, Preference, Record, ShellFolder, Single, WebsocketPack } from "../interface";
 import { PluginFeedback } from "./server";
 import { MemoryData, RecordIOBase } from './io';
+import { Console_Handler } from './detail/console_handle';
+import { WebsocketManager } from '../script/socket_manager';
 export interface BackendAction {
     memory: MemoryData;
     GetPreference: (uuid?: string) => Preference;
@@ -30,8 +32,8 @@ export interface ServerDetailEvent {
 }
 export declare class ServerDetail {
     execute_manager: Array<ExecutePair>;
-    console: UtilServer_Console.Util_Server_Console;
-    websocket_manager: Execute_SocketManager.WebsocketManager | undefined;
+    console: Console_Handler;
+    websocket_manager: WebsocketManager | undefined;
     shellBind: Map<any, any>;
     loader: RecordIOBase | undefined;
     backend: BackendAction;

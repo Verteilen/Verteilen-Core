@@ -65,5 +65,5 @@ export * as Execute_WebhookManager from './script/webhook_manager'
 /**
  * Util
  */
-export * as UtilServer_Console from './util/console_handle'
-export * as UtilServer_Log from './util/log_handle'
+export * as UtilServer_Console from './server/detail/console_handle'
+export * as UtilServer_Log from './server/detail/log_handle'

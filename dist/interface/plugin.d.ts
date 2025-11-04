@@ -1,9 +1,11 @@
-import { DataTime } from "./base";
+import { DatabaseContainer, DataTime, Project } from "./base";
 import { ACLType, LocalPermission } from "./server";
-import { TemplateGroup, TemplateGroup2 } from "./struct";
+type ProjectCall = (p: Project) => Project;
+type DatabaseCall = () => Array<DatabaseContainer>;
 export interface PluginContent {
     filename: string;
     url: string;
+    unpack: boolean;
     platform: NodeJS.Platform;
     arch: NodeJS.Architecture;
 }
@@ -19,15 +21,35 @@ export interface Plugin {
 export interface PluginWithToken extends Plugin {
     token: Array<string>;
 }
-export interface PluginList extends DataTime {
+export interface TemplateGroup_Project {
+    value: number;
+    group: string;
+    title?: string;
+    filename?: string;
+    template?: ProjectCall;
+}
+export interface TemplateGroup_Template {
+    value: number;
+    group: string;
+    title?: string;
+    filename?: string;
+    template?: DatabaseCall;
+}
+export interface PluginContainer extends DataTime {
     thumbnail?: string;
     icon?: string;
     owner?: string;
     title?: string;
-    url?: string;
+    url_plugin?: string;
     plugins: Array<Plugin>;
+    url_template?: string;
+    project: Array<TemplateGroup_Project>;
+    database: Array<TemplateGroup_Template>;
     permission?: LocalPermission;
     acl?: ACLType;
+}
+export interface PluginPageData {
+    plugins: Array<PluginContainer>;
 }
 export interface PluginState {
     name: string;
@@ -35,31 +57,19 @@ export interface PluginState {
     installed: boolean;
     supported: boolean;
 }
-export interface PluginPageTemplate {
-    owner?: string;
-    name: string;
-    project: Array<TemplateGroup>;
-    database: Array<TemplateGroup2>;
-    url?: string;
-    permission?: LocalPermission;
-    acl?: ACLType;
-}
-export interface TemplateDataProject {
+export interface TemplateData_Project {
     title: string;
     filename: string;
     group: string;
 }
-export interface TemplateDataDatabase {
+export interface TemplateData_Database {
     title: string;
     filename: string;
     group: string;
 }
 export interface TemplateData {
     url?: string;
-    projects: Array<TemplateDataProject>;
-    databases: Array<TemplateDataDatabase>;
+    projects: Array<TemplateData_Project>;
+    databases: Array<TemplateData_Database>;
 }
-export interface PluginPageData {
-    plugins: Array<PluginList>;
-    templates: Array<PluginPageTemplate>;
-}
+export {};

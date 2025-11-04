@@ -8,15 +8,15 @@ import {
     Header,
     DatabaseContainer,
     Plugin,
-    PluginList, 
+    PluginContainer, 
     PluginPageData, 
     PluginWithToken, 
     Project, 
     TemplateData, 
-    TemplateDataDatabase, 
-    TemplateDataProject, 
-    TemplateGroup, 
-    TemplateGroup2, 
+    TemplateData_Database, 
+    TemplateData_Project, 
+    TemplateGroup_Project, 
+    TemplateGroup_Database, 
     ToastData, 
     WebsocketPack
 } from "../interface";
@@ -49,50 +49,42 @@ export interface PluginLoader {
 export const GetCurrentPlugin = async (loader:RecordIOBase):Promise<PluginPageData> => {
     return new Promise<PluginPageData>(async (resolve) => {
         const b:PluginPageData = {
-            plugins: [],
-            templates: []
+            plugins: []
         }
-        const root = loader.join(loader.root, 'template')
-        const root2 = loader.join(loader.root, 'plugin')
+        const root = loader.join(loader.root, 'plugin')
         if(!loader.exists(root)) await loader.mkdir(root)
-        if(!loader.exists(root2)) await loader.mkdir(root2)
 
-        const files = (await loader.read_dir_file(root)).filter(x => x.endsWith('.json'));
-        const _configs = files.map(file => loader.read_string(loader.join(root, file), { encoding: 'utf-8' }))
-        const configs:Array<TemplateData> = (await Promise.all(_configs)).map(x => JSON.parse(x))
-        for(let index = 0; index < configs.length; index++){
-            const config = configs[index]
-            const ps:Array<TemplateGroup> = config.projects.map(x => ({
+        const plugin_folder = await loader.read_dir_dir(root)
+        const plugin_folder_files = await Promise.all(plugin_folder.map(x => loader.read_dir_file(x)))
+        for(let i = 0; i < plugin_folder_files.length; i++){
+            const files = plugin_folder_files[i]
+            const dirname = plugin_folder[i]
+            if(!files.includes("manifest.json")) continue
+
+            const manifest_path = loader.join(root, dirname, "manifest.json")
+            const manifest = await loader.read_string(manifest_path)
+            let header:PluginContainer | undefined = undefined
+            try{
+                header = JSON.parse(manifest)
+            }catch(e:any){
+                console.warn(`Reading file error: ${manifest_path}`)
+                continue
+            }
+            if(header == undefined) continue
+            header.gen_projects = header.projects.map(x => ({
                 value: -1,
                 group: x.group,
                 filename: x.filename,
                 title: x.title
             }))
-            const ps2:Array<TemplateGroup2> = config.databases.map(x => ({
+            header.gen_databases = header.databases.map(x => ({
                 value: -1,
                 group: x.group,
                 filename: x.filename,
                 title: x.title
             }))
-            b.templates.push({
-                name: files[index].replace('.json', ''),
-                project: ps,
-                database: ps2,
-                url: config.url
-            })
-        }
 
-        const files2 = (await loader.read_dir_file(root2)).filter(x => x.endsWith('.json'));
-        
-        const p_config2 = files2.map(file => {
-            return loader.read_string(loader.join(root2, file), { encoding: 'utf-8' })
-        })
-        const configs2:Array<PluginList> = (await Promise.all(p_config2)).map(x => JSON.parse(x))
-
-        for(let index = 0; index < configs2.length; index++){
-            const config = configs2[index]
-            config.title = files2[index].replace('.json', '')
-            b.plugins.push(config)
+            b.plugins.push(header)
         }
         resolve(b)
         return b
@@ -103,7 +95,6 @@ export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, s
     return {
         load_all: async ():Promise<PluginPageData> => {
             const cp = await GetCurrentPlugin(loader)
-            memory.templates = cp.templates
             memory.plugins = cp.plugins
             return cp
         },
@@ -191,7 +182,7 @@ export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, s
             const project_calls:Array<Promise<Response>> = []
             const database_calls:Array<Promise<Response>> = []
 
-            ob.projects.forEach((p:TemplateDataProject) => {
+            ob.projects.forEach((p:TemplateData_Project) => {
                 project_calls.push(fetch(folder + "/" + p.filename + '.json', req))
             })
             const pss = await Promise.all(project_calls)
@@ -208,7 +199,7 @@ export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, s
                 }
             })
 
-            ob.databases.forEach((p:TemplateDataDatabase) => {
+            ob.databases.forEach((p:TemplateData_Database) => {
                 database_calls.push(fetch(folder + "/" + p.filename + '.json', req))
             })
             const pss2 = await Promise.all(database_calls)

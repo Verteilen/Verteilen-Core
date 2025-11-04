@@ -3,9 +3,11 @@
 //      Share Codebase     
 //                           
 // ========================
-import { DataTime } from "./base"
+import { DatabaseContainer, DataTime, Project } from "./base"
 import { ACLType, LocalPermission } from "./server"
-import { TemplateGroup, TemplateGroup2 } from "./struct"
+
+type ProjectCall = (p:Project) => Project
+type DatabaseCall = () => Array<DatabaseContainer>
 
 /**
  * **Plugin Content**\
@@ -14,6 +16,11 @@ import { TemplateGroup, TemplateGroup2 } from "./struct"
 export interface PluginContent {
     filename: string
     url: string
+    /**
+     * **Should Unpack**\
+     * Support Zip format
+     */
+    unpack: boolean
     platform: NodeJS.Platform
     arch: NodeJS.Architecture
 }
@@ -72,7 +79,7 @@ export interface PluginWithToken extends Plugin {
  * **Plugin Group**\
  * User can upload a group of plugin with author and thumbnail etc...\
  */
-export interface PluginList extends DataTime {
+export interface PluginContainer extends DataTime {
     /**
      * **Thumbnail URL**\
      * The relative link for the thumbnail
@@ -101,32 +108,25 @@ export interface PluginList extends DataTime {
      */
     plugins: Array<Plugin>
     /**
-     * **Local Permission**\
-     * Client-side only permission field\
-     * Server will check user token and defined its permission level\
-     * And modify this field and send back to user
+     * **Data Mark: Project**\
+     * Contain the header data for project template
      */
-    permission?: LocalPermission
+    projects: Array<TemplateData_Project>
     /**
-     * **Accessibility**\
-     * Could be public, protected, private
+     * **Data Mark: Database**\
+     * Contain the header data for database template
      */
-    acl?: ACLType
-}
-
-export interface PluginState {
-    name: string
-    url: string
-    installed: boolean
-    supported: boolean
-}
-
-export interface PluginPageTemplate {
-    owner?: string
-    name: string
-    project: Array<TemplateGroup>
-    database: Array<TemplateGroup2>
-    url?: string
+    databases: Array<TemplateData_Database>
+    /**
+     * **Generate Method: Project**\
+     * Only exist in server side
+     */
+    gen_projects?: Array<TemplateGroup_Project>
+    /**
+     * **Generate Method: Database**\
+     * Only exist in server side
+     */
+    gen_databases?: Array<TemplateGroup_Database>
     /**
      * **Local Permission**\
      * Client-side only permission field\
@@ -139,24 +139,6 @@ export interface PluginPageTemplate {
      * Could be public, protected, private
      */
     acl?: ACLType
-}
-
-export interface TemplateDataProject {
-    title: string
-    filename: string
-    group: string
-}
-
-export interface TemplateDataDatabase {
-    title: string
-    filename: string
-    group: string
-}
-
-export interface TemplateData {
-    url?: string
-    projects: Array<TemplateDataProject>
-    databases: Array<TemplateDataDatabase>
 }
 
 /**
@@ -167,9 +149,90 @@ export interface PluginPageData {
     /**
      * **Plugins Data**
      */
-    plugins: Array<PluginList>
+    plugins: Array<PluginContainer>
+}
+
+
+/**
+ * **Vue Plugin state**\
+ * Dynamic data in frontend for display purpose
+ */
+export interface PluginState {
     /**
-     * **Templates Data**
+     * **Plugin Name**
      */
-    templates: Array<PluginPageTemplate>
+    name: string
+    /**
+     * **Plugin Manifest URL Name**
+     */
+    url: string
+    /**
+     * **Is Installed**
+     */
+    installed: boolean
+    /**
+     * **Is Supported**
+     */
+    supported: boolean
+}
+
+/**
+ * **Template Project Group**
+ */
+export interface TemplateData_Project {
+    /**
+     * **Project Template Name**
+     */
+    title: string
+    /**
+     * **Filename Name**
+     */
+    filename: string
+    /**
+     * **Group Name**
+     */
+    group: string
+}
+
+/**
+ * **Template Project Group**
+ */
+export interface TemplateData_Database {
+    /**
+     * **Database Template Name**
+     */
+    title: string
+    /**
+     * **Filename Name**
+     */
+    filename: string
+    /**
+     * **Group Name**
+     */
+    group: string
+}
+
+export interface TemplateGroup_Project {
+    value: number
+    group: string
+    title?: string
+    filename?: string
+    template?: ProjectCall
+}
+
+export interface TemplateGroup_Database {
+    value: number
+    group: string
+    title?: string
+    filename?: string
+    template?: DatabaseCall
+}
+
+/**
+ * **Template Group Data**
+ */
+export interface TemplateData {
+    url?: string
+    projects: Array<TemplateData_Project>
+    databases: Array<TemplateData_Database>
 }

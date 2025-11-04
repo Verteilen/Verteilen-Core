@@ -1,6 +1,6 @@
-import { ConditionResult, ExecutePair, ExecuteProxy, ExecuteRecordTask, ExecuteState, FeedBack, Job, JobCategory, MESSAGE_LIMIT, Database, Project, Record, Task } from "../interface"
+import { ConditionResult, ExecutePair, ExecuteProxy, ExecuteRecordTask, ExecuteState, FeedBack, Job, JobCategory, MESSAGE_LIMIT, Database, Project, Record, Task } from "../../interface"
 
-export class Util_Server_Console { 
+export class Console_Handler { 
 
     receivedPack = (model:ExecutePair, record:Record) => {
         const pass = model.manager!.Register()
@@ -43,7 +43,7 @@ export class Util_Server_Console {
     }
 }
 
-export class Util_Server_Console_Proxy {
+export class Console_Proxy {
     model:ExecutePair
 
     constructor(_model:ExecutePair){
