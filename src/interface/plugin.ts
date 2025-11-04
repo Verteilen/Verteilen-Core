@@ -6,7 +6,13 @@
 import { DatabaseContainer, DataTime, Project } from "./base"
 import { ACLType, LocalPermission } from "./server"
 
+/**
+ * Method to generate project template (populate)
+ */
 type ProjectCall = (p:Project) => Project
+/**
+ * Method to generate database values
+ */
 type DatabaseCall = () => Array<DatabaseContainer>
 
 /**
@@ -201,6 +207,10 @@ export interface TemplateData_Project {
      * **Group Name**
      */
     group: string
+    /**
+     * **Sort Order**
+     */
+    value: number
 }
 
 /**
@@ -219,29 +229,25 @@ export interface TemplateData_Database {
      * **Group Name**
      */
     group: string
+    /**
+     * **Sort Order**
+     */
+    value: number
 }
 
-export interface TemplateGroup_Project {
-    value: number
-    group: string
-    title?: string
-    filename?: string
-    template?: ProjectCall
+export interface TemplateGroup_Project extends TemplateData_Project {
+    template: ProjectCall
 }
 
-export interface TemplateGroup_Database {
-    value: number
-    group: string
-    title?: string
-    filename?: string
-    template?: DatabaseCall
+export interface TemplateGroup_Database extends TemplateData_Database {
+    template: DatabaseCall
 }
 
 /**
  * **Template Group Data**
  */
-export interface TemplateData {
+export interface PluginGenData {
     url?: string
-    projects: Array<TemplateData_Project>
-    databases: Array<TemplateData_Database>
+    projects: Array<TemplateGroup_Project>
+    databases: Array<TemplateGroup_Database>
 }

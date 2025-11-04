@@ -106,13 +106,13 @@ export const GetCurrentPlugin = async (loader:RecordIOBase):Promise<PluginPageDa
                 continue
             }
             if(header == undefined) continue
-            header.gen_projects = header.projects.map(x => ({
+            header.projects = header.projects.map(x => ({
                 value: -1,
                 group: x.group,
                 filename: x.filename,
                 title: x.title
             }))
-            header.gen_databases = header.databases.map(x => ({
+            header.databases = header.databases.map(x => ({
                 value: -1,
                 group: x.group,
                 filename: x.filename,

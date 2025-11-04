@@ -4,3 +4,5 @@ export * from './computed'
 export * from './interface'
 // ? Cannot be import in browser
 export * from './server'
+// ? Only for utility purpose, outside the application logic
+export * from './utility'

@@ -51,29 +51,23 @@ export interface TemplateData_Project {
     title: string;
     filename: string;
     group: string;
+    value: number;
 }
 export interface TemplateData_Database {
     title: string;
     filename: string;
     group: string;
-}
-export interface TemplateGroup_Project {
     value: number;
-    group: string;
-    title?: string;
-    filename?: string;
-    template?: ProjectCall;
 }
-export interface TemplateGroup_Database {
-    value: number;
-    group: string;
-    title?: string;
-    filename?: string;
-    template?: DatabaseCall;
+export interface TemplateGroup_Project extends TemplateData_Project {
+    template: ProjectCall;
 }
-export interface TemplateData {
+export interface TemplateGroup_Database extends TemplateData_Database {
+    template: DatabaseCall;
+}
+export interface PluginGenData {
     url?: string;
-    projects: Array<TemplateData_Project>;
-    databases: Array<TemplateData_Database>;
+    projects: Array<TemplateGroup_Project>;
+    databases: Array<TemplateGroup_Database>;
 }
 export {};

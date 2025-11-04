@@ -9,23 +9,6 @@ import * as jsEnv from "browser-or-node";
 import * as ws from 'ws'
 import * as https from 'https'
 
-function isRenderer () {
-  // running in a web browser
-  if (typeof process === 'undefined') return true
-
-  // node-integration is disabled
-  if (!process) return true
-
-  // We're in node.js somehow
-  // @ts-ignore
-  if (!process.type) return false
-
-  // @ts-ignore
-  return process.type === 'renderer'
-}
-
-console.log("isRenderer", isRenderer())
-
 /**
  * The node connection instance manager, Use by the cluster server
  */
