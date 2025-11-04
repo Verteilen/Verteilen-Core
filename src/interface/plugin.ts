@@ -115,6 +115,10 @@ export interface PluginContainer extends DataTime {
      */
     title?: string
     /**
+     * **Plugin Group Description**
+     */
+    description?: string
+    /**
      * **Plugin Header URL**
      */
     url?: string

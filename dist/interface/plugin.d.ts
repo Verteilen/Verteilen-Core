@@ -29,6 +29,7 @@ export interface PluginContainer extends DataTime {
     icon?: string;
     owner?: string;
     title?: string;
+    description?: string;
     url?: string;
     plugins: Array<Plugin>;
     projects: Array<TemplateData_Project>;

@@ -90,7 +90,7 @@ export const GetCurrentPlugin = async (loader:RecordIOBase):Promise<PluginPageDa
         if(!loader.exists(root)) await loader.mkdir(root)
 
         const plugin_folder = await loader.read_dir_dir(root)
-        const plugin_folder_files = await Promise.all(plugin_folder.map(x => loader.read_dir_file(x)))
+        const plugin_folder_files = await Promise.all(plugin_folder.map(x => loader.read_dir_file(loader.join(root, x))))
         for(let i = 0; i < plugin_folder_files.length; i++){
             const files = plugin_folder_files[i]
             const dirname = plugin_folder[i]
@@ -200,8 +200,8 @@ export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, s
             loader.write_string(loader.join(root, name, 'manifest.json'), JSON.stringify(ob, null, 4))
 
             const folder = url.substring(0, url.lastIndexOf('/'))
-            const project_calls:Array<Promise<Response>> = ob.projects.map(p => fetch(folder + "/" + p.filename + '.json', req))
-            const database_calls:Array<Promise<Response>> = ob.databases.map(p => fetch(folder + "/" + p.filename + '.json', req))
+            const project_calls:Array<Promise<Response>> = ob.projects.map(p => fetch(folder + "/project/" + p.filename + '.json', req))
+            const database_calls:Array<Promise<Response>> = ob.databases.map(p => fetch(folder + "/database/" + p.filename + '.json', req))
             // * Project template query
             const pss = await Promise.all(project_calls)
             const project_calls2:Array<Promise<string>> = pss.map(x => x.text())
