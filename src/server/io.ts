@@ -15,6 +15,9 @@ import {
     Job,
 } from "../interface"
 
+/**
+ * **Record Data**
+ */
 export interface MemoryData {
     projects: Array<Project>
     tasks: Array<Task>

@@ -46,6 +46,8 @@ export * from './interface/server'
 export * from './interface/struct'
 export * from './interface/table'
 export * from './interface/ui'
+export * from './interface/plugin'
+export * from './interface/log'
 
 /**
  * Plugin

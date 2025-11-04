@@ -126,51 +126,6 @@ class ServerDetail {
             }
         }
     };
-    console_update = () => {
-        const re = [];
-        this.execute_manager.forEach(x => {
-            if (x.record.running && !x.record.stop) {
-                try {
-                    x.manager.Update();
-                }
-                catch (err) {
-                    x.record.stop = true;
-                    console.log(err);
-                    re.push({
-                        code: 400,
-                        name: err.name,
-                        message: err.message,
-                        stack: err.stack
-                    });
-                }
-            }
-            if (x.record.stop) {
-                if (x.manager.jobstack == 0) {
-                    x.record.running = false;
-                }
-            }
-            if (x.record.command.length > 0) {
-                const p = x.record.command.shift();
-                if (p[0] == 'clean')
-                    this.console_clean(undefined, x.record.uuid);
-                else if (p[0] == 'stop')
-                    this.console_stop(undefined, x.record.uuid);
-                else if (p[0] == 'skip')
-                    this.console_skip(undefined, x.record.uuid, p[1], p[2]);
-                else if (p[0] == 'execute')
-                    this.console_execute(undefined, x.record.uuid, p[1]);
-            }
-        });
-        if (this.loader != undefined) {
-            const logss = this.backend.memory.logs.filter(x => x.dirty && x.output);
-            for (var x of logss) {
-                x.dirty = false;
-                const filename = this.loader.join(this.loader.root, "log", `${x.uuid}.json`);
-                this.loader.write_string(filename, JSON.stringify(x, null, 4));
-            }
-        }
-        return re;
-    };
     resource_start = (socket, uuid) => {
         const p = this.websocket_manager.targets.find(x => x.uuid == uuid);
         const d = { name: 'resource_start', data: 0 };
@@ -438,6 +393,51 @@ class ServerDetail {
             target.record.task_detail[i].state = interface_1.ExecuteState.FINISH;
         }
         console.log("Skip task", index);
+    };
+    console_update = () => {
+        const re = [];
+        this.execute_manager.forEach(x => {
+            if (x.record.running && !x.record.stop) {
+                try {
+                    x.manager.Update();
+                }
+                catch (err) {
+                    x.record.stop = true;
+                    console.log(err);
+                    re.push({
+                        code: 400,
+                        name: err.name,
+                        message: err.message,
+                        stack: err.stack
+                    });
+                }
+            }
+            if (x.record.stop) {
+                if (x.manager.jobstack == 0) {
+                    x.record.running = false;
+                }
+            }
+            if (x.record.command.length > 0) {
+                const p = x.record.command.shift();
+                if (p[0] == 'clean')
+                    this.console_clean(undefined, x.record.uuid);
+                else if (p[0] == 'stop')
+                    this.console_stop(undefined, x.record.uuid);
+                else if (p[0] == 'skip')
+                    this.console_skip(undefined, x.record.uuid, p[1], p[2]);
+                else if (p[0] == 'execute')
+                    this.console_execute(undefined, x.record.uuid, p[1]);
+            }
+        });
+        if (this.loader != undefined) {
+            const logss = this.backend.memory.logs.filter(x => x.dirty && x.output);
+            for (var x of logss) {
+                x.dirty = false;
+                const filename = this.loader.join(this.loader.root, "log", `${x.uuid}.json`);
+                this.loader.write_string(filename, JSON.stringify(x, null, 4));
+            }
+        }
+        return re;
     };
     CombineProxy = (eps) => {
         const p = {

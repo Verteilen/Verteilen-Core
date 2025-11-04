@@ -1,6 +1,7 @@
 import { Job, Database, Project, Task } from "./base";
 import { ExecuteState } from "./enum";
-import { ExecutionLog, Log, Preference } from "./record";
+import { ExecutionLog, Log } from "./log";
+import { Preference } from "./record";
 import { Login } from "./server";
 import { FeedBack, Header, Setter, ShellFolder, Single, WebsocketPack } from "./struct";
 import { DatabaseTable, NodeTable, ProjectTable } from "./table";
@@ -50,16 +51,12 @@ export type BusType = {
     makeToast: ToastData;
     modeSelect: boolean;
     createProject: void;
-    updateProject: void;
     recoverProject: ProjectTable;
     recoverDatabase: DatabaseTable;
     relogin: void;
     loginGuest: void;
     login: Login;
     logout: void;
-    updateTask: void;
-    updateJob: void;
-    updateDatabase: void;
     selectDatabase: string;
     updateLocate: void;
     updateNode: Array<NodeTable>;

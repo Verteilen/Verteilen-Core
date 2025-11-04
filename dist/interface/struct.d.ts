@@ -1,7 +1,7 @@
 import { DatabaseContainer, Job, Project } from "./base";
 import ws from 'ws';
 import { ServiceMode, TaskLogicType } from "./enum";
-import { ACLType, LocalPermission } from "./server";
+import { Plugin } from "./plugin";
 type ProjectCall = (p: Project) => Project;
 type DatabaseCall = () => Array<DatabaseContainer>;
 export interface WebsocketPack {
@@ -16,9 +16,6 @@ export interface WebsocketPack {
     last?: number;
     plugins?: Array<Plugin>;
     children?: Array<WebsocketPack>;
-}
-export interface CronWebsocketPack {
-    websocket: WebsocketPack;
 }
 export interface Header {
     name: string;
@@ -116,64 +113,6 @@ export interface TemplateGroup2 {
     title?: string;
     filename?: string;
     template?: DatabaseCall;
-}
-export interface PluginContent {
-    filename: string;
-    url: string;
-    platform: NodeJS.Platform;
-    arch: NodeJS.Architecture;
-}
-export interface Plugin {
-    name: string;
-    description: string;
-    version?: string;
-    progress?: number;
-    contents: Array<PluginContent>;
-}
-export interface PluginWithToken extends Plugin {
-    token: Array<string>;
-}
-export interface PluginList {
-    owner?: string;
-    title?: string;
-    url?: string;
-    plugins: Array<Plugin>;
-    permission?: LocalPermission;
-    acl?: ACLType;
-}
-export interface PluginState {
-    name: string;
-    url: string;
-    installed: boolean;
-    supported: boolean;
-}
-export interface PluginPageTemplate {
-    owner?: string;
-    name: string;
-    project: Array<TemplateGroup>;
-    database: Array<TemplateGroup2>;
-    url?: string;
-    permission?: LocalPermission;
-    acl?: ACLType;
-}
-export interface PluginPageData {
-    plugins: Array<PluginList>;
-    templates: Array<PluginPageTemplate>;
-}
-export interface TemplateDataProject {
-    title: string;
-    filename: string;
-    group: string;
-}
-export interface TemplateDataDatabase {
-    title: string;
-    filename: string;
-    group: string;
-}
-export interface TemplateData {
-    url?: string;
-    projects: Array<TemplateDataProject>;
-    databases: Array<TemplateDataDatabase>;
 }
 export interface BuildinAssetsContent {
     name: string;

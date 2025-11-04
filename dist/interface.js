@@ -57,6 +57,8 @@ __exportStar(require("./interface/server"), exports);
 __exportStar(require("./interface/struct"), exports);
 __exportStar(require("./interface/table"), exports);
 __exportStar(require("./interface/ui"), exports);
+__exportStar(require("./interface/plugin"), exports);
+__exportStar(require("./interface/log"), exports);
 exports.I18N = __importStar(require("./plugins/i18n"));
 exports.Execute_PART = __importStar(require("./script/execute"));
 exports.Execute_ConsoleManager = __importStar(require("./script/console_manager"));

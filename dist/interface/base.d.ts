@@ -6,6 +6,8 @@ export interface DatabaseConfigTrigger {
 }
 export interface DataHeader {
     uuid: string;
+}
+export interface DataTime {
     createDate?: string;
     updateDate?: string;
 }
@@ -23,7 +25,7 @@ export interface Property {
     expression: string;
     deep?: number;
 }
-export interface Service extends DataHeader {
+export interface Service extends DataHeader, DataTime {
     title: string;
     description: string;
     meta: any;
@@ -33,14 +35,14 @@ export interface Service extends DataHeader {
     permission?: LocalPermission;
     acl?: ACLType;
 }
-export interface Database extends DataHeader {
+export interface Database extends DataHeader, DataTime {
     title: string;
     canWrite: boolean;
     containers: Array<DatabaseContainer>;
     permission?: LocalPermission;
     acl?: ACLType;
 }
-export interface Job extends DataHeader {
+export interface Job extends DataHeader, DataTime {
     index?: number;
     title: string;
     description: string;
@@ -71,11 +73,11 @@ export interface TaskOption {
     multi: boolean;
     multiKey: string;
 }
-export interface Task extends DataHeader, TaskBase, TaskOption {
+export interface Task extends DataHeader, DataTime, TaskBase, TaskOption {
     permission?: LocalPermission;
     acl?: ACLType;
 }
-export interface Project extends DataHeader {
+export interface Project extends DataHeader, DataTime {
     owner?: string;
     title: string;
     description?: string;
@@ -86,7 +88,7 @@ export interface Project extends DataHeader {
     permission?: LocalPermission;
     acl?: ACLType;
 }
-export interface Node extends DataHeader {
+export interface Node extends DataHeader, DataTime {
     cluster: boolean;
     parent?: string;
     url: string;
@@ -96,3 +98,4 @@ export interface Node extends DataHeader {
 export declare const CreateDefaultProject: () => Project;
 export declare const CreateDefaultTask: () => Task;
 export declare const CreateDefaultJob: () => Job;
+export declare const CreateDefaultDatabase: () => Database;

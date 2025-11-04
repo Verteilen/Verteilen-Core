@@ -17,12 +17,15 @@ export interface DatabaseConfigTrigger {
 /**
  * Storable Data Header
  */
-export interface DataHeader{
+export interface DataHeader {
     /**
      * **ID**\
      * Contains 36 characters
      */
     uuid: string
+}
+
+export interface DataTime {
     createDate?: string
     updateDate?: string
 }
@@ -67,7 +70,7 @@ export interface Property {
 /**
  * **Background Service Container**
  */
-export interface Service extends DataHeader {
+export interface Service extends DataHeader, DataTime {
     /**
      * **Service Name**\
      * The name of the task
@@ -124,7 +127,7 @@ export interface Service extends DataHeader {
  * **Data Database Bank**\
  * Store the data which will be reference in the execute stage
  */
-export interface Database extends DataHeader {
+export interface Database extends DataHeader, DataTime {
     title: string
     canWrite: boolean
     containers: Array<DatabaseContainer>
@@ -146,7 +149,7 @@ export interface Database extends DataHeader {
  * Specifed the command, which show how does user want these compute to do\
  * Contains different arguments list, which could reference to database value
  */
-export interface Job extends DataHeader {
+export interface Job extends DataHeader, DataTime {
     /**
      * **Order**\
      * Define the order in the list\
@@ -301,7 +304,7 @@ export interface TaskOption {
  * **Task Container**\
  * Specified different stage of the compute process
  */
-export interface Task extends DataHeader, TaskBase, TaskOption {
+export interface Task extends DataHeader, DataTime, TaskBase, TaskOption {
     /**
      * **Local Permission**\
      * Client-side only permission field\
@@ -320,7 +323,7 @@ export interface Task extends DataHeader, TaskBase, TaskOption {
  * It has reference to database And contains multiple task\
  * We grab this container structure to execute queue to execute one by one
  */
-export interface Project extends DataHeader {
+export interface Project extends DataHeader, DataTime {
     /**
      * **User ID**\
      * Who own this project\
@@ -377,7 +380,7 @@ export interface Project extends DataHeader {
  * In the execute stage, it will needs nodes to compute the task\
  * Which specified in this type of structure
  */
-export interface Node extends DataHeader {
+export interface Node extends DataHeader, DataTime {
     /**
      * **Cluster Mode**\
      * Check if the node is cluster\
@@ -448,5 +451,14 @@ export const CreateDefaultJob = () : Job => {
         number_args: [],
         boolean_args: [],
         id_args: [],
+    }
+}
+
+export const CreateDefaultDatabase = () : Database => {
+    return {
+        uuid: uuidv6(),
+        title: "",
+        canWrite: true,
+        containers: [],
     }
 }

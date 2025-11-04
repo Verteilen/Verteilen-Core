@@ -18,6 +18,8 @@ export * from './interface/server';
 export * from './interface/struct';
 export * from './interface/table';
 export * from './interface/ui';
+export * from './interface/plugin';
+export * from './interface/log';
 export * as I18N from './plugins/i18n';
 export * as Execute_PART from './script/execute';
 export * as Execute_ConsoleManager from './script/console_manager';

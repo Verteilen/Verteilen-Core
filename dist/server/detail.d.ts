@@ -47,7 +47,6 @@ export declare class ServerDetail {
     Analysis: (d: BusAnalysis) => void;
     shellReply: (data: Single, p?: WebsocketPack) => void;
     folderReply: (data: ShellFolder, p?: WebsocketPack) => void;
-    console_update: () => any[];
     resource_start: (socket: any, uuid: string) => void;
     resource_end: (socket: any, uuid: string) => void;
     plugin_info: (socket: any, uuid: string) => void;
@@ -68,5 +67,6 @@ export declare class ServerDetail {
     console_clean: (socket: any, uuid: string) => void;
     console_skip: (socket: any, uuid: string, forward: boolean, type: number, state?: ExecuteState) => void;
     console_skip2: (socket: any, uuid: string, v: number) => void;
+    console_update: () => any[];
     CombineProxy: (eps: Array<ExecuteProxy>) => ExecuteProxy;
 }

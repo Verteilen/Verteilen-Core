@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateDefaultJob = exports.CreateDefaultTask = exports.CreateDefaultProject = void 0;
+exports.CreateDefaultDatabase = exports.CreateDefaultJob = exports.CreateDefaultTask = exports.CreateDefaultProject = void 0;
 const enum_1 = require("./enum");
 const uuid_1 = require("uuid");
 const CreateDefaultProject = () => {
@@ -45,3 +45,12 @@ const CreateDefaultJob = () => {
     };
 };
 exports.CreateDefaultJob = CreateDefaultJob;
+const CreateDefaultDatabase = () => {
+    return {
+        uuid: (0, uuid_1.v6)(),
+        title: "",
+        canWrite: true,
+        containers: [],
+    };
+};
+exports.CreateDefaultDatabase = CreateDefaultDatabase;

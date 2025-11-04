@@ -33,6 +33,11 @@ import { MemoryData, RecordIOBase } from './io'
 import { Util_Server_Console_Proxy } from '../util/console_handle'
 import { Util_Server_Log_Proxy } from '../util/log_handle'
 
+/**
+ * **Backend Interface**\
+ * The backend object must contain some utility functions\
+ * In order to make detail worker works
+ */
 export interface BackendAction {
     memory: MemoryData
     GetPreference: (uuid?:string) => Preference
@@ -102,12 +107,15 @@ export class ServerDetail {
         }
         this.websocket_manager = new Execute_SocketManager.WebsocketManager(this.NewConnection, this.DisConnection, this.Analysis, messager_log, n)
         this.console = new UtilServer_Console.Util_Server_Console()
+        // Internal update clock
         this.updatehandle = setInterval(() => {
             this.re.push(...this.console_update())
         }, RENDER_UPDATETICK);
     }
 
-    
+    /**
+     * ** Caller Reference**
+     */
     public get events() : ServerDetailEvent {
         return {
             resource_start: this.resource_start,
@@ -133,7 +141,7 @@ export class ServerDetail {
         }
     }
     
-
+    //#region Socket Events
     NewConnection = (x:WebsocketPack) => {
         const p = {
             title: "New Connection Established",
@@ -150,7 +158,6 @@ export class ServerDetail {
             y.manager!.NewConnection(x)
         })
     }
-
     DisConnection = (x:WebsocketPack) => {
         const p = {
             title: "Network Disconnected",
@@ -167,11 +174,12 @@ export class ServerDetail {
             y.manager!.Disconnect(x)
         })
     }
-
     Analysis = (d:BusAnalysis) => {
         this.execute_manager.forEach(x => x.manager!.Analysis(JSON.parse(JSON.stringify(d))))   
     }
+    //#endregion
 
+    //#region Node Reply
     /**
      * **Shell Reply Message Event**\
      * Called by the client node
@@ -216,50 +224,9 @@ export class ServerDetail {
             }
         }
     }
+    //#endregion
 
-    console_update = () => {
-        const re:Array<any> = []
-        this.execute_manager.forEach(x => {
-            if(x.record!.running && !x.record!.stop){
-                try {
-                    x.manager!.Update()
-                }catch(err:any){
-                    x.record!.stop = true
-                    console.log(err)
-                    re.push({
-                        code: 400,
-                        name: err.name,
-                        message: err.message,
-                        stack: err.stack
-                    })
-                }
-            }
-            if(x.record!.stop){
-                if(x.manager!.jobstack == 0){
-                    x.record!.running = false
-                }
-            }
-            if(x.record!.command.length > 0){
-                const p:Array<any> = x.record!.command.shift()!
-                if(p[0] == 'clean') this.console_clean(undefined, x.record!.uuid)
-                else if (p[0] == 'stop') this.console_stop(undefined, x.record!.uuid)
-                else if (p[0] == 'skip') this.console_skip(undefined, x.record!.uuid, p[1], p[2])
-                else if (p[0] == 'execute') this.console_execute(undefined, x.record!.uuid, p[1])
-            }
-        })
-        if(this.loader != undefined){
-            const logss = this.backend.memory.logs.filter(x => x.dirty && x.output)
-            for(var x of logss){
-                x.dirty = false
-                const filename = this.loader.join(this.loader.root, "log", `${x.uuid}.json`)
-                this.loader.write_string(filename, JSON.stringify(x, null, 4))
-            }
-        }
-        return re
-    }
-
-
-//#region For Backend
+    //#region For Backend
     resource_start = (socket:any, uuid:string) => {
         const p = this.websocket_manager!.targets.find(x => x.uuid == uuid)
         const d:Header = { name: 'resource_start', data: 0 }
@@ -278,6 +245,7 @@ export class ServerDetail {
         p?.websocket.send(JSON.stringify(d))
     }
 
+    //#region Shell
     shell_enter = (socket:any, uuid: string, value:string) => {
         this.websocket_manager!.shell_enter(uuid, value)
     }
@@ -305,7 +273,9 @@ export class ServerDetail {
     shell_folder = (socket:any, uuid: string, path:string) => {
         this.websocket_manager!.shell_folder(uuid, path)
     }
+    //#endregion
 
+    //#region Node
     node_list = (socket:any) => {
         const p = this.websocket_manager?.targets
         if(this.feedback.socket != undefined){
@@ -341,6 +311,9 @@ export class ServerDetail {
     node_delete = (socket:any, uuid:string, reason?:string) => {
         this.websocket_manager!.server_stop(uuid, reason)
     }
+    //#endregion
+
+    //#region Console
     console_list = (socket:any) => {
         if(this.feedback.electron){
             return this.execute_manager.map(x => x.record).filter(x => x != undefined)
@@ -526,7 +499,49 @@ export class ServerDetail {
         }
         console.log("Skip task", index)
     }
-//#endregion
+    console_update = () => {
+        const re:Array<any> = []
+        this.execute_manager.forEach(x => {
+            if(x.record!.running && !x.record!.stop){
+                try {
+                    x.manager!.Update()
+                }catch(err:any){
+                    x.record!.stop = true
+                    console.log(err)
+                    re.push({
+                        code: 400,
+                        name: err.name,
+                        message: err.message,
+                        stack: err.stack
+                    })
+                }
+            }
+            if(x.record!.stop){
+                if(x.manager!.jobstack == 0){
+                    x.record!.running = false
+                }
+            }
+            if(x.record!.command.length > 0){
+                const p:Array<any> = x.record!.command.shift()!
+                if(p[0] == 'clean') this.console_clean(undefined, x.record!.uuid)
+                else if (p[0] == 'stop') this.console_stop(undefined, x.record!.uuid)
+                else if (p[0] == 'skip') this.console_skip(undefined, x.record!.uuid, p[1], p[2])
+                else if (p[0] == 'execute') this.console_execute(undefined, x.record!.uuid, p[1])
+            }
+        })
+        if(this.loader != undefined){
+            const logss = this.backend.memory.logs.filter(x => x.dirty && x.output)
+            for(var x of logss){
+                x.dirty = false
+                const filename = this.loader.join(this.loader.root, "log", `${x.uuid}.json`)
+                this.loader.write_string(filename, JSON.stringify(x, null, 4))
+            }
+        }
+        return re
+    }
+    //#endregion
+
+    //#endregion
     CombineProxy = (eps:Array<ExecuteProxy>) => {
         const p:ExecuteProxy = {
             executeProjectStart: (data:[Project, number]):void => { eps.forEach(x => x.executeProjectStart(JSON.parse(JSON.stringify(data)))) },

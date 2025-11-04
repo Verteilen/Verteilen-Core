@@ -138,7 +138,10 @@
         "delete-job": "刪除工作",
         "delete-job-confirm": "確定刪除選取的工作嗎?",
         "delete-task": "刪除流程",
-        "delete-task-confirm": "確定刪除流程的工作嗎?"
+        "delete-task-confirm": "確定刪除選取的工作嗎?",
+        "create-service": "建立服務",
+        "delete-service": "刪除服務",
+        "delete-service-confirm": "確定刪除選取的服務嗎?"
     },
     "toolbar": {
         "server": "伺服器",
@@ -352,6 +355,7 @@
     "selectall": "全選",
     "unselectall": "取消全選",
     "project": "專案",
+    "service": "服務",
     "task": "流程",
     "job": "工作",
     "database": "資料庫",
