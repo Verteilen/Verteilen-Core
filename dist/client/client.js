@@ -148,7 +148,7 @@ class Client {
         this.analysis.forEach(x => x.update(this));
     };
     loadPlugins = () => {
-        const f = path.join(os.homedir(), interface_1.DATA_FOLDER);
+        const f = path.join(os.homedir(), interface_1.DATA_FOLDER, "node_plugin");
         const pluginPath = path.join(f, 'plugin.json');
         if (!(0, fs_1.existsSync)(f))
             (0, fs_1.mkdirSync)(f, { recursive: true });

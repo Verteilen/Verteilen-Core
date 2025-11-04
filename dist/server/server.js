@@ -16,7 +16,6 @@ class Server {
         user: [],
     };
     plugin = {
-        templates: [],
         plugins: [],
     };
     io = undefined;

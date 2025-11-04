@@ -1,7 +1,7 @@
 import { WebSocket } from 'ws';
-import { Messager, Messager_log, PluginList } from '../interface';
+import { Messager, Messager_log, PluginNode } from '../interface';
 export declare class Client {
-    plugins: PluginList;
+    plugins: PluginNode;
     private httpss;
     private client;
     private sources;

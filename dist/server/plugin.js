@@ -4,48 +4,43 @@ exports.CreatePluginLoader = exports.GetCurrentPlugin = void 0;
 const GetCurrentPlugin = async (loader) => {
     return new Promise(async (resolve) => {
         const b = {
-            plugins: [],
-            templates: []
+            plugins: []
         };
-        const root = loader.join(loader.root, 'template');
-        const root2 = loader.join(loader.root, 'plugin');
+        const root = loader.join(loader.root, 'plugin');
         if (!loader.exists(root))
             await loader.mkdir(root);
-        if (!loader.exists(root2))
-            await loader.mkdir(root2);
-        const files = (await loader.read_dir_file(root)).filter(x => x.endsWith('.json'));
-        const _configs = files.map(file => loader.read_string(loader.join(root, file), { encoding: 'utf-8' }));
-        const configs = (await Promise.all(_configs)).map(x => JSON.parse(x));
-        for (let index = 0; index < configs.length; index++) {
-            const config = configs[index];
-            const ps = config.projects.map(x => ({
+        const plugin_folder = await loader.read_dir_dir(root);
+        const plugin_folder_files = await Promise.all(plugin_folder.map(x => loader.read_dir_file(x)));
+        for (let i = 0; i < plugin_folder_files.length; i++) {
+            const files = plugin_folder_files[i];
+            const dirname = plugin_folder[i];
+            if (!files.includes("manifest.json"))
+                continue;
+            const manifest_path = loader.join(root, dirname, "manifest.json");
+            const manifest = await loader.read_string(manifest_path);
+            let header = undefined;
+            try {
+                header = JSON.parse(manifest);
+            }
+            catch (e) {
+                console.warn(`Reading file error: ${manifest_path}`);
+                continue;
+            }
+            if (header == undefined)
+                continue;
+            header.gen_projects = header.projects.map(x => ({
                 value: -1,
                 group: x.group,
                 filename: x.filename,
                 title: x.title
             }));
-            const ps2 = config.databases.map(x => ({
+            header.gen_databases = header.databases.map(x => ({
                 value: -1,
                 group: x.group,
                 filename: x.filename,
                 title: x.title
             }));
-            b.templates.push({
-                name: files[index].replace('.json', ''),
-                project: ps,
-                database: ps2,
-                url: config.url
-            });
-        }
-        const files2 = (await loader.read_dir_file(root2)).filter(x => x.endsWith('.json'));
-        const p_config2 = files2.map(file => {
-            return loader.read_string(loader.join(root2, file), { encoding: 'utf-8' });
-        });
-        const configs2 = (await Promise.all(p_config2)).map(x => JSON.parse(x));
-        for (let index = 0; index < configs2.length; index++) {
-            const config = configs2[index];
-            config.title = files2[index].replace('.json', '');
-            b.plugins.push(config);
+            b.plugins.push(header);
         }
         resolve(b);
         return b;
@@ -56,77 +51,62 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
     return {
         load_all: async () => {
             const cp = await (0, exports.GetCurrentPlugin)(loader);
-            memory.templates = cp.templates;
             memory.plugins = cp.plugins;
             return cp;
         },
-        get_project: (group, filename) => {
-            let find = false;
-            let result = undefined;
-            for (let x of memory.templates) {
-                for (let y of x.project) {
-                    if (y.group == group && y.filename == filename) {
-                        result = JSON.stringify(y);
-                        find = true;
-                        break;
-                    }
-                }
-                if (find)
-                    break;
-            }
-            return result;
-        },
-        get_database: (group, filename) => {
-            let find = false;
-            let result = undefined;
-            for (let x of memory.templates) {
-                for (let y of x.database) {
-                    if (y.group == group && y.filename == filename) {
-                        result = JSON.stringify(y);
-                        find = true;
-                        break;
-                    }
-                }
-                if (find)
-                    break;
-            }
-            return result;
-        },
-        get_plugin: async () => {
+        get_plugins: async () => {
             return memory;
         },
-        import_template: async (name, url, token) => {
-            const root = loader.join(loader.root, 'template');
+        get_project: (name, group, filename) => {
+            const plugin = memory.plugins.find(x => x.title == name);
+            if (plugin == undefined)
+                return undefined;
+            const result = plugin.projects.find(x => x.group == group && x.filename == filename);
+            if (result == undefined)
+                return undefined;
+            return JSON.stringify(result);
+        },
+        get_database: (name, group, filename) => {
+            const plugin = memory.plugins.find(x => x.title == name);
+            if (plugin == undefined)
+                return undefined;
+            const result = plugin.databases.find(x => x.group == group && x.filename == filename);
+            if (result == undefined)
+                return undefined;
+            return JSON.stringify(result);
+        },
+        import_plugin: async (name, url, token) => {
             const error_children = [];
-            const tokens = [undefined, ...token.split(' ')];
-            const content_folder = loader.join(root, name);
-            const project_folder = loader.join(content_folder, 'project');
-            const database_folder = loader.join(content_folder, 'database');
+            const root = loader.join(loader.root, 'plugin');
+            const project_folder = loader.join(root, name, 'project');
+            const database_folder = loader.join(root, name, 'database');
             if (!loader.exists(root))
                 await loader.mkdir(root);
+            if (!loader.exists(project_folder))
+                await loader.mkdir(project_folder);
+            if (!loader.exists(database_folder))
+                await loader.mkdir(database_folder);
+            const tokens = [undefined, ...token.split(' ')];
             let req = {};
             let ob = undefined;
             for (let t of tokens) {
-                if (t == undefined) {
-                    req = { method: 'GET', cache: "no-store" };
-                }
-                else {
-                    req = {
-                        method: 'GET',
-                        cache: "no-store",
-                        headers: {
-                            "Authorization": t ? `Bearer ${t}` : ''
-                        }
-                    };
-                }
+                req = t == undefined ? { method: 'GET', cache: "no-store" } : {
+                    method: 'GET',
+                    cache: "no-store",
+                    headers: {
+                        "Authorization": t ? `Bearer ${t}` : ''
+                    }
+                };
+                let tex = "";
                 try {
                     const res = await fetch(url, req);
-                    const tex = await res.text();
+                    tex = await res.text();
                     ob = JSON.parse(tex);
+                    console.log("Fetch plugin json successfully");
                     break;
                 }
                 catch (error) {
-                    console.error(error);
+                    console.warn(error, tex);
                 }
             }
             if (ob == undefined) {
@@ -141,19 +121,10 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
                 return memory;
             }
             ob.url = url;
-            loader.write_string(loader.join(root, name + '.json'), JSON.stringify(ob, null, 4));
-            if (!loader.exists(content_folder))
-                loader.mkdir(content_folder);
-            if (!loader.exists(project_folder))
-                loader.mkdir(project_folder);
-            if (!loader.exists(database_folder))
-                loader.mkdir(database_folder);
+            loader.write_string(loader.join(root, name, 'manifest.json'), JSON.stringify(ob, null, 4));
             const folder = url.substring(0, url.lastIndexOf('/'));
-            const project_calls = [];
-            const database_calls = [];
-            ob.projects.forEach((p) => {
-                project_calls.push(fetch(folder + "/" + p.filename + '.json', req));
-            });
+            const project_calls = ob.projects.map(p => fetch(folder + "/" + p.filename + '.json', req));
+            const database_calls = ob.databases.map(p => fetch(folder + "/" + p.filename + '.json', req));
             const pss = await Promise.all(project_calls);
             const project_calls2 = pss.map(x => x.text());
             const pss_result = await Promise.all(project_calls2);
@@ -167,9 +138,6 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
                     console.log("Parse error:\n", text);
                     error_children.push([`Import Project ${n} Error`, error.message]);
                 }
-            });
-            ob.databases.forEach((p) => {
-                database_calls.push(fetch(folder + "/" + p.filename + '.json', req));
             });
             const pss2 = await Promise.all(database_calls);
             const database_calls2 = pss2.map(x => x.text());
@@ -197,71 +165,13 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
                 return memory;
             }
             const cp = await (0, exports.GetCurrentPlugin)(loader);
-            memory.templates = cp.templates;
             memory.plugins = cp.plugins;
             return cp;
-        },
-        import_plugin: async (name, url, token) => {
-            const root = loader.join(loader.root, 'plugin');
-            const tokens = [undefined, ...token.split(' ')];
-            if (!loader.exists(root))
-                await loader.mkdir(root);
-            let req = {};
-            let ob = undefined;
-            for (let t of tokens) {
-                if (t == undefined) {
-                    req = { method: 'GET', cache: "no-store" };
-                }
-                else {
-                    req = {
-                        method: 'GET',
-                        cache: "no-store",
-                        headers: {
-                            "Authorization": t ? `Bearer ${t}` : ''
-                        }
-                    };
-                }
-                let tex = "";
-                try {
-                    const res = await fetch(url, req);
-                    tex = await res.text();
-                    ob = JSON.parse(tex);
-                    console.log("Fetch plugin json successfully");
-                    break;
-                }
-                catch (error) {
-                    console.warn(error, tex);
-                }
-            }
-            if (ob == undefined) {
-                const p = { title: "Import Failed", type: "error", message: `Cannot find the json from url ${url}, or maybe just the wrong token` };
-                const h = { name: "makeToast", data: JSON.stringify(p) };
-                if (feedback.electron) {
-                    feedback.electron()?.send("makeToast", JSON.stringify(p));
-                }
-                if (feedback.socket) {
-                    feedback.socket(JSON.stringify(h));
-                }
-                return memory;
-            }
-            ob.url = url;
-            loader.write_string(loader.join(root, name + '.json'), JSON.stringify(ob, null, 4));
-            const cp = await (0, exports.GetCurrentPlugin)(loader);
-            memory.templates = cp.templates;
-            memory.plugins = cp.plugins;
-            return cp;
-        },
-        delete_template: async (name) => {
-            const root = loader.join(loader.root, 'template');
-            if (loader.exists(loader.join(root, name + '.json')))
-                await loader.rm(loader.join(root, name + '.json'));
-            if (loader.exists(loader.join(root, name)))
-                await loader.rm(loader.join(root, name));
         },
         delete_plugin: async (name) => {
-            const root = loader.join(loader.root, 'plugin');
-            if (loader.exists(loader.join(root, name + '.json')))
-                await loader.rm(loader.join(root, name + '.json'));
+            const root = loader.join(loader.root, 'plugin', name);
+            if (loader.exists(root))
+                await loader.rm(root);
         },
         plugin_download: async (uuid, plugin, tokens) => {
             const p = JSON.parse(plugin);

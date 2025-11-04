@@ -3,7 +3,7 @@
 //      Share Codebase     
 //                           
 // ========================
-import { Header, Job, PluginList, ResourceType, SystemLoad } from '../interface'
+import { Header, Job, PluginNode, ResourceType, SystemLoad } from '../interface'
 import { ClientHTTP } from './http'
 import { ClientJobExecute } from './job_execute'
 import { ClientResource } from './resource'
@@ -69,7 +69,7 @@ const execute_job = () => {
         process.exit(1)
     }
     const d:Job = JSON.parse(process.env.job)
-    const p:PluginList = JSON.parse(process.env.plugin)
+    const p:PluginNode = JSON.parse(process.env.plugin)
     worker = new ClientJobExecute(messager, messager_log, d, undefined, p)
     worker.execute().then(x => {
         messager_log(x)

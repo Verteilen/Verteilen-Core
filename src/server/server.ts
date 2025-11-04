@@ -50,7 +50,6 @@ export class Server {
         user: [],
     }
     plugin: PluginPageData = {
-        templates: [],
         plugins: [],
     }
     io:RecordIOBase | undefined = undefined

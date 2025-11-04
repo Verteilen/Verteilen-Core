@@ -28,7 +28,6 @@ export interface PluginContent {
 /**
  * **Plugin Container**\
  * A plugin is basically a 
- * 
  */
 export interface Plugin {
     /**
@@ -64,6 +63,16 @@ export interface Plugin {
      * Provide list of files
      */
     contents: Array<PluginContent>
+}
+
+/**
+ * **Compute Client Plugin Store Data**
+ */
+export interface PluginNode {
+    /**
+     * A;; installed or installing 
+     */
+    plugins: Array<Plugin>
 }
 
 /**

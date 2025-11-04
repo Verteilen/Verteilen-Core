@@ -18,33 +18,23 @@ export interface Plugin {
     progress?: number;
     contents: Array<PluginContent>;
 }
+export interface PluginNode {
+    plugins: Array<Plugin>;
+}
 export interface PluginWithToken extends Plugin {
     token: Array<string>;
-}
-export interface TemplateGroup_Project {
-    value: number;
-    group: string;
-    title?: string;
-    filename?: string;
-    template?: ProjectCall;
-}
-export interface TemplateGroup_Template {
-    value: number;
-    group: string;
-    title?: string;
-    filename?: string;
-    template?: DatabaseCall;
 }
 export interface PluginContainer extends DataTime {
     thumbnail?: string;
     icon?: string;
     owner?: string;
     title?: string;
-    url_plugin?: string;
+    url?: string;
     plugins: Array<Plugin>;
-    url_template?: string;
-    project: Array<TemplateGroup_Project>;
-    database: Array<TemplateGroup_Template>;
+    projects: Array<TemplateData_Project>;
+    databases: Array<TemplateData_Database>;
+    gen_projects?: Array<TemplateGroup_Project>;
+    gen_databases?: Array<TemplateGroup_Database>;
     permission?: LocalPermission;
     acl?: ACLType;
 }
@@ -66,6 +56,20 @@ export interface TemplateData_Database {
     title: string;
     filename: string;
     group: string;
+}
+export interface TemplateGroup_Project {
+    value: number;
+    group: string;
+    title?: string;
+    filename?: string;
+    template?: ProjectCall;
+}
+export interface TemplateGroup_Database {
+    value: number;
+    group: string;
+    title?: string;
+    filename?: string;
+    template?: DatabaseCall;
 }
 export interface TemplateData {
     url?: string;

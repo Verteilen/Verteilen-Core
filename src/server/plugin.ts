@@ -11,17 +11,15 @@ import {
     PluginContainer, 
     PluginPageData, 
     PluginWithToken, 
-    Project, 
-    TemplateData, 
-    TemplateData_Database, 
-    TemplateData_Project, 
-    TemplateGroup_Project, 
-    TemplateGroup_Database, 
+    Project,  
     ToastData, 
     WebsocketPack
 } from "../interface";
 import { PluginFeedback } from "./server";
 
+/**
+ * Get socket from websocket client method
+ */
 export type SocketGetter = (uuid:string) => WebsocketPack | undefined
 
 /**
@@ -29,15 +27,52 @@ export type SocketGetter = (uuid:string) => WebsocketPack | undefined
  * Use for access the plugin store function
  */
 export interface PluginLoader {
+    /**
+     * Loading all plugins
+     */
     load_all: () => Promise<PluginPageData>
-    get_project: (group:string, filename:string) => string | undefined
-    get_database: (group:string, filename:string) => string | undefined
-    get_plugin: () => Promise<PluginPageData>
-    import_template: (name:string, url:string, token:string) => Promise<PluginPageData>
+    /**
+     * Loading plugins from cache
+     */
+    get_plugins: () => Promise<PluginPageData>
+    /**
+     * Get project template
+     * @param name Plugin name
+     * @param group Group search
+     * @param filename Template filename
+     */
+    get_project: (name:string, group:string, filename:string) => string | undefined
+    /**
+     * Get database template
+     * @param name Plugin name
+     * @param group Group search
+     * @param filename Template filename
+     */
+    get_database: (name:string, group:string, filename:string) => string | undefined
+    /**
+     * Import plugin from web
+     * @param name Plugin name
+     * @param url The URL for plugin manifest
+     * @param token Token list, use space to seperate
+     */
     import_plugin: (name:string, url:string, token:string) => Promise<PluginPageData>
-    delete_template: (name:string) => Promise<void>
+    /**
+     * Delete plugin by name
+     * @param name Plugin name
+     */
     delete_plugin: (name:string) => Promise<void>
+    /**
+     * Telling node Download plugin
+     * @param uuid Node ID
+     * @param plugin Plugin name
+     * @param token Token list, use space to seperate
+     */
     plugin_download: (uuid:string, plugin:string, tokens:string) => Promise<void>
+    /**
+     * Telling node Remove plugin
+     * @param uuid Node ID
+     * @param plugin Plugin name
+     */
     plugin_remove: (uuid:string, plugin:string) => Promise<void>
 }
 
@@ -98,71 +133,59 @@ export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, s
             memory.plugins = cp.plugins
             return cp
         },
-        get_project: (group:string, filename:string):string | undefined => {
-            let find = false
-            let result:string | undefined = undefined
-            for(let x of memory.templates){
-                for(let y of x.project){
-                    if(y.group == group && y.filename == filename){
-                        result = JSON.stringify(y)
-                        find = true
-                        break
-                    }
-                }
-                if(find) break
-            }
-            return result
-        },
-        get_database: (group:string, filename:string):string | undefined => {
-            let find = false
-            let result:string | undefined = undefined
-            for(let x of memory.templates){
-                for(let y of x.database){
-                    if(y.group == group && y.filename == filename){
-                        result = JSON.stringify(y)
-                        find = true
-                        break
-                    }
-                }
-                if(find) break
-            }
-            return result
-        },
-        get_plugin: async ():Promise<PluginPageData> => {
+        get_plugins: async ():Promise<PluginPageData> => {
             return memory
         },
-        import_template: async (name:string, url:string, token:string):Promise<PluginPageData> => {
-            const root = loader.join(loader.root, 'template')
+        get_project: (name:string, group:string, filename:string):string | undefined => {
+            const plugin = memory.plugins.find(x => x.title == name)
+            if(plugin == undefined) return undefined
+            const result = plugin.projects.find(x => x.group == group && x.filename == filename)
+            if(result == undefined) return undefined
+            return JSON.stringify(result)
+        },
+        get_database: (name:string, group:string, filename:string):string | undefined => {
+            const plugin = memory.plugins.find(x => x.title == name)
+            if(plugin == undefined) return undefined
+            const result = plugin.databases.find(x => x.group == group && x.filename == filename)
+            if(result == undefined) return undefined
+            return JSON.stringify(result)
+        },
+        import_plugin: async (name:string, url:string, token:string):Promise<PluginPageData> => {
             const error_children:Array<[string, string]> = []
+            const root = loader.join(loader.root, 'plugin')
+            const project_folder = loader.join(root, name, 'project')
+            const database_folder = loader.join(root, name, 'database')
+            if (!loader.exists(root)) await loader.mkdir(root);
+            if (!loader.exists(project_folder)) await loader.mkdir(project_folder)
+            if (!loader.exists(database_folder)) await loader.mkdir(database_folder)
+            // Trying no token first
             const tokens = [undefined, ...token.split(' ')]
-            const content_folder = loader.join(root, name)
-            const project_folder = loader.join(content_folder, 'project')
-            const database_folder = loader.join(content_folder, 'database')
-            if (!loader.exists(root)) await loader.mkdir(root)
             let req:RequestInit = {}
-            let ob:TemplateData | undefined = undefined
+            let ob:PluginContainer | undefined = undefined
             for(let t of tokens){
-                if(t == undefined){
-                    req = { method: 'GET', cache: "no-store" }
-                }else{
-                    req = {
-                        method: 'GET',
-                        cache: "no-store",
-                        headers: {
-                            "Authorization": t ? `Bearer ${t}` : ''
-                        }
-                    }
-                }
+                // Do not store cache
+                // Even tho, some website have it's own CDN policy, You might still get old data
+                // But most of them only sustained couple minutes
+                req = t == undefined ? { method: 'GET', cache: "no-store" } :  {
+                    method: 'GET',
+                    cache: "no-store",
+                    headers: {
+                        "Authorization": t ? `Bearer ${t}` : ''
+                }}
+                // Get data
+                let tex = ""
                 try{
                     const res = await fetch(url, req)
-                    const tex = await res.text()
+                    tex = await res.text()
                     ob = JSON.parse(tex)
+                    console.log("Fetch plugin json successfully")
                     break
                 }catch (error){
-                    console.error(error)
+                    console.warn(error, tex)
                 }
             }
             if(ob == undefined) {
+                // Query data failed
                 const p:ToastData = { title: "Import Failed", type: "error", message: `Cannot find the json from url ${url}, or maybe just the wrong token` }
                 const h:Header = { name: "makeToast", data: JSON.stringify(p) }
                 if (feedback.electron){
@@ -172,19 +195,14 @@ export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, s
                     feedback.socket(JSON.stringify(h))
                 }
                 return memory
-            } 
+            }
             ob.url = url
-            loader.write_string(loader.join(root, name + '.json'), JSON.stringify(ob, null, 4))
-            if(!loader.exists(content_folder)) loader.mkdir(content_folder)
-            if(!loader.exists(project_folder)) loader.mkdir(project_folder)
-            if(!loader.exists(database_folder)) loader.mkdir(database_folder)
-            const folder = url.substring(0, url.lastIndexOf('/'))
-            const project_calls:Array<Promise<Response>> = []
-            const database_calls:Array<Promise<Response>> = []
+            loader.write_string(loader.join(root, name, 'manifest.json'), JSON.stringify(ob, null, 4))
 
-            ob.projects.forEach((p:TemplateData_Project) => {
-                project_calls.push(fetch(folder + "/" + p.filename + '.json', req))
-            })
+            const folder = url.substring(0, url.lastIndexOf('/'))
+            const project_calls:Array<Promise<Response>> = ob.projects.map(p => fetch(folder + "/" + p.filename + '.json', req))
+            const database_calls:Array<Promise<Response>> = ob.databases.map(p => fetch(folder + "/" + p.filename + '.json', req))
+            // * Project template query
             const pss = await Promise.all(project_calls)
             const project_calls2:Array<Promise<string>> = pss.map(x => x.text())
             const pss_result = await Promise.all(project_calls2)
@@ -198,10 +216,7 @@ export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, s
                     error_children.push([`Import Project ${n} Error`, error.message])
                 }
             })
-
-            ob.databases.forEach((p:TemplateData_Database) => {
-                database_calls.push(fetch(folder + "/" + p.filename + '.json', req))
-            })
+            // * Database template query
             const pss2 = await Promise.all(database_calls)
             const database_calls2:Array<Promise<string>> = pss2.map(x => x.text())
             const pss_result2 = await Promise.all(database_calls2)
@@ -226,69 +241,15 @@ export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, s
                 }
                 return memory
             }
+
             const cp = await GetCurrentPlugin(loader)
-            memory.templates = cp.templates
             memory.plugins = cp.plugins
             return cp
-        },
-        import_plugin: async (name:string, url:string, token:string):Promise<PluginPageData> => {
-            const root = loader.join(loader.root, 'plugin')
-            const tokens = [undefined, ...token.split(' ')]
-            if (!loader.exists(root)) await loader.mkdir(root);
-            let req:RequestInit = {}
-            let ob:PluginList | undefined = undefined
-            for(let t of tokens){
-                if(t == undefined){
-                    req = { method: 'GET', cache: "no-store" }
-                }else{
-                    req = {
-                        method: 'GET',
-                        cache: "no-store",
-                        headers: {
-                            "Authorization": t ? `Bearer ${t}` : ''
-                        }
-                    }
-                }
-                let tex = ""
-                try{
-                    const res = await fetch(url, req)
-                    tex = await res.text()
-                    ob = JSON.parse(tex)
-                    console.log("Fetch plugin json successfully")
-                    break
-                }catch (error){
-                    console.warn(error, tex)
-                }
-            }
-            if(ob == undefined) {
-                const p:ToastData = { title: "Import Failed", type: "error", message: `Cannot find the json from url ${url}, or maybe just the wrong token` }
-                const h:Header = { name: "makeToast", data: JSON.stringify(p) }
-                if (feedback.electron){
-                    feedback.electron()?.send("makeToast", JSON.stringify(p))
-                }
-                if (feedback.socket){
-                    feedback.socket(JSON.stringify(h))
-                }
-                return memory
-            }
-            ob.url = url
-            loader.write_string(loader.join(root, name + '.json'), JSON.stringify(ob, null, 4))
-            const cp = await GetCurrentPlugin(loader)
-            memory.templates = cp.templates
-            memory.plugins = cp.plugins
-            return cp
-        },
-        delete_template: async (name:string):Promise<void> => {
-            const root = loader.join(loader.root, 'template')
-            if(loader.exists(loader.join(root, name + '.json'))) 
-                await loader.rm(loader.join(root, name + '.json'));
-            if(loader.exists(loader.join(root, name))) 
-                await loader.rm(loader.join(root, name));
         },
         delete_plugin: async (name:string):Promise<void> => {
-            const root = loader.join(loader.root, 'plugin')
-            if(loader.exists(loader.join(root, name + '.json'))) 
-                await loader.rm(loader.join(root, name + '.json'));
+            const root = loader.join(loader.root, 'plugin', name)
+            if(loader.exists(root)) 
+                await loader.rm(root);
         },
         plugin_download: async (uuid:string, plugin:string, tokens:string):Promise<void> => {
             const p:Plugin = JSON.parse(plugin)
