@@ -58,22 +58,12 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
             return memory;
         },
         get_project: (name, group, filename) => {
-            const plugin = memory.plugins.find(x => x.title == name);
-            if (plugin == undefined)
-                return undefined;
-            const result = plugin.projects.find(x => x.group == group && x.filename == filename);
-            if (result == undefined)
-                return undefined;
-            return JSON.stringify(result);
+            const path = loader.join(loader.root, "plugin", name, "project", filename);
+            return loader.exists(path) ? loader.read_string(path) : undefined;
         },
         get_database: (name, group, filename) => {
-            const plugin = memory.plugins.find(x => x.title == name);
-            if (plugin == undefined)
-                return undefined;
-            const result = plugin.databases.find(x => x.group == group && x.filename == filename);
-            if (result == undefined)
-                return undefined;
-            return JSON.stringify(result);
+            const path = loader.join(loader.root, "plugin", name, "database", filename);
+            return loader.exists(path) ? loader.read_string(path) : undefined;
         },
         import_plugin: async (name, url, token) => {
             const error_children = [];

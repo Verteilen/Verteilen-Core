@@ -5,8 +5,8 @@ export type SocketGetter = (uuid: string) => WebsocketPack | undefined;
 export interface PluginLoader {
     load_all: () => Promise<PluginPageData>;
     get_plugins: () => Promise<PluginPageData>;
-    get_project: (name: string, group: string, filename: string) => string | undefined;
-    get_database: (name: string, group: string, filename: string) => string | undefined;
+    get_project: (name: string, group: string, filename: string) => Promise<string> | undefined;
+    get_database: (name: string, group: string, filename: string) => Promise<string> | undefined;
     import_plugin: (name: string, url: string, token: string) => Promise<PluginPageData>;
     delete_plugin: (name: string) => Promise<void>;
     plugin_download: (uuid: string, plugin: string, tokens: string) => Promise<void>;

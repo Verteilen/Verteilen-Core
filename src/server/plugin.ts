@@ -41,14 +41,14 @@ export interface PluginLoader {
      * @param group Group search
      * @param filename Template filename
      */
-    get_project: (name:string, group:string, filename:string) => string | undefined
+    get_project: (name:string, group:string, filename:string) => Promise<string> | undefined
     /**
      * Get database template
      * @param name Plugin name
      * @param group Group search
      * @param filename Template filename
      */
-    get_database: (name:string, group:string, filename:string) => string | undefined
+    get_database: (name:string, group:string, filename:string) => Promise<string> | undefined
     /**
      * Import plugin from web
      * @param name Plugin name
@@ -136,19 +136,13 @@ export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, s
         get_plugins: async ():Promise<PluginPageData> => {
             return memory
         },
-        get_project: (name:string, group:string, filename:string):string | undefined => {
-            const plugin = memory.plugins.find(x => x.title == name)
-            if(plugin == undefined) return undefined
-            const result = plugin.projects.find(x => x.group == group && x.filename == filename)
-            if(result == undefined) return undefined
-            return JSON.stringify(result)
+        get_project: (name:string, group:string, filename:string):Promise<string> | undefined => {
+            const path = loader.join(loader.root, "plugin", name, "project", filename)
+            return loader.exists(path) ? loader.read_string(path) : undefined
         },
-        get_database: (name:string, group:string, filename:string):string | undefined => {
-            const plugin = memory.plugins.find(x => x.title == name)
-            if(plugin == undefined) return undefined
-            const result = plugin.databases.find(x => x.group == group && x.filename == filename)
-            if(result == undefined) return undefined
-            return JSON.stringify(result)
+        get_database: (name:string, group:string, filename:string):Promise<string> | undefined => {
+            const path = loader.join(loader.root, "plugin", name, "database", filename)
+            return loader.exists(path) ? loader.read_string(path) : undefined
         },
         import_plugin: async (name:string, url:string, token:string):Promise<PluginPageData> => {
             const error_children:Array<[string, string]> = []

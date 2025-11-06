@@ -425,5 +425,7 @@
     "goback": "Go Back",
     "logic": "Logic",
     "use_logic": "Use Logic",
-    "remove_logic": "Remove Logic"
+    "remove_logic": "Remove Logic",
+    "state": "State",
+    "delay": "Delay"
 }
