@@ -63,45 +63,73 @@ export interface Header {
      */
     name: string
     /**
-     * Token for encryption
+     * **Where Data Go**\
+     * The path to go\
+     * You might go to cluster and send to node children\
+     * This data specified the IP path\
+     * If undefined, it means it's destinations
+     * @example Use Space to seperate
+     * "192.168.10.1:50 192.168.10.7:8052"
+     */
+    destinations?: string
+    /**
+     * **Token Session**\
+     * Some request require token to access
      */
     token?: string
     /**
-     * Extra metadata
+     * **Extra Metadata**
      */
     meta?: string
     /**
-     * Print message
+     * **Print Message**
      */
     message?: string
     /**
-     * Resource channel
+     * **Resource channel**
      */
     channel?:string
     /**
-     * The data content
+     * **TData Content**\
+     * The content of the websocket package\
+     * Put everything you want to send in here
      */
     data?: any
 }
 
+/**
+ * **Data Format: Single Data**
+ */
 export interface Single {
     data: any
 }
 
+/**
+ * **Data Format: Path Data**
+ */
 export interface OnePath {
     path: string
 }
 
+/**
+ * **Data Format: Arrow Path**
+ */
 export interface TwoPath {
     from: string
     to: string
 }
 
+/**
+ * **Data Format: Map Setter**
+ */
 export interface Setter {
     key: string
     value: any
 }
 
+/**
+ * **Data Format: Feedback**
+ */
 export interface FeedBack {
     node_uuid?: string
     index?: number
@@ -111,11 +139,17 @@ export interface FeedBack {
     message: string
 }
 
+/**
+ * **Data Format: KeyValue**
+ */
 export interface KeyValue {
     key: any
     value: any
 }
 
+/**
+ * **Data Format: JWT Info**
+ */
 export interface JWT {
     user: string
     create: number

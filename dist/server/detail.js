@@ -9,7 +9,6 @@ const execute_manager_1 = require("../script/execute_manager");
 const socket_manager_1 = require("../script/socket_manager");
 class ServerDetail {
     execute_manager = [];
-    console;
     websocket_manager;
     shellBind = new Map();
     loader;
@@ -30,7 +29,6 @@ class ServerDetail {
             folderReply: this.folderReply
         };
         this.websocket_manager = new socket_manager_1.WebsocketManager(this.NewConnection, this.DisConnection, this.Analysis, messager_log, n);
-        this.console = new console_handle_1.Console_Handler();
         this.updatehandle = setInterval(() => {
             this.re.push(...this.console_update());
         }, interface_1.RENDER_UPDATETICK);
@@ -272,7 +270,7 @@ class ServerDetail {
         const uscp = new console_handle_1.Console_Proxy(p);
         const uslp = new log_handle_1.Log_Proxy(p, { logs: this.backend.memory.logs }, this.backend.GetPreference(uuid));
         em.proxy = this.CombineProxy([uscp.execute_proxy, uslp.execute_proxy]);
-        const r = this.console.receivedPack(p, record);
+        const r = (0, console_handle_1.receivedPack)(p, record);
         if (r)
             this.execute_manager.push(p);
         if (socket != undefined) {

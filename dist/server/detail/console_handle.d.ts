@@ -1,7 +1,5 @@
 import { ExecutePair, ExecuteProxy, ExecuteState, FeedBack, Job, Database, Project, Record, Task } from "../../interface";
-export declare class Console_Handler {
-    receivedPack: (model: ExecutePair, record: Record) => boolean;
-}
+export declare const receivedPack: (model: ExecutePair, record: Record) => boolean;
 export declare class Console_Proxy {
     model: ExecutePair;
     constructor(_model: ExecutePair);

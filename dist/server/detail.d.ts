@@ -1,7 +1,6 @@
 import { BusAnalysis, ExecutePair, ExecuteProxy, ExecuteRecord, ExecuteState, Messager, Preference, Record, ShellFolder, Single, WebsocketPack } from "../interface";
 import { PluginFeedback } from "./server";
 import { MemoryData, RecordIOBase } from './io';
-import { Console_Handler } from './detail/console_handle';
 import { WebsocketManager } from '../script/socket_manager';
 export interface BackendAction {
     memory: MemoryData;
@@ -32,7 +31,6 @@ export interface ServerDetailEvent {
 }
 export declare class ServerDetail {
     execute_manager: Array<ExecutePair>;
-    console: Console_Handler;
     websocket_manager: WebsocketManager | undefined;
     shellBind: Map<any, any>;
     loader: RecordIOBase | undefined;

@@ -111,10 +111,10 @@ export declare const i18nDefaultData: {
                 "enter-task-name": string;
                 "enter-task-description": string;
                 "new-job": string;
-                "new-database": string;
-                "edit-database": string;
+                "new-Variable": string;
+                "edit-Variable": string;
                 "delete-database": string;
-                "enter-database-name": string;
+                "enter-Variable-name": string;
                 "new-database-set": string;
                 "clone-database-set": string;
                 "edit-database-set": string;
@@ -434,6 +434,8 @@ export declare const i18nDefaultData: {
             logic: string;
             use_logic: string;
             remove_logic: string;
+            state: string;
+            delay: string;
         };
         zh_TW: {
             login: {
@@ -540,10 +542,10 @@ export declare const i18nDefaultData: {
                 "enter-task-name": string;
                 "enter-task-description": string;
                 "new-job": string;
-                "new-database": string;
-                "edit-database": string;
+                "new-Variable": string;
+                "edit-Variable": string;
                 "delete-database": string;
-                "enter-database-name": string;
+                "enter-Variable-name": string;
                 "new-database-set": string;
                 "clone-database-set": string;
                 "edit-database-set": string;
@@ -863,6 +865,8 @@ export declare const i18nDefaultData: {
             logic: string;
             use_logic: string;
             remove_logic: string;
+            state: string;
+            delay: string;
         };
     };
 };
@@ -972,10 +976,10 @@ export declare const i18n: import("vue-i18n").I18n<{
             "enter-task-name": string;
             "enter-task-description": string;
             "new-job": string;
-            "new-database": string;
-            "edit-database": string;
+            "new-Variable": string;
+            "edit-Variable": string;
             "delete-database": string;
-            "enter-database-name": string;
+            "enter-Variable-name": string;
             "new-database-set": string;
             "clone-database-set": string;
             "edit-database-set": string;
@@ -1295,6 +1299,8 @@ export declare const i18n: import("vue-i18n").I18n<{
         logic: string;
         use_logic: string;
         remove_logic: string;
+        state: string;
+        delay: string;
     };
     zh_TW: {
         login: {
@@ -1401,10 +1407,10 @@ export declare const i18n: import("vue-i18n").I18n<{
             "enter-task-name": string;
             "enter-task-description": string;
             "new-job": string;
-            "new-database": string;
-            "edit-database": string;
+            "new-Variable": string;
+            "edit-Variable": string;
             "delete-database": string;
-            "enter-database-name": string;
+            "enter-Variable-name": string;
             "new-database-set": string;
             "clone-database-set": string;
             "edit-database-set": string;
@@ -1724,6 +1730,8 @@ export declare const i18n: import("vue-i18n").I18n<{
         logic: string;
         use_logic: string;
         remove_logic: string;
+        state: string;
+        delay: string;
     };
 }, {}, {}, string, true>;
 export declare const raw_i18n: I18n;

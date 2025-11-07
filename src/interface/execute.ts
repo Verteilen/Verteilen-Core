@@ -13,7 +13,7 @@ import { ExecuteRecord } from "./log"
 
 /**
  * **Server Execute Record**\
- * 
+ * A package with execution worker and output log record
  */
 export interface ExecutePair {
     /**

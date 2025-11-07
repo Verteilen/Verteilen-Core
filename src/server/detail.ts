@@ -27,7 +27,7 @@ import {
 } from "../interface"
 import { PluginFeedback } from "./server"
 import { MemoryData, RecordIOBase } from './io'
-import { Console_Handler, Console_Proxy } from './detail/console_handle'
+import { receivedPack, Console_Proxy } from './detail/console_handle'
 import { Log_Proxy } from './detail/log_handle'
 import { ExecuteManager } from '../script/execute_manager'
 import { WebsocketManager } from '../script/socket_manager'
@@ -72,7 +72,6 @@ export interface ServerDetailEvent {
  */
 export class ServerDetail {
     execute_manager: Array<ExecutePair> = []
-    console:Console_Handler
     websocket_manager: WebsocketManager | undefined
 
     shellBind = new Map()
@@ -105,7 +104,6 @@ export class ServerDetail {
             folderReply: this.folderReply
         }
         this.websocket_manager = new WebsocketManager(this.NewConnection, this.DisConnection, this.Analysis, messager_log, n)
-        this.console = new Console_Handler()
         // Internal update clock
         this.updatehandle = setInterval(() => {
             this.re.push(...this.console_update())
@@ -382,7 +380,7 @@ export class ServerDetail {
         const uscp:Console_Proxy = new Console_Proxy(p)
         const uslp:Log_Proxy = new Log_Proxy(p, { logs: this.backend.memory.logs }, this.backend.GetPreference(uuid)!)
         em.proxy = this.CombineProxy([uscp.execute_proxy, uslp.execute_proxy])
-        const r = this.console.receivedPack(p, record)
+        const r = receivedPack(p, record)
         if(r) this.execute_manager.push(p)
         
         if(socket != undefined){

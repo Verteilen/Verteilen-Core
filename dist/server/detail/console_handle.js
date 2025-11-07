@@ -1,49 +1,47 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Console_Proxy = exports.Console_Handler = void 0;
+exports.Console_Proxy = exports.receivedPack = void 0;
 const interface_1 = require("../../interface");
-class Console_Handler {
-    receivedPack = (model, record) => {
-        const pass = model.manager.Register();
-        if (pass == -1) {
-            model.record.running = false;
-            model.record.stop = true;
-            return false;
-        }
-        model.record.projects = record.projects;
-        model.record.nodes = record.nodes;
-        model.record.project_state = model.record.projects.map(x => {
-            return {
-                uuid: x.uuid,
-                state: interface_1.ExecuteState.NONE
-            };
+const receivedPack = (model, record) => {
+    const pass = model.manager.Register();
+    if (pass == -1) {
+        model.record.running = false;
+        model.record.stop = true;
+        return false;
+    }
+    model.record.projects = record.projects;
+    model.record.nodes = record.nodes;
+    model.record.project_state = model.record.projects.map(x => {
+        return {
+            uuid: x.uuid,
+            state: interface_1.ExecuteState.NONE
+        };
+    });
+    model.record.project_index = pass;
+    model.record.project = record.projects[pass].uuid;
+    model.record.task_index = 0;
+    model.record.task_state = model.record.projects[0].tasks.map(x => {
+        return {
+            uuid: x.uuid,
+            state: interface_1.ExecuteState.NONE
+        };
+    });
+    model.record.task_state[0].state = interface_1.ExecuteState.RUNNING;
+    model.record.task_detail = [];
+    const task = model.record.projects[model.record.project_index]?.tasks[model.record.task_index];
+    const count = task.cronjob ? (task?.jobs.length ?? 0) : 1;
+    for (let i = 0; i < count; i++) {
+        model.record.task_detail.push({
+            index: i,
+            node: "",
+            message: [],
+            state: interface_1.ExecuteState.NONE
         });
-        model.record.project_index = pass;
-        model.record.project = record.projects[pass].uuid;
-        model.record.task_index = 0;
-        model.record.task_state = model.record.projects[0].tasks.map(x => {
-            return {
-                uuid: x.uuid,
-                state: interface_1.ExecuteState.NONE
-            };
-        });
-        model.record.task_state[0].state = interface_1.ExecuteState.RUNNING;
-        model.record.task_detail = [];
-        const task = model.record.projects[model.record.project_index]?.tasks[model.record.task_index];
-        const count = task.cronjob ? (task?.jobs.length ?? 0) : 1;
-        for (let i = 0; i < count; i++) {
-            model.record.task_detail.push({
-                index: i,
-                node: "",
-                message: [],
-                state: interface_1.ExecuteState.NONE
-            });
-        }
-        model.manager.Update();
-        return true;
-    };
-}
-exports.Console_Handler = Console_Handler;
+    }
+    model.manager.Update();
+    return true;
+};
+exports.receivedPack = receivedPack;
 class Console_Proxy {
     model;
     constructor(_model) {

@@ -17,6 +17,7 @@ export interface WebsocketPack {
 }
 export interface Header {
     name: string;
+    destinations?: string;
     token?: string;
     meta?: string;
     message?: string;
