@@ -141,7 +141,8 @@
         "delete-task-confirm": "確定刪除選取的工作嗎?",
         "create-service": "建立服務",
         "delete-service": "刪除服務",
-        "delete-service-confirm": "確定刪除選取的服務嗎?"
+        "delete-service-confirm": "確定刪除選取的服務嗎?",
+        "new-condition": "建立條件"
     },
     "toolbar": {
         "server": "伺服器",
@@ -348,6 +349,16 @@
             "messager": "messager(message:string)",
             "messager_log": "messager_log(message:string)"
         }
+    },
+    "condition": {
+        "group": "群組",
+        "condition": "條件",
+        "execution": "執行 (成功)",
+        "failed": "執行 (失敗)",
+        "single": "工作內容",
+        "or": "Or",
+        "and": "And",
+        "not": "Not"
     },
     "token": "密鑰",
     "info": "資訊",

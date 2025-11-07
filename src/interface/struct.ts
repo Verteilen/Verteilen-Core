@@ -264,14 +264,6 @@ export interface TaskLogicUnit {
      * **Common Logic Group**
      */
     children: Array<TaskLogicUnit>
-    /**
-     * **False Logic Group**
-     * - Group
-     *   - Condition
-     *   - Execution (True)
-     *   - Execution (False) <- This part
-     */
-    children2?: Array<TaskLogicUnit>
 }
 
 /**

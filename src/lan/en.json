@@ -141,7 +141,8 @@
         "delete-task-confirm": "Are you sure you want to delete these tasks?",
         "create-service": "Create Service",
         "delete-service": "Delete Service",
-        "delete-service-confirm": "Are you sure you want to delete these services?"
+        "delete-service-confirm": "Are you sure you want to delete these services?",
+        "new-condition": "Create Condition"
     },
     "toolbar": {
         "server": "Server",
@@ -348,6 +349,16 @@
             "messager": "messager(message:string)",
             "messager_log": "messager_log(message:string)"
         }
+    },
+    "condition": {
+        "group": "Group",
+        "condition": "Condition",
+        "execution": "Execution (Success)",
+        "failed": "Execution (Failed)",
+        "single": "Job Content",
+        "or": "Or",
+        "and": "And",
+        "not": "Not"
     },
     "token": "Token",
     "info": "Information",
