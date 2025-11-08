@@ -115,7 +115,6 @@ export interface TaskLogicUnit {
     job_uuid?: string;
     job?: Job;
     children: Array<TaskLogicUnit>;
-    children2?: Array<TaskLogicUnit>;
 }
 export interface TaskLogic {
     group: Array<TaskLogicUnit>;

@@ -150,6 +150,7 @@ export declare const i18nDefaultData: {
                 "create-service": string;
                 "delete-service": string;
                 "delete-service-confirm": string;
+                "new-condition": string;
             };
             toolbar: {
                 server: string;
@@ -357,6 +358,16 @@ export declare const i18nDefaultData: {
                     messager_log: string;
                 };
             };
+            condition: {
+                group: string;
+                condition: string;
+                execution: string;
+                failed: string;
+                single: string;
+                or: string;
+                and: string;
+                not: string;
+            };
             token: string;
             info: string;
             search: string;
@@ -436,6 +447,8 @@ export declare const i18nDefaultData: {
             remove_logic: string;
             state: string;
             delay: string;
+            zoom: string;
+            unzoom: string;
         };
         zh_TW: {
             login: {
@@ -581,6 +594,7 @@ export declare const i18nDefaultData: {
                 "create-service": string;
                 "delete-service": string;
                 "delete-service-confirm": string;
+                "new-condition": string;
             };
             toolbar: {
                 server: string;
@@ -788,6 +802,16 @@ export declare const i18nDefaultData: {
                     messager_log: string;
                 };
             };
+            condition: {
+                group: string;
+                condition: string;
+                execution: string;
+                failed: string;
+                single: string;
+                or: string;
+                and: string;
+                not: string;
+            };
             token: string;
             info: string;
             search: string;
@@ -867,6 +891,8 @@ export declare const i18nDefaultData: {
             remove_logic: string;
             state: string;
             delay: string;
+            zoom: string;
+            unzoom: string;
         };
     };
 };
@@ -1015,6 +1041,7 @@ export declare const i18n: import("vue-i18n").I18n<{
             "create-service": string;
             "delete-service": string;
             "delete-service-confirm": string;
+            "new-condition": string;
         };
         toolbar: {
             server: string;
@@ -1222,6 +1249,16 @@ export declare const i18n: import("vue-i18n").I18n<{
                 messager_log: string;
             };
         };
+        condition: {
+            group: string;
+            condition: string;
+            execution: string;
+            failed: string;
+            single: string;
+            or: string;
+            and: string;
+            not: string;
+        };
         token: string;
         info: string;
         search: string;
@@ -1301,6 +1338,8 @@ export declare const i18n: import("vue-i18n").I18n<{
         remove_logic: string;
         state: string;
         delay: string;
+        zoom: string;
+        unzoom: string;
     };
     zh_TW: {
         login: {
@@ -1446,6 +1485,7 @@ export declare const i18n: import("vue-i18n").I18n<{
             "create-service": string;
             "delete-service": string;
             "delete-service-confirm": string;
+            "new-condition": string;
         };
         toolbar: {
             server: string;
@@ -1653,6 +1693,16 @@ export declare const i18n: import("vue-i18n").I18n<{
                 messager_log: string;
             };
         };
+        condition: {
+            group: string;
+            condition: string;
+            execution: string;
+            failed: string;
+            single: string;
+            or: string;
+            and: string;
+            not: string;
+        };
         token: string;
         info: string;
         search: string;
@@ -1732,6 +1782,8 @@ export declare const i18n: import("vue-i18n").I18n<{
         remove_logic: string;
         state: string;
         delay: string;
+        zoom: string;
+        unzoom: string;
     };
 }, {}, {}, string, true>;
 export declare const raw_i18n: I18n;

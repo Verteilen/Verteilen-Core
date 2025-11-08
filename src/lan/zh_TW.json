@@ -438,5 +438,7 @@
     "use_logic": "套用邏輯",
     "remove_logic": "刪除邏輯",
     "state": "狀態",
-    "delay": "延遲"
+    "delay": "延遲",
+    "zoom": "放大",
+    "unzoom": "縮小"
 }

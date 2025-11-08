@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateRecordMongoLoader = exports.CreateRecordIOLoader = exports.CreateRecordMemoryLoader = exports._CreateRecordIOLoader = exports._CreateRecordMemoryLoader = void 0;
+exports.CreateRecordMongoLoader = exports.CreateRecordIOLoader = exports.CreateRecordMemoryLoader = exports._CreateRecordIOLoader = exports.ObsoleteSupport = exports._CreateRecordMemoryLoader = void 0;
 const interface_1 = require("../interface");
 const _CreateRecordMemoryLoader = (loader, type) => {
     const get_array = (type) => {
@@ -55,6 +55,63 @@ const _CreateRecordMemoryLoader = (loader, type) => {
     };
 };
 exports._CreateRecordMemoryLoader = _CreateRecordMemoryLoader;
+const ObsoleteSupport = async (loader, type, folder) => {
+    if (type == interface_1.RecordType.PROJECT) {
+        const path = loader.join(loader.root, "record");
+        if (!loader.exists(path))
+            return;
+        const p = await loader.read_dir_file(path);
+        const ps = p.filter(x => x.endsWith(".json")).map(x => {
+            const path_r = loader.join(path, x);
+            return loader.read_string(path_r);
+        });
+        const allRecordText = await Promise.all(ps);
+        const allRecord = allRecordText.map(x => JSON.parse(x));
+        const execute_project = [];
+        const execute_task = [];
+        const execute_job = [];
+        for (let x of allRecord) {
+            const tasks = x.task;
+            x.tasks = [];
+            x.database_uuid = x.parameter_uuid;
+            x.tasks_uuid = tasks.map(y => y.uuid);
+            delete x.parameter_uuid;
+            delete x.task;
+            for (let y of tasks) {
+                const jobs = y.jobs;
+                y.jobs = [];
+                y.jobs_uuid = jobs.map(z => z.uuid);
+                for (let z of jobs) {
+                    z.id_args = [];
+                    const d3 = loader.join(loader.root, "job", `${z.uuid}.json`);
+                    execute_job.push(loader.write_string(d3, JSON.stringify(z, null, 4)));
+                }
+                const d2 = loader.join(loader.root, "task", `${y.uuid}.json`);
+                execute_task.push(loader.write_string(d2, JSON.stringify(y, null, 4)));
+            }
+            const d1 = loader.join(loader.root, "project", `${x.uuid}.json`);
+            execute_project.push(loader.write_string(d1, JSON.stringify(x, null, 4)));
+        }
+        await Promise.all(execute_project);
+        await Promise.all(execute_task);
+        await Promise.all(execute_job);
+        await loader.rm(path);
+    }
+    else if (type == interface_1.RecordType.DATABASE) {
+        const path = loader.join(loader.root, "parameter");
+        if (!loader.exists(path))
+            return;
+        const p = await loader.read_dir_file(path);
+        const ps = p.filter(x => x.endsWith(".json")).map(x => {
+            const path2 = loader.join(path, x);
+            const path3 = loader.join(loader.root, folder, x);
+            return loader.cp(path2, path3);
+        });
+        await Promise.all(ps);
+        loader.rm(path);
+    }
+};
+exports.ObsoleteSupport = ObsoleteSupport;
 const _CreateRecordIOLoader = (loader, memory, type, folder, ext = ".json") => {
     const get_array = (type) => {
         switch (type) {
@@ -74,6 +131,7 @@ const _CreateRecordIOLoader = (loader, memory, type, folder, ext = ".json") => {
             const root = loader.join(loader.root, folder);
             if (!loader.exists(root))
                 await loader.mkdir(root);
+            await (0, exports.ObsoleteSupport)(loader, type, folder);
             const files = await loader.read_dir_file(root);
             const r = files.map(x => loader.read_string(loader.join(root, x), { encoding: 'utf8', flag: 'r' }));
             const p = await Promise.all(r);

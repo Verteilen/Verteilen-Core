@@ -438,5 +438,7 @@
     "use_logic": "Use Logic",
     "remove_logic": "Remove Logic",
     "state": "State",
-    "delay": "Delay"
+    "delay": "Delay",
+    "zoom": "Zoom",
+    "unzoom": "UnZoom"
 }

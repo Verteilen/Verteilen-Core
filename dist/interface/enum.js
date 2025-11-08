@@ -6,9 +6,11 @@ var TaskLogicType;
     TaskLogicType[TaskLogicType["GROUP"] = 0] = "GROUP";
     TaskLogicType[TaskLogicType["CONDITION"] = 1] = "CONDITION";
     TaskLogicType[TaskLogicType["EXECUTION"] = 2] = "EXECUTION";
-    TaskLogicType[TaskLogicType["Single"] = 3] = "Single";
-    TaskLogicType[TaskLogicType["ADD"] = 4] = "ADD";
-    TaskLogicType[TaskLogicType["OR"] = 5] = "OR";
+    TaskLogicType[TaskLogicType["FAILED"] = 3] = "FAILED";
+    TaskLogicType[TaskLogicType["SINGLE"] = 4] = "SINGLE";
+    TaskLogicType[TaskLogicType["ADD"] = 5] = "ADD";
+    TaskLogicType[TaskLogicType["OR"] = 6] = "OR";
+    TaskLogicType[TaskLogicType["NOT"] = 7] = "NOT";
 })(TaskLogicType || (exports.TaskLogicType = TaskLogicType = {}));
 var SocketState;
 (function (SocketState) {

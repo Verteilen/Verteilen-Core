@@ -136,6 +136,63 @@ export const _CreateRecordMemoryLoader = (loader:MemoryData, type:RecordType):Re
         }
     }
 }
+export const ObsoleteSupport = async (loader:RecordIOBase, type:RecordType, folder:string) => {
+    if(type == RecordType.PROJECT){
+        const path = loader.join(loader.root, "record")
+        if(!loader.exists(path)) return
+        const p = await loader.read_dir_file(path)
+        const ps = p.filter(x => x.endsWith(".json")).map(x => {
+            const path_r = loader.join(path, x)
+            return loader.read_string(path_r)
+        })
+        const allRecordText:Array<string> = await Promise.all(ps)
+        const allRecord:Array<any> = allRecordText.map(x => JSON.parse(x))
+
+        const execute_project:Array<Promise<any>> = []
+        const execute_task:Array<Promise<any>> = []
+        const execute_job:Array<Promise<any>> = []
+        for(let x of allRecord){
+            const tasks:Array<any> = x.task
+            x.tasks = []
+            x.database_uuid = x.parameter_uuid
+            x.tasks_uuid = tasks.map(y => y.uuid)
+            delete x.parameter_uuid
+            delete x.task
+
+            for(let y of tasks){
+                const jobs = y.jobs
+                y.jobs = []
+                y.jobs_uuid = jobs.map(z => z.uuid)
+
+                for(let z of jobs){
+                    z.id_args = []
+                    const d3 = loader.join(loader.root, "job", `${z.uuid}.json`)
+                    execute_job.push(loader.write_string(d3, JSON.stringify(z, null, 4)))
+                }
+                const d2 = loader.join(loader.root, "task", `${y.uuid}.json`)
+                execute_task.push(loader.write_string(d2, JSON.stringify(y, null, 4)))
+            }
+            const d1 = loader.join(loader.root, "project", `${x.uuid}.json`)
+            execute_project.push(loader.write_string(d1, JSON.stringify(x, null, 4)))
+        }
+        await Promise.all(execute_project)
+        await Promise.all(execute_task)
+        await Promise.all(execute_job)
+        await loader.rm(path)
+    }
+    else if(type == RecordType.DATABASE){
+        const path = loader.join(loader.root, "parameter")
+        if(!loader.exists(path)) return
+        const p = await loader.read_dir_file(path)
+        const ps = p.filter(x => x.endsWith(".json")).map(x => {
+            const path2 = loader.join(path, x)
+            const path3 = loader.join(loader.root, folder, x)
+            return loader.cp(path2, path3)
+        })
+        await Promise.all(ps)
+        loader.rm(path)
+    }
+}
 /**
  * **Create the interface for record files storage**\
  * Generate a loader interface for register to server event
@@ -162,6 +219,7 @@ export const _CreateRecordIOLoader = (loader:RecordIOBase, memory:MemoryData, ty
         load_all: async ():Promise<Array<string>> => {
             const root = loader.join(loader.root, folder)
             if(!loader.exists(root)) await loader.mkdir(root)
+            await ObsoleteSupport(loader, type, folder)
             const files = await loader.read_dir_file(root)
             const r:Array<Promise<string>> = files.map(x => 
                 loader.read_string(loader.join(root, x), { encoding: 'utf8', flag: 'r' })

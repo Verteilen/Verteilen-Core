@@ -44,6 +44,7 @@ export interface RecordIOBase {
 export interface RecordMongoBase {
 }
 export declare const _CreateRecordMemoryLoader: (loader: MemoryData, type: RecordType) => RecordIOLoader;
+export declare const ObsoleteSupport: (loader: RecordIOBase, type: RecordType, folder: string) => Promise<void>;
 export declare const _CreateRecordIOLoader: (loader: RecordIOBase, memory: MemoryData, type: RecordType, folder: string, ext?: string) => RecordIOLoader;
 export declare const CreateRecordMemoryLoader: (loader: MemoryData) => RecordLoader;
 export declare const CreateRecordIOLoader: (loader: RecordIOBase, memory: MemoryData) => RecordLoader;
