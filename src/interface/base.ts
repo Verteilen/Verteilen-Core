@@ -25,6 +25,40 @@ export interface DataHeader {
     uuid: string
 }
 
+export interface ShareLevel {
+    user: string
+    permission: LocalPermission
+}
+
+export interface Shareable {
+    /**
+     * **User ID**\
+     * Who own this project\
+     * It will specified public if this field is undefined\
+     * This will getting detect before {@link Project.acl}
+     */
+    owner?: string
+    /**
+     * **Local Permission**\
+     * Client-side only permission field\
+     * Server will check user token and defined its permission level\
+     * And modify this field and send back to user
+     */
+    permission?: LocalPermission
+    /**
+     * **Accessibility**\
+     * Could be public, protected, private
+     * * PUBLIC: Everyone can see it
+     * * PRIVATE: Only owner can see it
+     * * PROTECTED: Only shared and owner can see it
+     */
+    acl?: ACLType
+    /**
+     * **Shared With Who**
+     */
+    shared?: Array<ShareLevel>
+}
+
 export interface DataTime {
     createDate?: string
     updateDate?: string
@@ -110,46 +144,22 @@ export interface Service extends DataHeader, DataTime {
      * What project does it run through
      */
     project: string
-    /**
-     * **Local Permission**\
-     * Client-side only permission field\
-     * Server will check user token and defined its permission level\
-     * And modify this field and send back to user
-     */
-    permission?: LocalPermission
-    /**
-     * **Accessibility**\
-     * Could be public, protected, private
-     */
-    acl?: ACLType
 }
 /**
  * **Data Database Bank**\
  * Store the data which will be reference in the execute stage
  */
-export interface Database extends DataHeader, DataTime {
+export interface Database extends DataHeader, DataTime, Shareable {
     title: string
     canWrite: boolean
     containers: Array<DatabaseContainer>
-    /**
-     * **Local Permission**\
-     * Client-side only permission field\
-     * Server will check user token and defined its permission level\
-     * And modify this field and send back to user
-     */
-    permission?: LocalPermission
-    /**
-     * **Accessibility**\
-     * Could be public, protected, private
-     */
-    acl?: ACLType
 }
 /**
  * **Compute Instruction Container**\
  * Specifed the command, which show how does user want these compute to do\
  * Contains different arguments list, which could reference to database value
  */
-export interface Job extends DataHeader, DataTime {
+export interface Job extends DataHeader, DataTime, Shareable {
     /**
      * **Order**\
      * Define the order in the list\
@@ -212,18 +222,6 @@ export interface Job extends DataHeader, DataTime {
      * In order to execute job, some type of job will require arguments
      */
     id_args: Array<boolean>
-    /**
-     * **Local Permission**\
-     * Client-side only permission field\
-     * Server will check user token and defined its permission level\
-     * And modify this field and send back to user
-     */
-    permission?: LocalPermission
-    /**
-     * **Accessibility**\
-     * Could be public, protected, private
-     */
-    acl?: ACLType
 }
 /**
  * **Task Base Container**\
@@ -304,33 +302,14 @@ export interface TaskOption {
  * **Task Container**\
  * Specified different stage of the compute process
  */
-export interface Task extends DataHeader, DataTime, TaskBase, TaskOption {
-    /**
-     * **Local Permission**\
-     * Client-side only permission field\
-     * Server will check user token and defined its permission level\
-     * And modify this field and send back to user
-     */
-    permission?: LocalPermission
-    /**
-     * **Accessibility**\
-     * Could be public, protected, private
-     */
-    acl?: ACLType
+export interface Task extends DataHeader, DataTime, TaskBase, TaskOption, Shareable {
 }
 /**
  * **Compute Structure Container**\
  * It has reference to database And contains multiple task\
  * We grab this container structure to execute queue to execute one by one
  */
-export interface Project extends DataHeader, DataTime {
-    /**
-     * **User ID**\
-     * Who own this project\
-     * It will specified public if this field is undefined\
-     * This will getting detect before {@link Project.acl}
-     */
-    owner?: string
+export interface Project extends DataHeader, DataTime, Shareable {
     /**
      * **Project Name**\
      * The name of the project
@@ -362,25 +341,13 @@ export interface Project extends DataHeader, DataTime {
      * Store in disk
      */
     tasks_uuid: Array<string>
-    /**
-     * **Local Permission**\
-     * Client-side only permission field\
-     * Server will check user token and defined its permission level\
-     * And modify this field and send back to user
-     */
-    permission?: LocalPermission
-    /**
-     * **Accessibility**\
-     * Could be public, protected, private
-     */
-    acl?: ACLType
 }
 /**
  * **Compute Node Structure Container**\
  * In the execute stage, it will needs nodes to compute the task\
  * Which specified in this type of structure
  */
-export interface Node extends DataHeader, DataTime {
+export interface Node extends DataHeader, DataTime, Shareable {
     /**
      * **Cluster Mode**\
      * Check if the node is cluster\
@@ -397,18 +364,6 @@ export interface Node extends DataHeader, DataTime {
      * The address to the compute node
      */
     url: string
-    /**
-     * **Local Permission**\
-     * Client-side only permission field\
-     * Server will check user token and defined its permission level\
-     * And modify this field and send back to user
-     */
-    permission?: LocalPermission
-    /**
-     * **Accessibility**\
-     * Could be public, protected, private
-     */
-    acl?: ACLType
 }
 
 

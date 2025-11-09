@@ -76,14 +76,14 @@ export class Server {
      */
     LoadFromDisk = ():Promise<Array<Array<string>>> => {
         const ts = [
-            this.current_loader.project.load_all(),
-            this.current_loader.task.load_all(),
-            this.current_loader.job.load_all(),
-            this.current_loader.database.load_all(),
-            this.current_loader.node.load_all(),
-            this.current_loader.log.load_all(),
-            this.current_loader.lib.load_all(),
-            this.current_loader.user.load_all(),
+            this.current_loader.project.load_all(false),
+            this.current_loader.task.load_all(false),
+            this.current_loader.job.load_all(false),
+            this.current_loader.database.load_all(false),
+            this.current_loader.node.load_all(false),
+            this.current_loader.log.load_all(false),
+            this.current_loader.lib.load_all(false),
+            this.current_loader.user.load_all(false),
         ]
         return Promise.all(ts)
     }

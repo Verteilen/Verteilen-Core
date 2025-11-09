@@ -3,6 +3,7 @@
 //      Share Codebase     
 //                           
 // ========================
+import { Shareable } from "./base"
 import { ExecuteState } from "./enum"
 
 export interface ExecuteData {
@@ -54,7 +55,7 @@ export interface Preference {
     url?: string
 }
 
-export interface Library {
+export interface Library extends Shareable {
     uuid: string
     name: string
     load: boolean

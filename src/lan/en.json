@@ -1,9 +1,15 @@
 {
+    "acl": {
+        "success": "Successfully executed",
+        "unverify": "Un verify",
+        "no-permission-action": "You have no permission"
+    },
     "login": {
         "title": "Account Login",
         "submit": "Submit",
         "account": "Account",
-        "password": "Password"
+        "password": "Password",
+        "failed": "Login Failed"
     },
     "guides": {
         "workflow": "Workflow",

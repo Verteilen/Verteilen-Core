@@ -13,7 +13,13 @@ import {
     Node,
     Task,
     Job,
+    Shareable,
+    ACLType,
+    JWT,
+    SERECT,
+    DataHeader,
 } from "../interface"
+import jwt from 'jsonwebtoken'
 
 /**
  * **Record Data**
@@ -34,13 +40,13 @@ export interface MemoryData {
  * FOr backend server action
  */
 export interface RecordIOLoader {
-    load_all: () => Promise<Array<string>>
-    delete_all: () => Promise<void>
-    list_all: () => Promise<Array<string>>
-    save: (name:string, data:string) => Promise<void>
-    load: (name:string, cache:boolean) => Promise<string>
-    rename: (name:string, newname:string) => Promise<void>
-    delete: (name:string) => Promise<void>
+    load_all: (cache:boolean, token?:string) => Promise<Array<string>>
+    delete_all: (token?:string) => Promise<void>
+    list_all: (token?:string) => Promise<Array<string>>
+    save: (name:string, data:string, token?:string) => Promise<void>
+    load: (name:string, cache:boolean, token?:string) => Promise<string>
+    rename: (name:string, newname:string, token?:string) => Promise<void>
+    delete: (name:string, token?:string) => Promise<void>
 }
 /**
  * **IO Loader Worker**\
@@ -81,62 +87,23 @@ export interface RecordMongoBase {
 
 }
 
-/**
- * **Create the interface for record memory storage**\
- * Generate a loader interface for register to server event
- * @param loader Memory loader interface
- * @param type Type of storage
- * @returns Interface for calling
- */
-export const _CreateRecordMemoryLoader = (loader:MemoryData, type:RecordType):RecordIOLoader => {
-    const get_array = (type:RecordType):Array<any> => {
-        switch(type){
-            default:
-            case RecordType.PROJECT: return loader.projects
-            case RecordType.TASK: return loader.tasks
-            case RecordType.JOB: return loader.jobs
-            case RecordType.DATABASE: return loader.database
-            case RecordType.NODE: return loader.nodes
-            case RecordType.LOG: return loader.logs
-            case RecordType.LIB: return loader.libs
-            case RecordType.USER: return loader.user
-        }
-    }
-    return {
-        load_all: async ():Promise<Array<string>> => {
-            return get_array(type).map(x => JSON.stringify(x))
-        },
-        delete_all: async ():Promise<void> => {
-            const arr = get_array(type).map(x => JSON.stringify(x))
-            arr.splice(0, arr.length)
-        },
-        list_all: async ():Promise<Array<string>> => {
-            return get_array(type).map(x => x.uuid)
-        },
-        save: async (name:string, data:string):Promise<void> => {
-            const arr = get_array(type)
-            const b = arr.findIndex(x => name == x.uuid)
-            if(b != -1) arr[b] = JSON.parse(data)
-            else arr.push(JSON.parse(data))
-        },
-        load: async (name:string):Promise<string> => {
-            const arr = get_array(type)
-            const b = arr.find(x => name == x.uuid)
-            return b ? JSON.stringify(b) : ""
-        },
-        rename: async (name:string, newname:string):Promise<void> => {
-            const arr = get_array(type)
-            const b = arr.findIndex(x => x.uuid == name)
-            if(b != -1) arr[b].uuid = newname
-        },
-        delete: async (name:string):Promise<void> => {
-            const arr = get_array(type)
-            const b = arr.findIndex(x => x.uuid == name)
-            if(b != -1) arr.splice(b, 1)
-        }
-    }
+const permissionHelper = (x:Shareable & DataHeader, uuid:string) => {
+    const ispublic = x.owner == undefined || x.acl == ACLType.PUBLIC
+    if(ispublic) return true
+    const isowner = x.owner == uuid
+    if(isowner) return true
+    const canbeshared = x.acl != ACLType.PRIVATE
+    if(!canbeshared) return false
+    if(!x.shared) return false
+    const target = x.shared.find(x => x.user == uuid)
+    if(target == undefined) return false
+    return true
 }
-export const ObsoleteSupport = async (loader:RecordIOBase, type:RecordType, folder:string) => {
+const permissionGetPublic = (v:Array<Shareable & DataHeader>):Array<Shareable & DataHeader> => {
+    return v.filter(x => x.owner == undefined || x.acl == ACLType.PUBLIC)
+}
+
+const obsoleteSupport = async (loader:RecordIOBase, type:RecordType, folder:string) => {
     if(type == RecordType.PROJECT){
         const path = loader.join(loader.root, "record")
         if(!loader.exists(path)) return
@@ -193,6 +160,111 @@ export const ObsoleteSupport = async (loader:RecordIOBase, type:RecordType, fold
         loader.rm(path)
     }
 }
+
+/**
+ * **Create the interface for record memory storage**\
+ * Generate a loader interface for register to server event
+ * @param loader Memory loader interface
+ * @param type Type of storage
+ * @returns Interface for calling
+ */
+export const _CreateRecordMemoryLoader = (loader:MemoryData, type:RecordType):RecordIOLoader => {
+    const get_array = (type:RecordType):Array<Shareable & DataHeader> => {
+        switch(type){
+            default:
+            case RecordType.PROJECT: return loader.projects
+            case RecordType.TASK: return loader.tasks
+            case RecordType.JOB: return loader.jobs
+            case RecordType.DATABASE: return loader.database
+            case RecordType.NODE: return loader.nodes
+            case RecordType.LOG: return loader.logs
+            case RecordType.LIB: return loader.libs
+            case RecordType.USER: return loader.user
+        }
+    }
+    return {
+        load_all: async (cache:boolean, token?:string):Promise<Array<string>> => {
+            return new Promise<Array<string>>((resolve, reject) => {
+                const arr = get_array(type)
+                const pub = permissionGetPublic(arr).map(x => JSON.stringify(x))
+                const default_behaviour = (v:Array<string>) => resolve(v)
+                if(token == undefined){
+                    default_behaviour(pub)
+                    return
+                }
+
+                jwt.verify(token, SERECT, { complete: true }, (err, decode) => {
+                    if(err){
+                        reject(err.name)
+                        return
+                    }
+                    if(decode == undefined){
+                        default_behaviour(pub)
+                        return
+                    }
+                    const payload:JWT = JSON.parse(decode.payload as string)
+                    return arr.filter(x => permissionHelper(x, payload.user))
+                        .map(x => JSON.stringify(x))
+                })
+            })
+        },
+        delete_all: async (token?:string):Promise<void> => {
+            return new Promise<void>((resolve, reject) => {
+                const arr = get_array(type)
+                const pub = permissionGetPublic(arr)
+                const default_behaviour = (kill:Array<Shareable & DataHeader>) => {
+                    pub.forEach(x => {
+                        const index = arr.findIndex(y => y.uuid == x.uuid)
+                        arr.slice(index, 1)
+                    })
+                    resolve()
+                }
+                if(token == undefined){
+                    default_behaviour(pub)
+                    return
+                }
+
+                jwt.verify(token, SERECT, { complete: true }, (err, decode) => {
+                    if(err){
+                        reject(err.name)
+                        return
+                    }
+                    if(decode == undefined){
+                        default_behaviour(pub)
+                        return
+                    }
+                    const payload:JWT = JSON.parse(decode.payload as string)
+                    const targets = arr.filter(x => permissionHelper(x, payload.user))
+                    default_behaviour(targets)
+                })
+            })
+        },
+        list_all: async (token?:string):Promise<Array<string>> => {
+            return get_array(type).map(x => x.uuid)
+        },
+        save: async (name:string, data:string, token?:string):Promise<void> => {
+            const arr = get_array(type)
+            const b = arr.findIndex(x => name == x.uuid)
+            if(b != -1) arr[b] = JSON.parse(data)
+            else arr.push(JSON.parse(data))
+        },
+        load: async (name:string, cache:boolean, token?:string):Promise<string> => {
+            const arr = get_array(type)
+            const b = arr.find(x => name == x.uuid)
+            return b ? JSON.stringify(b) : ""
+        },
+        rename: async (name:string, newname:string, token?:string):Promise<void> => {
+            const arr = get_array(type)
+            const b = arr.findIndex(x => x.uuid == name)
+            if(b != -1) arr[b].uuid = newname
+        },
+        delete: async (name:string, token?:string):Promise<void> => {
+            const arr = get_array(type)
+            const b = arr.findIndex(x => x.uuid == name)
+            if(b != -1) arr.splice(b, 1)
+        }
+    }
+}
 /**
  * **Create the interface for record files storage**\
  * Generate a loader interface for register to server event
@@ -202,47 +274,40 @@ export const ObsoleteSupport = async (loader:RecordIOBase, type:RecordType, fold
  * @returns Interface for calling
  */
 export const _CreateRecordIOLoader = (loader:RecordIOBase, memory:MemoryData, type:RecordType, folder:string, ext:string = ".json"):RecordIOLoader => {
-    const get_array = (type:RecordType):Array<any> => {
-        switch(type){
-            default:
-            case RecordType.PROJECT: return memory.projects
-            case RecordType.TASK: return memory.tasks
-            case RecordType.JOB: return memory.jobs
-            case RecordType.DATABASE: return memory.database
-            case RecordType.NODE: return memory.nodes
-            case RecordType.LOG: return memory.logs
-            case RecordType.LIB: return memory.libs
-            case RecordType.USER: return memory.user
-        }
-    }
+    const mem = _CreateRecordMemoryLoader(memory, type)
     return {
-        load_all: async ():Promise<Array<string>> => {
+        load_all: async (cache:boolean, token?:string):Promise<Array<string>> => {
+            if(cache){
+                return mem.load_all(cache, token)
+            }
             const root = loader.join(loader.root, folder)
             if(!loader.exists(root)) await loader.mkdir(root)
-            await ObsoleteSupport(loader, type, folder)
+            await obsoleteSupport(loader, type, folder)
             const files = await loader.read_dir_file(root)
             const r:Array<Promise<string>> = files.map(x => 
                 loader.read_string(loader.join(root, x), { encoding: 'utf8', flag: 'r' })
             )
             const p = await Promise.all(r)
-            const arr = get_array(type)
-            arr.splice(0, arr.length)
-            arr.push(...p.map(x => JSON.parse(x)))
-            return p
+            const saver = p.map(x => {
+                const data = JSON.parse(x)
+                return mem.save(data.uuid, x, token)
+            })
+            await Promise.all(saver)
+            return mem.load_all(cache, token)
         },
-        delete_all: async ():Promise<void> => {
+        delete_all: async (token?:string):Promise<void> => {
             const root = loader.join(loader.root, folder)
             if(loader.exists(root)) await loader.rm(root)
             await loader.mkdir(root)
             const arr = get_array(type)
             arr.splice(0, arr.length)
         },
-        list_all: async ():Promise<Array<string>> => {
+        list_all: async (token?:string):Promise<Array<string>> => {
             const root = loader.join(loader.root, folder)
             if(!loader.exists(root)) await loader.mkdir(root)
             return loader.read_dir_file(root)
         },
-        save: async (uuid:string, data:string):Promise<void> => {
+        save: async (uuid:string, data:string, token?:string):Promise<void> => {
             const root = loader.join(loader.root, folder)
             if(!loader.exists(root)) await loader.mkdir(root)
             const file = loader.join(root, uuid + ext)
@@ -252,7 +317,7 @@ export const _CreateRecordIOLoader = (loader:RecordIOBase, memory:MemoryData, ty
             if(b != -1) arr[b] = JSON.parse(data)
             else arr.push(JSON.parse(data))
         },
-        load: async (uuid:string, cache: boolean):Promise<string> => {
+        load: async (uuid:string, cache: boolean, token?:string):Promise<string> => {
             const arr:Array<any> = get_array(type)
             if(cache){
                 const b = arr.findIndex(x => x.uuid == uuid)
@@ -270,7 +335,7 @@ export const _CreateRecordIOLoader = (loader:RecordIOBase, memory:MemoryData, ty
             if(cache) arr.push(JSON.parse(a))
             return a
         },
-        rename: async (uuid:string, newuuid:string):Promise<void> => {
+        rename: async (uuid:string, newuuid:string, token?:string):Promise<void> => {
             const root = loader.join(loader.root, folder)
             if(!loader.exists(root)) await loader.mkdir(root)
             const oldfile = loader.join(root, uuid + ext)
@@ -281,7 +346,7 @@ export const _CreateRecordIOLoader = (loader:RecordIOBase, memory:MemoryData, ty
             const b = arr.findIndex(x => x.uuid == uuid)
             if(b != -1) arr[b].uuid = newuuid
         },
-        delete: async (uuid:string):Promise<void> => {
+        delete: async (uuid:string, token?:string):Promise<void> => {
             const root = loader.join(loader.root, folder)
             if(!loader.exists(root)) await loader.mkdir(root)
             const file = loader.join(root, uuid + ext)
