@@ -7,6 +7,16 @@ export interface DatabaseConfigTrigger {
 export interface DataHeader {
     uuid: string;
 }
+export interface ShareLevel {
+    user: string;
+    permission: LocalPermission;
+}
+export interface Shareable {
+    owner?: string;
+    permission?: LocalPermission;
+    acl?: ACLType;
+    shared?: Array<ShareLevel>;
+}
 export interface DataTime {
     createDate?: string;
     updateDate?: string;
@@ -32,17 +42,13 @@ export interface Service extends DataHeader, DataTime {
     type: ServiceMode;
     timer: string;
     project: string;
-    permission?: LocalPermission;
-    acl?: ACLType;
 }
-export interface Database extends DataHeader, DataTime {
+export interface Database extends DataHeader, DataTime, Shareable {
     title: string;
     canWrite: boolean;
     containers: Array<DatabaseContainer>;
-    permission?: LocalPermission;
-    acl?: ACLType;
 }
-export interface Job extends DataHeader, DataTime {
+export interface Job extends DataHeader, DataTime, Shareable {
     index?: number;
     title: string;
     description: string;
@@ -55,8 +61,6 @@ export interface Job extends DataHeader, DataTime {
     number_args: Array<number>;
     boolean_args: Array<boolean>;
     id_args: Array<boolean>;
-    permission?: LocalPermission;
-    acl?: ACLType;
 }
 export interface TaskBase {
     properties: Array<Property>;
@@ -73,27 +77,20 @@ export interface TaskOption {
     multi: boolean;
     multiKey: string;
 }
-export interface Task extends DataHeader, DataTime, TaskBase, TaskOption {
-    permission?: LocalPermission;
-    acl?: ACLType;
+export interface Task extends DataHeader, DataTime, TaskBase, TaskOption, Shareable {
 }
-export interface Project extends DataHeader, DataTime {
-    owner?: string;
+export interface Project extends DataHeader, DataTime, Shareable {
     title: string;
     description?: string;
     database_uuid: string;
     database?: Database;
     tasks: Array<Task>;
     tasks_uuid: Array<string>;
-    permission?: LocalPermission;
-    acl?: ACLType;
 }
-export interface Node extends DataHeader, DataTime {
+export interface Node extends DataHeader, DataTime, Shareable {
     cluster: boolean;
     parent?: string;
     url: string;
-    permission?: LocalPermission;
-    acl?: ACLType;
 }
 export declare const CreateDefaultProject: () => Project;
 export declare const CreateDefaultTask: () => Task;

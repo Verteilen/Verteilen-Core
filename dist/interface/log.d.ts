@@ -1,4 +1,4 @@
-import { Database, Node, Project } from "./base";
+import { Database, Node, Project, Shareable } from "./base";
 import { ExecuteState } from "./enum";
 import { ExecuteData } from "./record";
 export interface ExecuteRecordTask {
@@ -13,7 +13,7 @@ export interface ExecutionTaskLog {
     end_timer: number;
     task_detail: Array<ExecuteRecordTask>;
 }
-export interface ExecutionLog {
+export interface ExecutionLog extends Shareable {
     uuid: string;
     dirty?: boolean;
     output?: boolean;

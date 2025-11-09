@@ -1,3 +1,4 @@
+import { MongoClient } from "mongodb";
 import { Project, RecordType, Database, UserProfile, Library, ExecutionLog, Node, Task, Job } from "../interface";
 export interface MemoryData {
     projects: Array<Project>;
@@ -10,13 +11,12 @@ export interface MemoryData {
     user: Array<UserProfile>;
 }
 export interface RecordIOLoader {
-    load_all: () => Promise<Array<string>>;
-    delete_all: () => Promise<void>;
-    list_all: () => Promise<Array<string>>;
-    save: (name: string, data: string) => Promise<void>;
-    load: (name: string, cache: boolean) => Promise<string>;
-    rename: (name: string, newname: string) => Promise<void>;
-    delete: (name: string) => Promise<void>;
+    load_all: (cache: boolean, token?: string) => Promise<Array<string>>;
+    delete_all: (token?: string) => Promise<Array<string>>;
+    list_all: (token?: string) => Promise<Array<string>>;
+    save: (uuid: string, data: string, token?: string) => Promise<boolean>;
+    load: (uuid: string, token?: string) => Promise<string>;
+    delete: (uuid: string, token?: string) => Promise<boolean>;
 }
 export interface RecordLoader {
     project: RecordIOLoader;
@@ -41,11 +41,9 @@ export interface RecordIOBase {
     rm: (path: string) => Promise<void>;
     cp: (path: string, newpath: string) => Promise<void>;
 }
-export interface RecordMongoBase {
-}
 export declare const _CreateRecordMemoryLoader: (loader: MemoryData, type: RecordType) => RecordIOLoader;
-export declare const ObsoleteSupport: (loader: RecordIOBase, type: RecordType, folder: string) => Promise<void>;
 export declare const _CreateRecordIOLoader: (loader: RecordIOBase, memory: MemoryData, type: RecordType, folder: string, ext?: string) => RecordIOLoader;
+export declare const _CreateRecordMongoLoader: (loader: MongoClient, memory: MemoryData, type: RecordType, db: string, collection: string) => RecordIOLoader;
 export declare const CreateRecordMemoryLoader: (loader: MemoryData) => RecordLoader;
 export declare const CreateRecordIOLoader: (loader: RecordIOBase, memory: MemoryData) => RecordLoader;
-export declare const CreateRecordMongoLoader: (loader: RecordMongoBase, folder: string, ext?: string) => void;
+export declare const CreateRecordMongoLoader: (url: string, memory: MemoryData) => RecordLoader;

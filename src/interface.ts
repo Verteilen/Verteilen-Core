@@ -37,6 +37,7 @@ export const SCROLL_LIMIT = 100
 export const ENV_CHARACTER = '%'
 export const IGNORE_CHARACTER = '^'
 export const DATA_FOLDER = '.verteilen'
+export const MONGODB_NAME = "verteilen"
 
 export * from './interface/base'
 export * from './interface/bus'

@@ -73,7 +73,7 @@ const CreateRootUser = () => {
         },
         name: "root",
         description: "Root User",
-        permission: (0, exports.CreateRootPermission)()
+        global_permission: (0, exports.CreateRootPermission)()
     };
 };
 exports.CreateRootUser = CreateRootUser;

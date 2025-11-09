@@ -7,11 +7,17 @@ export declare const i18nDefaultData: {
     fallbackFormat: string;
     messages: {
         en: {
+            acl: {
+                success: string;
+                unverify: string;
+                "no-permission-action": string;
+            };
             login: {
                 title: string;
                 submit: string;
                 account: string;
                 password: string;
+                failed: string;
             };
             guides: {
                 workflow: string;
@@ -451,11 +457,17 @@ export declare const i18nDefaultData: {
             unzoom: string;
         };
         zh_TW: {
+            acl: {
+                success: string;
+                unverify: string;
+                "no-permission-action": string;
+            };
             login: {
                 title: string;
                 submit: string;
                 account: string;
                 password: string;
+                failed: string;
             };
             guides: {
                 workflow: string;
@@ -898,11 +910,17 @@ export declare const i18nDefaultData: {
 };
 export declare const i18n: import("vue-i18n").I18n<{
     en: {
+        acl: {
+            success: string;
+            unverify: string;
+            "no-permission-action": string;
+        };
         login: {
             title: string;
             submit: string;
             account: string;
             password: string;
+            failed: string;
         };
         guides: {
             workflow: string;
@@ -1342,11 +1360,17 @@ export declare const i18n: import("vue-i18n").I18n<{
         unzoom: string;
     };
     zh_TW: {
+        acl: {
+            success: string;
+            unverify: string;
+            "no-permission-action": string;
+        };
         login: {
             title: string;
             submit: string;
             account: string;
             password: string;
+            failed: string;
         };
         guides: {
             workflow: string;

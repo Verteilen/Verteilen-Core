@@ -3,6 +3,7 @@
 //      Share Codebase     
 //                           
 // ========================
+import { MongoClient } from "mongodb"
 import { 
     Project, 
     RecordType, 
@@ -18,6 +19,7 @@ import {
     JWT,
     SERECT,
     DataHeader,
+    MONGODB_NAME,
 } from "../interface"
 import jwt from 'jsonwebtoken'
 
@@ -41,12 +43,11 @@ export interface MemoryData {
  */
 export interface RecordIOLoader {
     load_all: (cache:boolean, token?:string) => Promise<Array<string>>
-    delete_all: (token?:string) => Promise<void>
+    delete_all: (token?:string) => Promise<Array<string>>
     list_all: (token?:string) => Promise<Array<string>>
-    save: (name:string, data:string, token?:string) => Promise<void>
-    load: (name:string, cache:boolean, token?:string) => Promise<string>
-    rename: (name:string, newname:string, token?:string) => Promise<void>
-    delete: (name:string, token?:string) => Promise<void>
+    save: (uuid:string, data:string, token?:string) => Promise<boolean>
+    load: (uuid:string, token?:string) => Promise<string>
+    delete: (uuid:string, token?:string) => Promise<boolean>
 }
 /**
  * **IO Loader Worker**\
@@ -78,13 +79,6 @@ export interface RecordIOBase {
     mkdir: (path:string) => Promise<void>
     rm: (path:string) => Promise<void>
     cp: (path:string, newpath:string) => Promise<void>
-}
-/**
- * **Mongo Function Interface**\
- * Use for access the MongoDB store function
- */
-export interface RecordMongoBase {
-
 }
 
 const permissionHelper = (x:Shareable & DataHeader, uuid:string) => {
@@ -208,16 +202,17 @@ export const _CreateRecordMemoryLoader = (loader:MemoryData, type:RecordType):Re
                 })
             })
         },
-        delete_all: async (token?:string):Promise<void> => {
-            return new Promise<void>((resolve, reject) => {
+        delete_all: async (token?:string):Promise<Array<string>> => {
+            return new Promise<Array<string>>((resolve, reject) => {
                 const arr = get_array(type)
                 const pub = permissionGetPublic(arr)
                 const default_behaviour = (kill:Array<Shareable & DataHeader>) => {
-                    pub.forEach(x => {
+                    const r = kill.map(x => x.uuid)
+                    kill.forEach(x => {
                         const index = arr.findIndex(y => y.uuid == x.uuid)
                         arr.slice(index, 1)
                     })
-                    resolve()
+                    resolve(r)
                 }
                 if(token == undefined){
                     default_behaviour(pub)
@@ -240,35 +235,163 @@ export const _CreateRecordMemoryLoader = (loader:MemoryData, type:RecordType):Re
             })
         },
         list_all: async (token?:string):Promise<Array<string>> => {
-            return get_array(type).map(x => x.uuid)
+            return new Promise<Array<string>>((resolve, reject) => {
+                const arr = get_array(type)
+                const pub = permissionGetPublic(arr)
+                const default_behaviour = () => {
+                    resolve(pub.map(x => x.uuid))
+                }
+
+                if(token == undefined){
+                    default_behaviour()
+                    return
+                }
+
+                jwt.verify(token, SERECT, { complete: true }, (err, decode) => {
+                    if(err){
+                        reject(err.name)
+                        return
+                    }
+                    if(decode == undefined){
+                        default_behaviour()
+                        return
+                    }
+                    const payload:JWT = JSON.parse(decode.payload as string)
+                    const targets = arr.filter(x => permissionHelper(x, payload.user))
+                    resolve(targets.map(x => x.uuid))
+                })
+            })
         },
-        save: async (name:string, data:string, token?:string):Promise<void> => {
-            const arr = get_array(type)
-            const b = arr.findIndex(x => name == x.uuid)
-            if(b != -1) arr[b] = JSON.parse(data)
-            else arr.push(JSON.parse(data))
+        save: async (uuid:string, data:string, token?:string):Promise<boolean> => {
+            return new Promise<boolean>((resolve, reject) => {
+                const arr = get_array(type)
+                const index = arr.findIndex(x => x.uuid == uuid)
+                const exist = index == -1 ? undefined : arr[index]
+                if(!exist){
+                    arr.push(JSON.parse(data))
+                    resolve(true)
+                    return
+                }
+                const ispublic = exist.owner == undefined || exist.acl == ACLType.PUBLIC
+                if(ispublic){
+                    arr[index] = Object.assign(exist, JSON.parse(data))
+                    resolve(true)
+                    return
+                }
+
+                if(token == undefined){
+                    reject("Require Token")
+                    return
+                }
+
+                jwt.verify(token, SERECT, { complete: true }, (err, decode) => {
+                    if(err){
+                        reject(err.name)
+                        return
+                    }
+                    if(decode == undefined){
+                        reject("Require Token")
+                        return
+                    }
+                    const payload:JWT = JSON.parse(decode.payload as string)
+                    if(permissionHelper(exist, payload.user)){
+                        arr[index] = Object.assign(exist, JSON.parse(data))
+                    }else{
+                        reject("Permission Denied")
+                    }
+                })
+            })
         },
-        load: async (name:string, cache:boolean, token?:string):Promise<string> => {
-            const arr = get_array(type)
-            const b = arr.find(x => name == x.uuid)
-            return b ? JSON.stringify(b) : ""
+        load: async (uuid:string, token?:string):Promise<string> => {
+            return new Promise<string>((resolve, reject) => {
+                const arr = get_array(type)
+                const index = arr.findIndex(x => uuid == x.uuid)
+                const exist = index == -1 ? undefined : arr[index]
+                if(exist == undefined){
+                    reject("Item do not exists")
+                    return
+                }
+                const ispublic = exist.owner == undefined || exist.acl == ACLType.PUBLIC
+                if(ispublic){
+                    resolve(JSON.stringify(exist))
+                    return
+                }
+
+                if(token == undefined){
+                    reject("Require Token")
+                    return
+                }
+
+                jwt.verify(token, SERECT, { complete: true }, (err, decode) => {
+                    if(err){
+                        reject(err.name)
+                        return
+                    }
+                    if(decode == undefined){
+                        reject("Require Token")
+                        return
+                    }
+                    const payload:JWT = JSON.parse(decode.payload as string)
+                    if(permissionHelper(exist, payload.user)){
+                        resolve(JSON.stringify(exist))
+                    }else{
+                        reject("Permission Denied")
+                    }
+                })
+            })
         },
-        rename: async (name:string, newname:string, token?:string):Promise<void> => {
-            const arr = get_array(type)
-            const b = arr.findIndex(x => x.uuid == name)
-            if(b != -1) arr[b].uuid = newname
-        },
-        delete: async (name:string, token?:string):Promise<void> => {
-            const arr = get_array(type)
-            const b = arr.findIndex(x => x.uuid == name)
-            if(b != -1) arr.splice(b, 1)
+        delete: async (uuid:string, token?:string):Promise<boolean> => {
+            return new Promise<boolean>((resolve, reject) => {
+                const arr = get_array(type)
+                const index = arr.findIndex(x => uuid == x.uuid)
+                const exist = index == -1 ? undefined : arr[index]
+                const default_behaviour = () => {
+                    arr.splice(index, 1)
+                    resolve(true)
+                }
+
+                if(exist == undefined){
+                    resolve(false)
+                    return
+                }
+
+                const ispublic = exist.owner == undefined || exist.acl == ACLType.PUBLIC
+                if(ispublic){
+                    default_behaviour()
+                    return
+                }
+
+                if(token == undefined){
+                    reject("Require Token")
+                    return
+                }
+
+                jwt.verify(token, SERECT, { complete: true }, (err, decode) => {
+                    if(err){
+                        reject(err.name)
+                        return
+                    }
+                    if(decode == undefined){
+                        reject("Require Token")
+                        return
+                    }
+                    const payload:JWT = JSON.parse(decode.payload as string)
+                    if(permissionHelper(exist, payload.user)){
+                        default_behaviour()
+                    }else{
+                        reject("Permission Denied")
+                    }
+                })
+            })
         }
     }
 }
 /**
  * **Create the interface for record files storage**\
  * Generate a loader interface for register to server event
- * @param loader IO loader interface
+ * @param loader File loader interface
+ * @param memory Memory loader interface
+ * @param type Type of storage
  * @param folder Folder name
  * @param ext Store file extension
  * @returns Interface for calling
@@ -277,11 +400,9 @@ export const _CreateRecordIOLoader = (loader:RecordIOBase, memory:MemoryData, ty
     const mem = _CreateRecordMemoryLoader(memory, type)
     return {
         load_all: async (cache:boolean, token?:string):Promise<Array<string>> => {
-            if(cache){
-                return mem.load_all(cache, token)
-            }
             const root = loader.join(loader.root, folder)
             if(!loader.exists(root)) await loader.mkdir(root)
+            if(cache) return mem.load_all(cache, token)
             await obsoleteSupport(loader, type, folder)
             const files = await loader.read_dir_file(root)
             const r:Array<Promise<string>> = files.map(x => 
@@ -295,70 +416,93 @@ export const _CreateRecordIOLoader = (loader:RecordIOBase, memory:MemoryData, ty
             await Promise.all(saver)
             return mem.load_all(cache, token)
         },
-        delete_all: async (token?:string):Promise<void> => {
+        delete_all: async (token?:string):Promise<Array<string>> => {
             const root = loader.join(loader.root, folder)
-            if(loader.exists(root)) await loader.rm(root)
-            await loader.mkdir(root)
-            const arr = get_array(type)
-            arr.splice(0, arr.length)
+            // Memory action
+            const c = await mem.delete_all(token)
+            // Get the removed uuids and delete from disk
+            const kill_all = c.map(x => {
+                return loader.rm(loader.join(root, x + ext))
+            })
+            await Promise.all(kill_all)
+            return c
         },
         list_all: async (token?:string):Promise<Array<string>> => {
             const root = loader.join(loader.root, folder)
             if(!loader.exists(root)) await loader.mkdir(root)
-            return loader.read_dir_file(root)
+            return mem.list_all(token)
         },
-        save: async (uuid:string, data:string, token?:string):Promise<void> => {
+        save: async (uuid:string, data:string, token?:string):Promise<boolean> => {
             const root = loader.join(loader.root, folder)
             if(!loader.exists(root)) await loader.mkdir(root)
+            const r = await mem.save(uuid, data, token)
+            if(!r) return false
+
             const file = loader.join(root, uuid + ext)
             await loader.write_string(file, data)
-            const arr = get_array(type)
-            const b = arr.findIndex(x => x.uuid == uuid)
-            if(b != -1) arr[b] = JSON.parse(data)
-            else arr.push(JSON.parse(data))
+            return true
         },
-        load: async (uuid:string, cache: boolean, token?:string):Promise<string> => {
-            const arr:Array<any> = get_array(type)
-            if(cache){
-                const b = arr.findIndex(x => x.uuid == uuid)
-                if(b != -1) return JSON.stringify(arr[b])
-            }
+        load: async (uuid:string, token?:string):Promise<string> => {
             const root = loader.join(loader.root, folder)
             if(!loader.exists(root)) await loader.mkdir(root)
-            const file = loader.join(root, uuid + ext)
-            if(!loader.exists(file)){
-                const b = arr.findIndex(x => x.uuid == uuid)
-                if(b != -1) arr.splice(b, 1)
-                return ""
-            }
-            const a = await loader.read_string(file)
-            if(cache) arr.push(JSON.parse(a))
-            return a
+            return mem.load(uuid, token)
         },
-        rename: async (uuid:string, newuuid:string, token?:string):Promise<void> => {
+        delete: async (uuid:string, token?:string):Promise<boolean> => {
             const root = loader.join(loader.root, folder)
             if(!loader.exists(root)) await loader.mkdir(root)
-            const oldfile = loader.join(root, uuid + ext)
-            const newfile = loader.join(root, newuuid + ext)
-            await loader.cp(oldfile, newfile)
-            await loader.rm(oldfile)
-            const arr = get_array(type)
-            const b = arr.findIndex(x => x.uuid == uuid)
-            if(b != -1) arr[b].uuid = newuuid
-        },
-        delete: async (uuid:string, token?:string):Promise<void> => {
-            const root = loader.join(loader.root, folder)
-            if(!loader.exists(root)) await loader.mkdir(root)
+
+            const r = await mem.delete(uuid, token)
+            if(!r) return false
+
             const file = loader.join(root, uuid + ext)
             if(loader.exists(file)){
                 await loader.rm(file)
             }
-            const arr = get_array(type)
-            const b = arr.findIndex(x => x.uuid == uuid)
-            if(b != -1) arr.splice(b, 1)
+            return true
         }
     }
 }
+/**
+ * **Create the interface for record mongoDB storage**\
+ * @param loader MongoDB loader client
+ * @param memory Memory loader interface
+ * @param type Type of storage
+ * @param db Database name
+ * @param collection Collection from database
+ * @returns Interface for calling
+ */
+export const _CreateRecordMongoLoader = (loader:MongoClient, memory:MemoryData, type:RecordType, db:string, collection:string):RecordIOLoader => {
+    const mem = _CreateRecordMemoryLoader(memory, type)
+    return {
+        load_all: async (cache: boolean, token?: string): Promise<Array<string>> => {
+            if(cache) return mem.load_all(cache, token)
+            const database = loader.db(db) 
+            const col = database.collection(collection)
+            const data = await col.find({}).toArray()
+            const exec = data.map(x => {
+                return mem.save(x.uuid, JSON.stringify(x), token)
+            })
+            await Promise.all(exec)
+            return mem.load_all(cache, token)
+        },
+        delete_all: async (token?: string): Promise<Array<string>> => {
+            throw new Error("Function not implemented.")
+        },
+        list_all: async (token?: string): Promise<Array<string>> => {
+            throw new Error("Function not implemented.")
+        },
+        save: async (uuid: string, data: string, token?: string): Promise<boolean> => {
+            throw new Error("Function not implemented.")
+        },
+        load: async (uuid: string, token?: string): Promise<string> => {
+            throw new Error("Function not implemented.")
+        },
+        delete: async (uuid: string, token?: string): Promise<boolean> => {
+            throw new Error("Function not implemented.")
+        }
+    }
+}
+
 
 /**
  * **Create the interface for record memory storage**\
@@ -393,11 +537,26 @@ export const CreateRecordIOLoader = (loader:RecordIOBase, memory:MemoryData):Rec
         database: _CreateRecordIOLoader(loader, memory, RecordType.DATABASE, "database"),
         node: _CreateRecordIOLoader(loader, memory, RecordType.NODE, "node"),
         log: _CreateRecordIOLoader(loader, memory, RecordType.LOG, "log"),
-        lib: _CreateRecordIOLoader(loader, memory, RecordType.LIB, "lib", ""),
+        lib: _CreateRecordIOLoader(loader, memory, RecordType.LIB, "lib"),
         user: _CreateRecordIOLoader(loader, memory, RecordType.USER, "user"),
     }
 }
-
-export const CreateRecordMongoLoader = (loader:RecordMongoBase, folder:string, ext:string = ".json") => {
-
+/**
+ * **Create the interface for record mongoDB storage**\
+ * @param url MongoDB URL
+ * @param memory loader memory loader interface
+ * @returns 
+ */
+export const CreateRecordMongoLoader = (url:string, memory:MemoryData):RecordLoader => {
+    const loader:MongoClient = new MongoClient(url)
+    return {
+        project: _CreateRecordMongoLoader(loader, memory, RecordType.PROJECT, MONGODB_NAME, "project"),
+        task: _CreateRecordMongoLoader(loader, memory, RecordType.TASK, MONGODB_NAME, "task"),
+        job: _CreateRecordMongoLoader(loader, memory, RecordType.JOB, MONGODB_NAME, "job"),
+        database: _CreateRecordMongoLoader(loader, memory, RecordType.DATABASE, MONGODB_NAME, "database"),
+        node: _CreateRecordMongoLoader(loader, memory, RecordType.NODE, MONGODB_NAME, "node"),
+        log: _CreateRecordMongoLoader(loader, memory, RecordType.LOG, MONGODB_NAME, "log"),
+        lib: _CreateRecordMongoLoader(loader, memory, RecordType.LIB, MONGODB_NAME, "lib"),
+        user: _CreateRecordMongoLoader(loader, memory, RecordType.USER, MONGODB_NAME, "user"),
+    }
 }

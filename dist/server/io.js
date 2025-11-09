@@ -1,61 +1,33 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateRecordMongoLoader = exports.CreateRecordIOLoader = exports.CreateRecordMemoryLoader = exports._CreateRecordIOLoader = exports.ObsoleteSupport = exports._CreateRecordMemoryLoader = void 0;
-const interface_1 = require("../interface");
-const _CreateRecordMemoryLoader = (loader, type) => {
-    const get_array = (type) => {
-        switch (type) {
-            default:
-            case interface_1.RecordType.PROJECT: return loader.projects;
-            case interface_1.RecordType.TASK: return loader.tasks;
-            case interface_1.RecordType.JOB: return loader.jobs;
-            case interface_1.RecordType.DATABASE: return loader.database;
-            case interface_1.RecordType.NODE: return loader.nodes;
-            case interface_1.RecordType.LOG: return loader.logs;
-            case interface_1.RecordType.LIB: return loader.libs;
-            case interface_1.RecordType.USER: return loader.user;
-        }
-    };
-    return {
-        load_all: async () => {
-            return get_array(type).map(x => JSON.stringify(x));
-        },
-        delete_all: async () => {
-            const arr = get_array(type).map(x => JSON.stringify(x));
-            arr.splice(0, arr.length);
-        },
-        list_all: async () => {
-            return get_array(type).map(x => x.uuid);
-        },
-        save: async (name, data) => {
-            const arr = get_array(type);
-            const b = arr.findIndex(x => name == x.uuid);
-            if (b != -1)
-                arr[b] = JSON.parse(data);
-            else
-                arr.push(JSON.parse(data));
-        },
-        load: async (name) => {
-            const arr = get_array(type);
-            const b = arr.find(x => name == x.uuid);
-            return b ? JSON.stringify(b) : "";
-        },
-        rename: async (name, newname) => {
-            const arr = get_array(type);
-            const b = arr.findIndex(x => x.uuid == name);
-            if (b != -1)
-                arr[b].uuid = newname;
-        },
-        delete: async (name) => {
-            const arr = get_array(type);
-            const b = arr.findIndex(x => x.uuid == name);
-            if (b != -1)
-                arr.splice(b, 1);
-        }
-    };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-exports._CreateRecordMemoryLoader = _CreateRecordMemoryLoader;
-const ObsoleteSupport = async (loader, type, folder) => {
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CreateRecordMongoLoader = exports.CreateRecordIOLoader = exports.CreateRecordMemoryLoader = exports._CreateRecordMongoLoader = exports._CreateRecordIOLoader = exports._CreateRecordMemoryLoader = void 0;
+const mongodb_1 = require("mongodb");
+const interface_1 = require("../interface");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const permissionHelper = (x, uuid) => {
+    const ispublic = x.owner == undefined || x.acl == interface_1.ACLType.PUBLIC;
+    if (ispublic)
+        return true;
+    const isowner = x.owner == uuid;
+    if (isowner)
+        return true;
+    const canbeshared = x.acl != interface_1.ACLType.PRIVATE;
+    if (!canbeshared)
+        return false;
+    if (!x.shared)
+        return false;
+    const target = x.shared.find(x => x.user == uuid);
+    if (target == undefined)
+        return false;
+    return true;
+};
+const permissionGetPublic = (v) => {
+    return v.filter(x => x.owner == undefined || x.acl == interface_1.ACLType.PUBLIC);
+};
+const obsoleteSupport = async (loader, type, folder) => {
     if (type == interface_1.RecordType.PROJECT) {
         const path = loader.join(loader.root, "record");
         if (!loader.exists(path))
@@ -111,113 +83,323 @@ const ObsoleteSupport = async (loader, type, folder) => {
         loader.rm(path);
     }
 };
-exports.ObsoleteSupport = ObsoleteSupport;
-const _CreateRecordIOLoader = (loader, memory, type, folder, ext = ".json") => {
+const _CreateRecordMemoryLoader = (loader, type) => {
     const get_array = (type) => {
         switch (type) {
             default:
-            case interface_1.RecordType.PROJECT: return memory.projects;
-            case interface_1.RecordType.TASK: return memory.tasks;
-            case interface_1.RecordType.JOB: return memory.jobs;
-            case interface_1.RecordType.DATABASE: return memory.database;
-            case interface_1.RecordType.NODE: return memory.nodes;
-            case interface_1.RecordType.LOG: return memory.logs;
-            case interface_1.RecordType.LIB: return memory.libs;
-            case interface_1.RecordType.USER: return memory.user;
+            case interface_1.RecordType.PROJECT: return loader.projects;
+            case interface_1.RecordType.TASK: return loader.tasks;
+            case interface_1.RecordType.JOB: return loader.jobs;
+            case interface_1.RecordType.DATABASE: return loader.database;
+            case interface_1.RecordType.NODE: return loader.nodes;
+            case interface_1.RecordType.LOG: return loader.logs;
+            case interface_1.RecordType.LIB: return loader.libs;
+            case interface_1.RecordType.USER: return loader.user;
         }
     };
     return {
-        load_all: async () => {
+        load_all: async (cache, token) => {
+            return new Promise((resolve, reject) => {
+                const arr = get_array(type);
+                const pub = permissionGetPublic(arr).map(x => JSON.stringify(x));
+                const default_behaviour = (v) => resolve(v);
+                if (token == undefined) {
+                    default_behaviour(pub);
+                    return;
+                }
+                jsonwebtoken_1.default.verify(token, interface_1.SERECT, { complete: true }, (err, decode) => {
+                    if (err) {
+                        reject(err.name);
+                        return;
+                    }
+                    if (decode == undefined) {
+                        default_behaviour(pub);
+                        return;
+                    }
+                    const payload = JSON.parse(decode.payload);
+                    return arr.filter(x => permissionHelper(x, payload.user))
+                        .map(x => JSON.stringify(x));
+                });
+            });
+        },
+        delete_all: async (token) => {
+            return new Promise((resolve, reject) => {
+                const arr = get_array(type);
+                const pub = permissionGetPublic(arr);
+                const default_behaviour = (kill) => {
+                    const r = kill.map(x => x.uuid);
+                    kill.forEach(x => {
+                        const index = arr.findIndex(y => y.uuid == x.uuid);
+                        arr.slice(index, 1);
+                    });
+                    resolve(r);
+                };
+                if (token == undefined) {
+                    default_behaviour(pub);
+                    return;
+                }
+                jsonwebtoken_1.default.verify(token, interface_1.SERECT, { complete: true }, (err, decode) => {
+                    if (err) {
+                        reject(err.name);
+                        return;
+                    }
+                    if (decode == undefined) {
+                        default_behaviour(pub);
+                        return;
+                    }
+                    const payload = JSON.parse(decode.payload);
+                    const targets = arr.filter(x => permissionHelper(x, payload.user));
+                    default_behaviour(targets);
+                });
+            });
+        },
+        list_all: async (token) => {
+            return new Promise((resolve, reject) => {
+                const arr = get_array(type);
+                const pub = permissionGetPublic(arr);
+                const default_behaviour = () => {
+                    resolve(pub.map(x => x.uuid));
+                };
+                if (token == undefined) {
+                    default_behaviour();
+                    return;
+                }
+                jsonwebtoken_1.default.verify(token, interface_1.SERECT, { complete: true }, (err, decode) => {
+                    if (err) {
+                        reject(err.name);
+                        return;
+                    }
+                    if (decode == undefined) {
+                        default_behaviour();
+                        return;
+                    }
+                    const payload = JSON.parse(decode.payload);
+                    const targets = arr.filter(x => permissionHelper(x, payload.user));
+                    resolve(targets.map(x => x.uuid));
+                });
+            });
+        },
+        save: async (uuid, data, token) => {
+            return new Promise((resolve, reject) => {
+                const arr = get_array(type);
+                const index = arr.findIndex(x => x.uuid == uuid);
+                const exist = index == -1 ? undefined : arr[index];
+                if (!exist) {
+                    arr.push(JSON.parse(data));
+                    resolve(true);
+                    return;
+                }
+                const ispublic = exist.owner == undefined || exist.acl == interface_1.ACLType.PUBLIC;
+                if (ispublic) {
+                    arr[index] = Object.assign(exist, JSON.parse(data));
+                    resolve(true);
+                    return;
+                }
+                if (token == undefined) {
+                    reject("Require Token");
+                    return;
+                }
+                jsonwebtoken_1.default.verify(token, interface_1.SERECT, { complete: true }, (err, decode) => {
+                    if (err) {
+                        reject(err.name);
+                        return;
+                    }
+                    if (decode == undefined) {
+                        reject("Require Token");
+                        return;
+                    }
+                    const payload = JSON.parse(decode.payload);
+                    if (permissionHelper(exist, payload.user)) {
+                        arr[index] = Object.assign(exist, JSON.parse(data));
+                    }
+                    else {
+                        reject("Permission Denied");
+                    }
+                });
+            });
+        },
+        load: async (uuid, token) => {
+            return new Promise((resolve, reject) => {
+                const arr = get_array(type);
+                const index = arr.findIndex(x => uuid == x.uuid);
+                const exist = index == -1 ? undefined : arr[index];
+                if (exist == undefined) {
+                    reject("Item do not exists");
+                    return;
+                }
+                const ispublic = exist.owner == undefined || exist.acl == interface_1.ACLType.PUBLIC;
+                if (ispublic) {
+                    resolve(JSON.stringify(exist));
+                    return;
+                }
+                if (token == undefined) {
+                    reject("Require Token");
+                    return;
+                }
+                jsonwebtoken_1.default.verify(token, interface_1.SERECT, { complete: true }, (err, decode) => {
+                    if (err) {
+                        reject(err.name);
+                        return;
+                    }
+                    if (decode == undefined) {
+                        reject("Require Token");
+                        return;
+                    }
+                    const payload = JSON.parse(decode.payload);
+                    if (permissionHelper(exist, payload.user)) {
+                        resolve(JSON.stringify(exist));
+                    }
+                    else {
+                        reject("Permission Denied");
+                    }
+                });
+            });
+        },
+        delete: async (uuid, token) => {
+            return new Promise((resolve, reject) => {
+                const arr = get_array(type);
+                const index = arr.findIndex(x => uuid == x.uuid);
+                const exist = index == -1 ? undefined : arr[index];
+                const default_behaviour = () => {
+                    arr.splice(index, 1);
+                    resolve(true);
+                };
+                if (exist == undefined) {
+                    resolve(false);
+                    return;
+                }
+                const ispublic = exist.owner == undefined || exist.acl == interface_1.ACLType.PUBLIC;
+                if (ispublic) {
+                    default_behaviour();
+                    return;
+                }
+                if (token == undefined) {
+                    reject("Require Token");
+                    return;
+                }
+                jsonwebtoken_1.default.verify(token, interface_1.SERECT, { complete: true }, (err, decode) => {
+                    if (err) {
+                        reject(err.name);
+                        return;
+                    }
+                    if (decode == undefined) {
+                        reject("Require Token");
+                        return;
+                    }
+                    const payload = JSON.parse(decode.payload);
+                    if (permissionHelper(exist, payload.user)) {
+                        default_behaviour();
+                    }
+                    else {
+                        reject("Permission Denied");
+                    }
+                });
+            });
+        }
+    };
+};
+exports._CreateRecordMemoryLoader = _CreateRecordMemoryLoader;
+const _CreateRecordIOLoader = (loader, memory, type, folder, ext = ".json") => {
+    const mem = (0, exports._CreateRecordMemoryLoader)(memory, type);
+    return {
+        load_all: async (cache, token) => {
             const root = loader.join(loader.root, folder);
             if (!loader.exists(root))
                 await loader.mkdir(root);
-            await (0, exports.ObsoleteSupport)(loader, type, folder);
+            if (cache)
+                return mem.load_all(cache, token);
+            await obsoleteSupport(loader, type, folder);
             const files = await loader.read_dir_file(root);
             const r = files.map(x => loader.read_string(loader.join(root, x), { encoding: 'utf8', flag: 'r' }));
             const p = await Promise.all(r);
-            const arr = get_array(type);
-            arr.splice(0, arr.length);
-            arr.push(...p.map(x => JSON.parse(x)));
-            return p;
+            const saver = p.map(x => {
+                const data = JSON.parse(x);
+                return mem.save(data.uuid, x, token);
+            });
+            await Promise.all(saver);
+            return mem.load_all(cache, token);
         },
-        delete_all: async () => {
+        delete_all: async (token) => {
             const root = loader.join(loader.root, folder);
-            if (loader.exists(root))
-                await loader.rm(root);
-            await loader.mkdir(root);
-            const arr = get_array(type);
-            arr.splice(0, arr.length);
+            const c = await mem.delete_all(token);
+            const kill_all = c.map(x => {
+                return loader.rm(loader.join(root, x + ext));
+            });
+            await Promise.all(kill_all);
+            return c;
         },
-        list_all: async () => {
-            const root = loader.join(loader.root, folder);
-            if (!loader.exists(root))
-                await loader.mkdir(root);
-            return loader.read_dir_file(root);
-        },
-        save: async (uuid, data) => {
+        list_all: async (token) => {
             const root = loader.join(loader.root, folder);
             if (!loader.exists(root))
                 await loader.mkdir(root);
+            return mem.list_all(token);
+        },
+        save: async (uuid, data, token) => {
+            const root = loader.join(loader.root, folder);
+            if (!loader.exists(root))
+                await loader.mkdir(root);
+            const r = await mem.save(uuid, data, token);
+            if (!r)
+                return false;
             const file = loader.join(root, uuid + ext);
             await loader.write_string(file, data);
-            const arr = get_array(type);
-            const b = arr.findIndex(x => x.uuid == uuid);
-            if (b != -1)
-                arr[b] = JSON.parse(data);
-            else
-                arr.push(JSON.parse(data));
+            return true;
         },
-        load: async (uuid, cache) => {
-            const arr = get_array(type);
-            if (cache) {
-                const b = arr.findIndex(x => x.uuid == uuid);
-                if (b != -1)
-                    return JSON.stringify(arr[b]);
-            }
+        load: async (uuid, token) => {
             const root = loader.join(loader.root, folder);
             if (!loader.exists(root))
                 await loader.mkdir(root);
-            const file = loader.join(root, uuid + ext);
-            if (!loader.exists(file)) {
-                const b = arr.findIndex(x => x.uuid == uuid);
-                if (b != -1)
-                    arr.splice(b, 1);
-                return "";
-            }
-            const a = await loader.read_string(file);
-            if (cache)
-                arr.push(JSON.parse(a));
-            return a;
+            return mem.load(uuid, token);
         },
-        rename: async (uuid, newuuid) => {
+        delete: async (uuid, token) => {
             const root = loader.join(loader.root, folder);
             if (!loader.exists(root))
                 await loader.mkdir(root);
-            const oldfile = loader.join(root, uuid + ext);
-            const newfile = loader.join(root, newuuid + ext);
-            await loader.cp(oldfile, newfile);
-            await loader.rm(oldfile);
-            const arr = get_array(type);
-            const b = arr.findIndex(x => x.uuid == uuid);
-            if (b != -1)
-                arr[b].uuid = newuuid;
-        },
-        delete: async (uuid) => {
-            const root = loader.join(loader.root, folder);
-            if (!loader.exists(root))
-                await loader.mkdir(root);
+            const r = await mem.delete(uuid, token);
+            if (!r)
+                return false;
             const file = loader.join(root, uuid + ext);
             if (loader.exists(file)) {
                 await loader.rm(file);
             }
-            const arr = get_array(type);
-            const b = arr.findIndex(x => x.uuid == uuid);
-            if (b != -1)
-                arr.splice(b, 1);
+            return true;
         }
     };
 };
 exports._CreateRecordIOLoader = _CreateRecordIOLoader;
+const _CreateRecordMongoLoader = (loader, memory, type, db, collection) => {
+    const mem = (0, exports._CreateRecordMemoryLoader)(memory, type);
+    return {
+        load_all: async (cache, token) => {
+            if (cache)
+                return mem.load_all(cache, token);
+            const database = loader.db(db);
+            const col = database.collection(collection);
+            const data = await col.find({}).toArray();
+            const exec = data.map(x => {
+                return mem.save(x.uuid, JSON.stringify(x), token);
+            });
+            await Promise.all(exec);
+            return mem.load_all(cache, token);
+        },
+        delete_all: async (token) => {
+            throw new Error("Function not implemented.");
+        },
+        list_all: async (token) => {
+            throw new Error("Function not implemented.");
+        },
+        save: async (uuid, data, token) => {
+            throw new Error("Function not implemented.");
+        },
+        load: async (uuid, token) => {
+            throw new Error("Function not implemented.");
+        },
+        delete: async (uuid, token) => {
+            throw new Error("Function not implemented.");
+        }
+    };
+};
+exports._CreateRecordMongoLoader = _CreateRecordMongoLoader;
 const CreateRecordMemoryLoader = (loader) => {
     return {
         project: (0, exports._CreateRecordMemoryLoader)(loader, interface_1.RecordType.PROJECT),
@@ -239,11 +421,22 @@ const CreateRecordIOLoader = (loader, memory) => {
         database: (0, exports._CreateRecordIOLoader)(loader, memory, interface_1.RecordType.DATABASE, "database"),
         node: (0, exports._CreateRecordIOLoader)(loader, memory, interface_1.RecordType.NODE, "node"),
         log: (0, exports._CreateRecordIOLoader)(loader, memory, interface_1.RecordType.LOG, "log"),
-        lib: (0, exports._CreateRecordIOLoader)(loader, memory, interface_1.RecordType.LIB, "lib", ""),
+        lib: (0, exports._CreateRecordIOLoader)(loader, memory, interface_1.RecordType.LIB, "lib"),
         user: (0, exports._CreateRecordIOLoader)(loader, memory, interface_1.RecordType.USER, "user"),
     };
 };
 exports.CreateRecordIOLoader = CreateRecordIOLoader;
-const CreateRecordMongoLoader = (loader, folder, ext = ".json") => {
+const CreateRecordMongoLoader = (url, memory) => {
+    const loader = new mongodb_1.MongoClient(url);
+    return {
+        project: (0, exports._CreateRecordMongoLoader)(loader, memory, interface_1.RecordType.PROJECT, interface_1.MONGODB_NAME, "project"),
+        task: (0, exports._CreateRecordMongoLoader)(loader, memory, interface_1.RecordType.TASK, interface_1.MONGODB_NAME, "task"),
+        job: (0, exports._CreateRecordMongoLoader)(loader, memory, interface_1.RecordType.JOB, interface_1.MONGODB_NAME, "job"),
+        database: (0, exports._CreateRecordMongoLoader)(loader, memory, interface_1.RecordType.DATABASE, interface_1.MONGODB_NAME, "database"),
+        node: (0, exports._CreateRecordMongoLoader)(loader, memory, interface_1.RecordType.NODE, interface_1.MONGODB_NAME, "node"),
+        log: (0, exports._CreateRecordMongoLoader)(loader, memory, interface_1.RecordType.LOG, interface_1.MONGODB_NAME, "log"),
+        lib: (0, exports._CreateRecordMongoLoader)(loader, memory, interface_1.RecordType.LIB, interface_1.MONGODB_NAME, "lib"),
+        user: (0, exports._CreateRecordMongoLoader)(loader, memory, interface_1.RecordType.USER, interface_1.MONGODB_NAME, "user"),
+    };
 };
 exports.CreateRecordMongoLoader = CreateRecordMongoLoader;

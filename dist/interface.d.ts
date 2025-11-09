@@ -1,3 +1,4 @@
+export declare const SERECT: string;
 export declare const PORT = 12080;
 export declare const WebPORT = 11080;
 export declare const WebHookPORT = 15080;
@@ -9,6 +10,7 @@ export declare const SCROLL_LIMIT = 100;
 export declare const ENV_CHARACTER = "%";
 export declare const IGNORE_CHARACTER = "^";
 export declare const DATA_FOLDER = ".verteilen";
+export declare const MONGODB_NAME = "verteilen";
 export * from './interface/base';
 export * from './interface/bus';
 export * from './interface/enum';

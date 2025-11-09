@@ -1,3 +1,4 @@
+import { Shareable } from "./base";
 import { ExecuteState } from "./enum";
 export interface ExecuteData {
     uuid: string;
@@ -27,7 +28,7 @@ export interface Preference {
     mode?: number;
     url?: string;
 }
-export interface Library {
+export interface Library extends Shareable {
     uuid: string;
     name: string;
     load: boolean;

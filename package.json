@@ -33,6 +33,7 @@
     "i18n-js": "^4.5.1",
     "jest": "^29.7.0",
     "jsonwebtoken": "^9.0.2",
+    "mongodb": "^7.0.0",
     "pem": "^1.14.8",
     "systeminformation": "^5.25.11",
     "tcp-port-used": "^1.0.2",

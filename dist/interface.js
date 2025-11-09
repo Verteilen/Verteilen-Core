@@ -36,7 +36,8 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UtilServer_Log = exports.UtilServer_Console = exports.Execute_WebhookManager = exports.Execute_SocketManager = exports.Execute_ExecuteManager = exports.Execute_ConsoleServerManager = exports.Execute_ConsoleManager = exports.Execute_PART = exports.I18N = exports.DATA_FOLDER = exports.IGNORE_CHARACTER = exports.ENV_CHARACTER = exports.SCROLL_LIMIT = exports.RENDER_FILE_UPDATETICK = exports.RENDER_UPDATETICK = exports.CLIENT_UPDATETICK = exports.MESSAGE_LIMIT = exports.WebHookPORT = exports.WebPORT = exports.PORT = void 0;
+exports.UtilServer_Log = exports.UtilServer_Console = exports.Execute_WebhookManager = exports.Execute_SocketManager = exports.Execute_ExecuteManager = exports.Execute_ConsoleServerManager = exports.Execute_ConsoleManager = exports.Execute_PART = exports.I18N = exports.MONGODB_NAME = exports.DATA_FOLDER = exports.IGNORE_CHARACTER = exports.ENV_CHARACTER = exports.SCROLL_LIMIT = exports.RENDER_FILE_UPDATETICK = exports.RENDER_UPDATETICK = exports.CLIENT_UPDATETICK = exports.MESSAGE_LIMIT = exports.WebHookPORT = exports.WebPORT = exports.PORT = exports.SERECT = void 0;
+exports.SERECT = process.env.SERECT || "aVdWN1gWTTUsAQ06aZHyyLMXo0kEJYhU";
 exports.PORT = 12080;
 exports.WebPORT = 11080;
 exports.WebHookPORT = 15080;
@@ -48,6 +49,7 @@ exports.SCROLL_LIMIT = 100;
 exports.ENV_CHARACTER = '%';
 exports.IGNORE_CHARACTER = '^';
 exports.DATA_FOLDER = '.verteilen';
+exports.MONGODB_NAME = "verteilen";
 __exportStar(require("./interface/base"), exports);
 __exportStar(require("./interface/bus"), exports);
 __exportStar(require("./interface/enum"), exports);
