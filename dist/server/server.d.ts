@@ -2,7 +2,6 @@ import { Execute_ConsoleServerManager, PluginPageData } from "../interface";
 import { ServerDetail } from "./detail";
 import { MemoryData, RecordIOBase, RecordLoader } from "./io";
 import { Project_Module } from "./module/project";
-import { EventObserver } from "./observer";
 import { PluginLoader } from "./plugin";
 export type Caller_Electron_Send = (channel: string, ...args: any[]) => void;
 export interface Caller_Electron {
@@ -21,7 +20,7 @@ export declare class Server {
     memory: MemoryData;
     plugin: PluginPageData;
     io: RecordIOBase | undefined;
-    loader: RecordLoader | EventObserver | undefined;
+    loader: RecordLoader | undefined;
     plugin_loader: PluginLoader | undefined;
     memory_loader: RecordLoader;
     detail: ServerDetail | undefined;

@@ -6,7 +6,7 @@
 /**
  * Express server related data structure
  */
-import { Shareable } from "./base"
+import { DataHeader, Shareable } from "./base"
 import { Preference } from "./record"
 import { v6 as uuidv6 } from 'uuid'
 
@@ -85,8 +85,7 @@ export interface LocalPermissionContainer2 {
 /**
  * The data structure store in the DATA_Folder
  */
-export interface UserProfile extends Shareable {
-    uuid: string
+export interface UserProfile extends DataHeader, Shareable {
     token: string
     name: string
     email?: string

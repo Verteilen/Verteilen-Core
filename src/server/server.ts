@@ -7,7 +7,6 @@ import { Execute_ConsoleServerManager, Header, PluginPageData } from "../interfa
 import { ServerDetail } from "./detail";
 import { CreateRecordMemoryLoader, MemoryData, RecordIOBase, RecordLoader } from "./io";
 import { Project_Module } from "./module/project";
-import { EventObserver } from "./observer";
 import { PluginLoader } from "./plugin";
 
 export type Caller_Electron_Send = (channel: string, ...args: any[]) => void
@@ -53,7 +52,7 @@ export class Server {
         plugins: [],
     }
     io:RecordIOBase | undefined = undefined
-    loader:RecordLoader | EventObserver | undefined = undefined
+    loader:RecordLoader | undefined = undefined
     plugin_loader: PluginLoader | undefined = undefined
     memory_loader:RecordLoader
     detail: ServerDetail | undefined

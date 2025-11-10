@@ -1,4 +1,4 @@
-import { Shareable } from "./base";
+import { DataHeader, Shareable } from "./base";
 import { Preference } from "./record";
 export declare enum ACLType {
     PUBLIC = 0,
@@ -52,8 +52,7 @@ export interface LocalPermissionContainer2 {
     uuid2: string;
     permission: LocalPermission;
 }
-export interface UserProfile extends Shareable {
-    uuid: string;
+export interface UserProfile extends DataHeader, Shareable {
     token: string;
     name: string;
     email?: string;

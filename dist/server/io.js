@@ -383,19 +383,38 @@ const _CreateRecordMongoLoader = (loader, memory, type, db, collection) => {
             return mem.load_all(cache, token);
         },
         delete_all: async (token) => {
-            throw new Error("Function not implemented.");
+            const c = await mem.delete_all(token);
+            const database = loader.db(db);
+            const col = database.collection(collection);
+            const exec = c.map(x => {
+                return col.deleteOne({ uuid: x });
+            });
+            await Promise.all(exec);
+            return c;
         },
         list_all: async (token) => {
-            throw new Error("Function not implemented.");
+            return mem.list_all(token);
         },
         save: async (uuid, data, token) => {
-            throw new Error("Function not implemented.");
+            const r = await mem.save(uuid, data, token);
+            if (!r)
+                return false;
+            const database = loader.db(db);
+            const col = database.collection(collection);
+            col.findOneAndUpdate({ uuid: uuid }, JSON.parse(data));
+            return true;
         },
         load: async (uuid, token) => {
-            throw new Error("Function not implemented.");
+            return mem.load(uuid, token);
         },
         delete: async (uuid, token) => {
-            throw new Error("Function not implemented.");
+            const r = await mem.delete(uuid, token);
+            if (!r)
+                return false;
+            const database = loader.db(db);
+            const col = database.collection(collection);
+            await col.deleteOne({ uuid: uuid });
+            return true;
         }
     };
 };

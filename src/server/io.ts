@@ -486,19 +486,40 @@ export const _CreateRecordMongoLoader = (loader:MongoClient, memory:MemoryData, 
             return mem.load_all(cache, token)
         },
         delete_all: async (token?: string): Promise<Array<string>> => {
-            throw new Error("Function not implemented.")
+            // Memory action
+            const c = await mem.delete_all(token)
+            const database = loader.db(db) 
+            const col = database.collection(collection)
+            // Get the removed uuids and delete from disk
+            const exec = c.map(x => {
+                return col.deleteOne({ uuid: x })
+            })
+            await Promise.all(exec)
+            return c
         },
         list_all: async (token?: string): Promise<Array<string>> => {
-            throw new Error("Function not implemented.")
+            return mem.list_all(token)
         },
         save: async (uuid: string, data: string, token?: string): Promise<boolean> => {
-            throw new Error("Function not implemented.")
+            const r = await mem.save(uuid, data, token)
+            if(!r) return false
+
+            const database = loader.db(db) 
+            const col = database.collection(collection)
+            col.findOneAndUpdate({ uuid: uuid }, JSON.parse(data))
+            return true
         },
         load: async (uuid: string, token?: string): Promise<string> => {
-            throw new Error("Function not implemented.")
+            return mem.load(uuid, token)
         },
         delete: async (uuid: string, token?: string): Promise<boolean> => {
-            throw new Error("Function not implemented.")
+            const r = await mem.delete(uuid, token)
+            if(!r) return false
+
+            const database = loader.db(db) 
+            const col = database.collection(collection)
+            await col.deleteOne({ uuid: uuid })
+            return true
         }
     }
 }
