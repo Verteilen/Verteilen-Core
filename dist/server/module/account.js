@@ -14,7 +14,7 @@ class Account_Module {
         this.memory = memory;
     }
     login = async (username, password) => {
-        const data = await this.loader.user.load_all(false);
+        const data = await this.loader.user.load_all();
         const users = data.map(x => JSON.parse(x));
         const target = users.find(x => x.name == username && x.password == password);
         if (target != undefined) {

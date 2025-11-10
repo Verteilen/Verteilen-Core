@@ -26,10 +26,7 @@ describe("Get plugin test", () => {
     test("Query plugin", async () => {
         const plugin = await GetCurrentPlugin(CreateIO())
         const p = await fsp.readdir(path.join(os.homedir(), DATA_FOLDER, "plugin"), { withFileTypes: true })
-        const t = await fsp.readdir(path.join(os.homedir(), DATA_FOLDER, "template"), { withFileTypes: true })
-        const p2 = p.filter(x => x.isFile()).map(x => x.name)
-        const t2 = t.filter(x => x.isFile()).map(x => x.name)
+        const p2 = p.filter(x => !x.isFile()).map(x => x.name)
         expect(plugin.plugins.length).toBe(p2.length)
-        expect(plugin.templates.length).toBe(t2.length)
     })
 })

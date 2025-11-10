@@ -23,7 +23,7 @@ export class Account_Module {
      * @returns Token string
      */
     login = async (username:string, password:string):Promise<string> => {
-        const data = await this.loader.user.load_all(false)
+        const data = await this.loader.user.load_all()
         const users:Array<UserProfile> = data.map(x => JSON.parse(x))
         const target = users.find(x => x.name == username && x.password == password)
         if(target != undefined){

@@ -1,5 +1,5 @@
 import { ClientJobExecute } from "../../src/client/job_execute"
-import { Job, JobCategory, JobType2 } from "../../src/interface"
+import { CreateDefaultJob, Job, JobCategory, JobType2 } from "../../src/interface"
 
 
 describe("Client Execute Test", () => {
@@ -11,6 +11,7 @@ describe("Client Execute Test", () => {
 
     test("Testing condition (OS when path not exist)", async () => {
         job = {
+            ...CreateDefaultJob(),
             index: 0,
             uuid: "UUID",
             runtime_uuid: "Runtime",
@@ -33,6 +34,7 @@ describe("Client Execute Test", () => {
     })
     test("Testing condition (OS when path exist)", async () => {
         job = {
+            ...CreateDefaultJob(),
             index: 0,
             uuid: "UUID",
             runtime_uuid: "Runtime",

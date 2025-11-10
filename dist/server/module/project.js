@@ -147,7 +147,7 @@ class Project_Module {
         }
     }
     async Delete_Database_Idle(uuid) {
-        return this.loader.project.load_all(true).then(() => {
+        return this.loader.project.load_all().then(() => {
             const f = this.memory.projects.find(x => x.database_uuid == uuid);
             if (f == undefined) {
                 this.loader.database.delete(uuid);

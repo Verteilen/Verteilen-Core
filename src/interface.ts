@@ -3,7 +3,8 @@
 //      Share Codebase     
 //                           
 // ========================
-export const SERECT = process.env.SERECT || "aVdWN1gWTTUsAQ06aZHyyLMXo0kEJYhU"
+const DefaultSerect = "aVdWN1gWTTUsAQ06aZHyyLMXo0kEJYhU"
+export const SERECT = typeof process !== 'undefined' ? (process.env.SERECT || DefaultSerect) : DefaultSerect
 /**
  * Default client node port
  */

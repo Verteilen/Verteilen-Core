@@ -5,7 +5,7 @@
 // ========================
 import { Execute_ConsoleServerManager, Header, PluginPageData } from "../interface";
 import { ServerDetail } from "./detail";
-import { CreateRecordMemoryLoader, MemoryData, RecordIOBase, RecordLoader } from "./io";
+import { CreateRecordMemoryLoader_Browser, MemoryData, RecordIOBase, RecordLoader } from "./io";
 import { Project_Module } from "./module/project";
 import { PluginLoader } from "./plugin";
 
@@ -32,11 +32,7 @@ export interface PluginFeedback {
     socket:Caller_Socket | undefined
 }
 
-/**
- * **Compute Server**\
- * The task schedule server
- */
-export class Server {
+export class ServerBase {
     manager:Array<Execute_ConsoleServerManager.ConsoleServerManager> = []
     memory: MemoryData = {
         projects: [],
@@ -53,14 +49,14 @@ export class Server {
     }
     io:RecordIOBase | undefined = undefined
     loader:RecordLoader | undefined = undefined
-    plugin_loader: PluginLoader | undefined = undefined
     memory_loader:RecordLoader
+    plugin_loader: PluginLoader | undefined = undefined
     detail: ServerDetail | undefined
     
     module_project: Project_Module
 
     constructor() {
-        this.memory_loader = CreateRecordMemoryLoader(this.memory)
+        this.memory_loader = CreateRecordMemoryLoader_Browser(this.memory)
         this.module_project = new Project_Module(this)
     }
 
@@ -70,19 +66,19 @@ export class Server {
     }
 
     /**
-     * **Data: Disk -> Memory**\
+     * **Data: Memory**\
      * Load every type of data from disk, store them into memory
      */
     LoadFromDisk = ():Promise<Array<Array<string>>> => {
         const ts = [
-            this.current_loader.project.load_all(false),
-            this.current_loader.task.load_all(false),
-            this.current_loader.job.load_all(false),
-            this.current_loader.database.load_all(false),
-            this.current_loader.node.load_all(false),
-            this.current_loader.log.load_all(false),
-            this.current_loader.lib.load_all(false),
-            this.current_loader.user.load_all(false),
+            this.current_loader.project.fetch_all(),
+            this.current_loader.task.fetch_all(),
+            this.current_loader.job.fetch_all(),
+            this.current_loader.database.fetch_all(),
+            this.current_loader.node.fetch_all(),
+            this.current_loader.log.fetch_all(),
+            this.current_loader.lib.fetch_all(),
+            this.current_loader.user.fetch_all(),
         ]
         return Promise.all(ts)
     }

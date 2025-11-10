@@ -15,14 +15,14 @@ export interface PluginFeedback {
     electron: (() => (Caller_Electron | undefined)) | undefined;
     socket: Caller_Socket | undefined;
 }
-export declare class Server {
+export declare class ServerBase {
     manager: Array<Execute_ConsoleServerManager.ConsoleServerManager>;
     memory: MemoryData;
     plugin: PluginPageData;
     io: RecordIOBase | undefined;
     loader: RecordLoader | undefined;
-    plugin_loader: PluginLoader | undefined;
     memory_loader: RecordLoader;
+    plugin_loader: PluginLoader | undefined;
     detail: ServerDetail | undefined;
     module_project: Project_Module;
     constructor();

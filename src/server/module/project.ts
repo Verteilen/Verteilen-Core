@@ -5,13 +5,13 @@
 // ========================
 import { Job, Project, Task } from "../../interface"
 import { MemoryData, RecordLoader } from "../io"
-import { Server } from "../server"
+import { ServerBase } from "../server"
 import { v6 as uuidv6 } from 'uuid'
 
 export class Project_Module {
-    server:Server
+    server:ServerBase
 
-    constructor(memory:Server) {
+    constructor(memory:ServerBase) {
         this.server = memory
     }
 
@@ -195,7 +195,7 @@ export class Project_Module {
      * @param uuid Database UUID
      */
     async Delete_Database_Idle(uuid:string){
-        return this.loader.project.load_all(true).then(() => {
+        return this.loader.project.load_all().then(() => {
             const f = this.memory.projects.find(x => x.database_uuid == uuid)
             if(f == undefined){
                 this.loader.database.delete(uuid)

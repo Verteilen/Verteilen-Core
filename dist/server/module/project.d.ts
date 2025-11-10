@@ -1,9 +1,9 @@
 import { Job, Project, Task } from "../../interface";
 import { MemoryData, RecordLoader } from "../io";
-import { Server } from "../server";
+import { ServerBase } from "../server";
 export declare class Project_Module {
-    server: Server;
-    constructor(memory: Server);
+    server: ServerBase;
+    constructor(memory: ServerBase);
     get memory(): MemoryData;
     get loader(): RecordLoader;
     ProjectJobCount(uuid: string): Promise<number>;
