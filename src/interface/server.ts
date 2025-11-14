@@ -57,6 +57,7 @@ export interface GlobalPermission {
     database: LocalPermission
 
     plugin: LocalPermission
+    service: LocalPermission
     node: LocalPermission
     lib: LocalPermission
     log: LocalPermission
@@ -132,6 +133,7 @@ export const CreateRootPermission = ():GlobalPermission => {
         task: perl,
         job: perl,
         plugin: perl,
+        service: perl,
         node: perl,
         database: perl,
         lib: perl,

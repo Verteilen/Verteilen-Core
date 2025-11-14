@@ -32,6 +32,7 @@ export interface GlobalPermission {
     job: LocalPermission;
     database: LocalPermission;
     plugin: LocalPermission;
+    service: LocalPermission;
     node: LocalPermission;
     lib: LocalPermission;
     log: LocalPermission;

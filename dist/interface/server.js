@@ -48,6 +48,7 @@ const CreateRootPermission = () => {
         task: perl,
         job: perl,
         plugin: perl,
+        service: perl,
         node: perl,
         database: perl,
         lib: perl,
