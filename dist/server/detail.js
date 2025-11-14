@@ -3,11 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ServerDetail = void 0;
 const uuid_1 = require("uuid");
 const interface_1 = require("../interface");
-const console_handle_1 = require("../util/console_handle");
-const log_handle_1 = require("../util/log_handle");
+const console_handle_1 = require("./detail/console_handle");
+const log_handle_1 = require("./detail/log_handle");
+const execute_manager_1 = require("../script/execute_manager");
+const socket_manager_1 = require("../script/socket_manager");
 class ServerDetail {
     execute_manager = [];
-    console;
     websocket_manager;
     shellBind = new Map();
     loader;
@@ -27,8 +28,7 @@ class ServerDetail {
             shellReply: this.shellReply,
             folderReply: this.folderReply
         };
-        this.websocket_manager = new interface_1.Execute_SocketManager.WebsocketManager(this.NewConnection, this.DisConnection, this.Analysis, messager_log, n);
-        this.console = new interface_1.UtilServer_Console.Util_Server_Console();
+        this.websocket_manager = new socket_manager_1.WebsocketManager(this.NewConnection, this.DisConnection, this.Analysis, messager_log, n);
         this.updatehandle = setInterval(() => {
             this.re.push(...this.console_update());
         }, interface_1.RENDER_UPDATETICK);
@@ -125,51 +125,6 @@ class ServerDetail {
                 });
             }
         }
-    };
-    console_update = () => {
-        const re = [];
-        this.execute_manager.forEach(x => {
-            if (x.record.running && !x.record.stop) {
-                try {
-                    x.manager.Update();
-                }
-                catch (err) {
-                    x.record.stop = true;
-                    console.log(err);
-                    re.push({
-                        code: 400,
-                        name: err.name,
-                        message: err.message,
-                        stack: err.stack
-                    });
-                }
-            }
-            if (x.record.stop) {
-                if (x.manager.jobstack == 0) {
-                    x.record.running = false;
-                }
-            }
-            if (x.record.command.length > 0) {
-                const p = x.record.command.shift();
-                if (p[0] == 'clean')
-                    this.console_clean(undefined, x.record.uuid);
-                else if (p[0] == 'stop')
-                    this.console_stop(undefined, x.record.uuid);
-                else if (p[0] == 'skip')
-                    this.console_skip(undefined, x.record.uuid, p[1], p[2]);
-                else if (p[0] == 'execute')
-                    this.console_execute(undefined, x.record.uuid, p[1]);
-            }
-        });
-        if (this.loader != undefined) {
-            const logss = this.backend.memory.logs.filter(x => x.dirty && x.output);
-            for (var x of logss) {
-                x.dirty = false;
-                const filename = this.loader.join(this.loader.root, "log", `${x.uuid}.json`);
-                this.loader.write_string(filename, JSON.stringify(x, null, 4));
-            }
-        }
-        return re;
     };
     resource_start = (socket, uuid) => {
         const p = this.websocket_manager.targets.find(x => x.uuid == uuid);
@@ -291,7 +246,7 @@ class ServerDetail {
     };
     console_add = (socket, name, record, uuid) => {
         record.projects.forEach(x => x.uuid = (0, uuid_1.v6)());
-        const em = new interface_1.Execute_ExecuteManager.ExecuteManager(name, this.websocket_manager, this.message, JSON.parse(JSON.stringify(record)));
+        const em = new execute_manager_1.ExecuteManager(name, this.websocket_manager, this.message, JSON.parse(JSON.stringify(record)));
         const er = {
             ...record,
             uuid: em.uuid,
@@ -312,10 +267,10 @@ class ServerDetail {
         };
         em.libs = { libs: this.backend.memory.libs };
         const p = { manager: em, record: er };
-        const uscp = new console_handle_1.Util_Server_Console_Proxy(p);
-        const uslp = new log_handle_1.Util_Server_Log_Proxy(p, { logs: this.backend.memory.logs }, this.backend.GetPreference(uuid));
+        const uscp = new console_handle_1.Console_Proxy(p);
+        const uslp = new log_handle_1.Log_Proxy(p, { logs: this.backend.memory.logs }, this.backend.GetPreference(uuid));
         em.proxy = this.CombineProxy([uscp.execute_proxy, uslp.execute_proxy]);
-        const r = this.console.receivedPack(p, record);
+        const r = (0, console_handle_1.receivedPack)(p, record);
         if (r)
             this.execute_manager.push(p);
         if (socket != undefined) {
@@ -438,6 +393,51 @@ class ServerDetail {
             target.record.task_detail[i].state = interface_1.ExecuteState.FINISH;
         }
         console.log("Skip task", index);
+    };
+    console_update = () => {
+        const re = [];
+        this.execute_manager.forEach(x => {
+            if (x.record.running && !x.record.stop) {
+                try {
+                    x.manager.Update();
+                }
+                catch (err) {
+                    x.record.stop = true;
+                    console.log(err);
+                    re.push({
+                        code: 400,
+                        name: err.name,
+                        message: err.message,
+                        stack: err.stack
+                    });
+                }
+            }
+            if (x.record.stop) {
+                if (x.manager.jobstack == 0) {
+                    x.record.running = false;
+                }
+            }
+            if (x.record.command.length > 0) {
+                const p = x.record.command.shift();
+                if (p[0] == 'clean')
+                    this.console_clean(undefined, x.record.uuid);
+                else if (p[0] == 'stop')
+                    this.console_stop(undefined, x.record.uuid);
+                else if (p[0] == 'skip')
+                    this.console_skip(undefined, x.record.uuid, p[1], p[2]);
+                else if (p[0] == 'execute')
+                    this.console_execute(undefined, x.record.uuid, p[1]);
+            }
+        });
+        if (this.loader != undefined) {
+            const logss = this.backend.memory.logs.filter(x => x.dirty && x.output);
+            for (var x of logss) {
+                x.dirty = false;
+                const filename = this.loader.join(this.loader.root, "log", `${x.uuid}.json`);
+                this.loader.write_string(filename, JSON.stringify(x, null, 4));
+            }
+        }
+        return re;
     };
     CombineProxy = (eps) => {
         const p = {

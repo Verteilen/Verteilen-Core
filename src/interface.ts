@@ -3,6 +3,8 @@
 //      Share Codebase     
 //                           
 // ========================
+const DefaultSerect = "aVdWN1gWTTUsAQ06aZHyyLMXo0kEJYhU"
+export const SERECT = typeof process !== 'undefined' ? (process.env.SERECT || DefaultSerect) : DefaultSerect
 /**
  * Default client node port
  */
@@ -36,6 +38,7 @@ export const SCROLL_LIMIT = 100
 export const ENV_CHARACTER = '%'
 export const IGNORE_CHARACTER = '^'
 export const DATA_FOLDER = '.verteilen'
+export const MONGODB_NAME = "verteilen"
 
 export * from './interface/base'
 export * from './interface/bus'
@@ -46,6 +49,8 @@ export * from './interface/server'
 export * from './interface/struct'
 export * from './interface/table'
 export * from './interface/ui'
+export * from './interface/plugin'
+export * from './interface/log'
 
 /**
  * Plugin
@@ -63,5 +68,5 @@ export * as Execute_WebhookManager from './script/webhook_manager'
 /**
  * Util
  */
-export * as UtilServer_Console from './util/console_handle'
-export * as UtilServer_Log from './util/log_handle'
+export * as UtilServer_Console from './server/detail/console_handle'
+export * as UtilServer_Log from './server/detail/log_handle'

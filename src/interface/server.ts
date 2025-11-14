@@ -6,6 +6,7 @@
 /**
  * Express server related data structure
  */
+import { DataHeader, Shareable } from "./base"
 import { Preference } from "./record"
 import { v6 as uuidv6 } from 'uuid'
 
@@ -56,6 +57,7 @@ export interface GlobalPermission {
     database: LocalPermission
 
     plugin: LocalPermission
+    service: LocalPermission
     node: LocalPermission
     lib: LocalPermission
     log: LocalPermission
@@ -84,8 +86,7 @@ export interface LocalPermissionContainer2 {
 /**
  * The data structure store in the DATA_Folder
  */
-export interface UserProfile {
-    uuid: string
+export interface UserProfile extends DataHeader, Shareable {
     token: string
     name: string
     email?: string
@@ -93,7 +94,7 @@ export interface UserProfile {
     type: UserType
     description?: string
     password?: string
-    permission: GlobalPermission
+    global_permission: GlobalPermission
 }
 
 /**
@@ -132,6 +133,7 @@ export const CreateRootPermission = ():GlobalPermission => {
         task: perl,
         job: perl,
         plugin: perl,
+        service: perl,
         node: perl,
         database: perl,
         lib: perl,
@@ -157,6 +159,6 @@ export const CreateRootUser = ():UserProfile => {
         },
         name: "root",
         description: "Root User",
-        permission: CreateRootPermission()
+        global_permission: CreateRootPermission()
     }
 }

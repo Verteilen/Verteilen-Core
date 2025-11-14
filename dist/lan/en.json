@@ -1,9 +1,15 @@
 {
+    "acl": {
+        "success": "Successfully executed",
+        "unverify": "Un verify",
+        "no-permission-action": "You have no permission"
+    },
     "login": {
         "title": "Account Login",
         "submit": "Submit",
         "account": "Account",
-        "password": "Password"
+        "password": "Password",
+        "failed": "Login Failed"
     },
     "guides": {
         "workflow": "Workflow",
@@ -103,14 +109,14 @@
         "enter-task-name": "Enter Task Name",
         "enter-task-description": "Enter Task Description",
         "new-job": "New Job",
-        "new-database": "New Database",
-        "edit-database": "Modify Database",
+        "new-Variable": "New Variable",
+        "edit-Variable": "Modify Variable",
         "delete-database": "Delete Database",
-        "enter-database-name": "Enter Database Name",
-        "new-database-set": "New Database Set",
-        "clone-database-set": "Clone Database Set",
-        "edit-database-set": "Modify Database Set",
-        "enter-database-set-name": "Enter Database Set Name",
+        "enter-Variable-name": "Enter Variable Name",
+        "new-database-set": "New Database",
+        "clone-database-set": "Clone Database",
+        "edit-database-set": "Modify Database",
+        "enter-database-set-name": "Enter Database Name",
         "import-database": "Delete Database",
         "delete-database-confirm": "Are you sure delete database you selected",
         "database-datatype": "Datatype",
@@ -133,10 +139,16 @@
         "delete-template": "Delete Template",
         "delete-plugin-confirm": "Are you sure delete plugin you selected",
         "delete-template-confirm": "Are you sure delete template you selected",
+        "job-title": "Job Title",
+        "job-description": "Job Description",
         "delete-job": "Delete Job",
         "delete-job-confirm": "Are you sure you want to delete this job?",
         "delete-task": "Delete Task",
-        "delete-task-confirm": "Are you sure you want to delete these tasks?"
+        "delete-task-confirm": "Are you sure you want to delete these tasks?",
+        "create-service": "Create Service",
+        "delete-service": "Delete Service",
+        "delete-service-confirm": "Are you sure you want to delete these services?",
+        "new-condition": "Create Condition"
     },
     "toolbar": {
         "server": "Server",
@@ -270,7 +282,10 @@
         "multi": "Multi",
         "cronjob": "Distribute",
         "task-count": "Task Count",
-        "job-count": "Job Count"
+        "job-count": "Job Count",
+        "hidden": "Hidden",
+        "runtime": "Runtime",
+        "value": "Value"
     },
     "codehint": {
         "v_path": "Path module",
@@ -341,12 +356,23 @@
             "messager_log": "messager_log(message:string)"
         }
     },
+    "condition": {
+        "group": "Group",
+        "condition": "Condition",
+        "execution": "Execution (Success)",
+        "failed": "Execution (Failed)",
+        "single": "Job Content",
+        "or": "Or",
+        "and": "And",
+        "not": "Not"
+    },
     "token": "Token",
     "info": "Information",
     "search": "Search",
     "selectall": "Select All",
     "unselectall": "Unselect All",
     "project": "Project",
+    "service": "Service",
     "task": "Task",
     "job": "JOB",
     "database": "Database",
@@ -383,6 +409,7 @@
     "useTemplate": "Use Template",
     "useExistDatabase": "Use Exist Database",
     "execute-keep": "Execute (Keep)",
+    "select": "Select",
     "database-setting": "Database Setting",
     "database-select": "Database Select",
     "is-running": "Is Running",
@@ -412,5 +439,12 @@
     "no": "No",
     "next": "Next",
     "previous": "Previous",
-    "goback": "Go Back"
+    "goback": "Go Back",
+    "logic": "Logic",
+    "use_logic": "Use Logic",
+    "remove_logic": "Remove Logic",
+    "state": "State",
+    "delay": "Delay",
+    "zoom": "Zoom",
+    "unzoom": "UnZoom"
 }

@@ -4,8 +4,13 @@ exports.DatabaseTemplateText = exports.ProjectTemplateText = exports.JobType2Tex
 var TaskLogicType;
 (function (TaskLogicType) {
     TaskLogicType[TaskLogicType["GROUP"] = 0] = "GROUP";
-    TaskLogicType[TaskLogicType["ADD"] = 1] = "ADD";
-    TaskLogicType[TaskLogicType["OR"] = 2] = "OR";
+    TaskLogicType[TaskLogicType["CONDITION"] = 1] = "CONDITION";
+    TaskLogicType[TaskLogicType["EXECUTION"] = 2] = "EXECUTION";
+    TaskLogicType[TaskLogicType["FAILED"] = 3] = "FAILED";
+    TaskLogicType[TaskLogicType["SINGLE"] = 4] = "SINGLE";
+    TaskLogicType[TaskLogicType["ADD"] = 5] = "ADD";
+    TaskLogicType[TaskLogicType["OR"] = 6] = "OR";
+    TaskLogicType[TaskLogicType["NOT"] = 7] = "NOT";
 })(TaskLogicType || (exports.TaskLogicType = TaskLogicType = {}));
 var SocketState;
 (function (SocketState) {

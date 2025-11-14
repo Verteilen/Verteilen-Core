@@ -140,7 +140,7 @@ class ClientAnalysis {
         source.send(JSON.stringify(h));
     };
     plugin_info = (data, source) => {
-        const pat = path.join(os.homedir(), interface_1.DATA_FOLDER, "plugin.json");
+        const pat = path.join(os.homedir(), interface_1.DATA_FOLDER, "node_plugin", "plugin.json");
         if ((0, fs_1.existsSync)(pat)) {
             const p = JSON.parse((0, fs_1.readFileSync)(pat).toString());
             const h = { name: 'plugin_info_reply', data: p.plugins };
@@ -210,7 +210,7 @@ class ClientAnalysis {
         const filename = links[links.length - 1];
         const version = links[links.length - 2];
         const REPO = `${links[3]}/${links[4]}`;
-        const dir = path.join(os.homedir(), interface_1.DATA_FOLDER, "exe");
+        const dir = path.join(os.homedir(), interface_1.DATA_FOLDER, "node_plugin", plugin.name);
         if (!(0, fs_1.existsSync)(dir))
             (0, fs_1.mkdirSync)(dir, { recursive: true });
         let req = {};
@@ -264,14 +264,12 @@ class ClientAnalysis {
     plugin_remove = (plugin, source) => {
         this.client.plugins.plugins = this.client.plugins.plugins.filter(x => x.name != plugin.name);
         this.client.savePlugin();
-        const dir = path.join(os.homedir(), interface_1.DATA_FOLDER, "exe");
+        const dir = path.join(os.homedir(), interface_1.DATA_FOLDER, "node_plugin");
         if (!(0, fs_1.existsSync)(dir))
             (0, fs_1.mkdirSync)(dir, { recursive: true });
-        plugin.contents.forEach(x => {
-            if ((0, fs_1.existsSync)(path.join(dir, x.filename))) {
-                (0, fs_1.rmSync)(path.join(dir, x.filename));
-            }
-        });
+        if ((0, fs_1.existsSync)(path.join(dir, plugin.name))) {
+            (0, fs_1.rmSync)(path.join(dir, plugin.name), { recursive: true });
+        }
         this.plugin_info(0, source);
     };
     resource_start = (data, source) => {

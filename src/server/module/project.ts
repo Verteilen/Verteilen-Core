@@ -5,55 +5,62 @@
 // ========================
 import { Job, Project, Task } from "../../interface"
 import { MemoryData, RecordLoader } from "../io"
-import { Server } from "../server"
+import { ServerBase } from "../server"
 import { v6 as uuidv6 } from 'uuid'
 
 export class Project_Module {
-    server:Server
+    server:ServerBase
 
-    constructor(memory:Server) {
+    constructor(memory:ServerBase) {
         this.server = memory
     }
 
     public get memory(): MemoryData { return this.server.memory }
     public get loader(): RecordLoader { return this.server.current_loader }
 
-    ProjectJobCount(uuid:string):number {
+    async ProjectJobCount(uuid:string):Promise<number> {
+        await this.loader.project.load(uuid)
         const p:Project | undefined = this.memory.projects.find(p=> p.uuid == uuid)
         if(!p) return 0
         const t:Array<Task> = p.tasks_uuid.map(t_uuid => this.memory.tasks.find(t => t.uuid == t_uuid)).filter(t => t != undefined)
         const counts = t.map(x => x.jobs_uuid.length)
         return counts.reduce((a,b) => a + b, 0)
     }
+    async ReOrderProjectTask(uuid:string, uuids:Array<string>):Promise<void> {
+        await this.loader.project.load(uuid)
+        const p:Project | undefined = this.memory.projects.find(p=> p.uuid == uuid)
+        if(!p) return
+        p.tasks_uuid = uuids
+        this.loader.project.save(uuid, JSON.stringify(p, null, 4))
+    }
 
     /**
      * Assign real data to instance
      * @param uuid Project UUID
      */
-    PopulateProject(uuid:string):Project | undefined {
+    async PopulateProject(uuid:string):Promise<Project | undefined> {
+        await this.loader.project.load(uuid)
         const p:Project | undefined = this.memory.projects.find(p=> p.uuid == uuid)
         if(!p) return undefined
         const buffer:Project = Object.assign({}, p) as Project
-        for(var x of buffer.tasks_uuid){
-            const t:Task | undefined = this.PopulateTask(x)
-            if(!t) return undefined
-            buffer.tasks.push(t)
-        }
+        const ts = buffer.tasks_uuid.map(x => this.PopulateTask(x))
+        buffer.tasks = (await Promise.all(ts)).filter(x => x != undefined)
         return buffer
     }
     /**
      * Assign real data to instance
      * @param uuid Task UUID
      */
-    PopulateTask(uuid:string):Task | undefined {
+    async PopulateTask(uuid:string):Promise<Task | undefined> {
+        await this.loader.task.load(uuid)
         const p:Task | undefined = this.memory.tasks.find(p=> p.uuid == uuid)
         if(!p) return undefined
         const buffer:Task = Object.assign({}, p) as Task
-        for(var x of buffer.jobs_uuid){
-            const t:Job | undefined = this.memory.jobs.find(t => t.uuid == x)
-            if(!t) return undefined
-            buffer.jobs.push(t)
-        }
+        const js = buffer.jobs_uuid.map(async x => {
+            await this.loader.job.load(uuid)
+            return this.memory.jobs.find(t => t.uuid == x)
+        })
+        buffer.jobs = (await Promise.all(js)).filter(x => x != undefined)
         return buffer
     }
     /**
@@ -62,11 +69,11 @@ export class Project_Module {
      * @returns Related Tasks
      */
     async GetProjectRelatedTask(uuid:string):Promise<Array<Task>> {
-        await this.loader.project.load(uuid, true)
+        await this.loader.project.load(uuid)
         const p = this.memory.projects.find(x => x.uuid == uuid)
         if(!p) return []
         const r = p.tasks_uuid.map(x => {
-            return this.loader.task.load(x, true)
+            return this.loader.task.load(x)
         })
         await Promise.all(r)
         const tasks = p.tasks_uuid.map(x => this.memory.tasks.find(y => y.uuid == x)).filter(x => x != undefined)
@@ -78,11 +85,11 @@ export class Project_Module {
      * @returns Related Jobs
      */
     async GetTaskRelatedJob(uuid:string):Promise<Array<Job>> {
-        await this.loader.task.load(uuid, true)
+        await this.loader.task.load(uuid)
         const p = this.memory.tasks.find(x => x.uuid == uuid)
         if(!p) return []
         const r = p.jobs_uuid.map(x => {
-            return this.loader.job.load(x, true)
+            return this.loader.job.load(x)
         })
         await Promise.all(r)
         const jobs = p.jobs_uuid.map(x => this.memory.jobs.find(y => y.uuid == x)).filter(x => x != undefined)
@@ -94,7 +101,7 @@ export class Project_Module {
      * @returns The new uuids list
      */
     async CloneProjects(uuids:Array<string>):Promise<Array<string>>{
-        const p = uuids.map(x => this.loader.project.load(x, true))
+        const p = uuids.map(x => this.loader.project.load(x))
         const ps = await Promise.all(p)
         const projects:Array<Project> = ps.map(x => JSON.parse(x))
         projects.forEach((x, i) => x.uuid = uuidv6({}, undefined, i))
@@ -113,7 +120,7 @@ export class Project_Module {
      * @returns The new uuids list
      */
     async CloneTasks(uuids:Array<string>):Promise<Array<string>>{
-        const p = uuids.map(x => this.loader.task.load(x, true))
+        const p = uuids.map(x => this.loader.task.load(x))
         const ps = await Promise.all(p)
         const tasks:Array<Task> = ps.map(x => JSON.parse(x))
         tasks.forEach((x, i) => x.uuid = uuidv6({}, undefined, 2500 + i))
@@ -132,7 +139,7 @@ export class Project_Module {
      * @returns The new uuids list
      */
     async CloneJobs(uuids:Array<string>):Promise<Array<string>>{
-        const p = uuids.map(x => this.loader.job.load(x, true))
+        const p = uuids.map(x => this.loader.job.load(x))
         const ps = await Promise.all(p)
         const jobs:Array<Job> = ps.map(x => JSON.parse(x))
         jobs.forEach((x, i) => x.uuid = uuidv6({}, undefined, 5000 + i))
@@ -145,7 +152,7 @@ export class Project_Module {
      * @param uuid Project UUID
      */
     async CascadeDeleteProject(uuid:string, bind:boolean):Promise<void>{
-        await this.loader.project.load(uuid, true)
+        await this.loader.project.load(uuid)
         const p:Project = this.memory.projects.find(p=> p.uuid == uuid)!
         if(!p) return
         const ps = p.tasks_uuid.map(t_uuid => this.CascadeDeleteTask(t_uuid))
@@ -159,7 +166,7 @@ export class Project_Module {
      * @param uuid Task UUID
      */
     async CascadeDeleteTask(uuid:string):Promise<void>{
-        await this.loader.task.load(uuid, true)
+        await this.loader.task.load(uuid)
         const p:Task = this.memory.tasks.find(p=> p.uuid == uuid)!
         if(!p) return
         const ps = p.jobs_uuid.map(j_uuid => this.loader.job.delete(j_uuid))

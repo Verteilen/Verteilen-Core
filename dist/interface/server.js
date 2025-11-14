@@ -48,6 +48,7 @@ const CreateRootPermission = () => {
         task: perl,
         job: perl,
         plugin: perl,
+        service: perl,
         node: perl,
         database: perl,
         lib: perl,
@@ -73,7 +74,7 @@ const CreateRootUser = () => {
         },
         name: "root",
         description: "Root User",
-        permission: (0, exports.CreateRootPermission)()
+        global_permission: (0, exports.CreateRootPermission)()
     };
 };
 exports.CreateRootUser = CreateRootUser;

@@ -9,11 +9,11 @@
 import { ExecuteManager } from "../script/execute_manager"
 import { Job } from "./base"
 import { ExecuteState } from "./enum"
-import { ExecuteRecord } from "./record"
+import { ExecuteRecord } from "./log"
 
 /**
  * **Server Execute Record**\
- * 
+ * A package with execution worker and output log record
  */
 export interface ExecutePair {
     /**

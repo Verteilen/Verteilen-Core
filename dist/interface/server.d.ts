@@ -1,3 +1,4 @@
+import { DataHeader, Shareable } from "./base";
 import { Preference } from "./record";
 export declare enum ACLType {
     PUBLIC = 0,
@@ -31,6 +32,7 @@ export interface GlobalPermission {
     job: LocalPermission;
     database: LocalPermission;
     plugin: LocalPermission;
+    service: LocalPermission;
     node: LocalPermission;
     lib: LocalPermission;
     log: LocalPermission;
@@ -51,8 +53,7 @@ export interface LocalPermissionContainer2 {
     uuid2: string;
     permission: LocalPermission;
 }
-export interface UserProfile {
-    uuid: string;
+export interface UserProfile extends DataHeader, Shareable {
     token: string;
     name: string;
     email?: string;
@@ -60,7 +61,7 @@ export interface UserProfile {
     type: UserType;
     description?: string;
     password?: string;
-    permission: GlobalPermission;
+    global_permission: GlobalPermission;
 }
 export interface UserProfileClient {
     picture_url: boolean;

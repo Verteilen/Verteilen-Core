@@ -7,13 +7,10 @@
  * All kinds of data structure
  * It's a mess, i know
  */
-import { DatabaseContainer, Project } from "./base"
+import { Job } from "./base"
 import ws from 'ws'
 import { ServiceMode, TaskLogicType } from "./enum"
-import { ACLType, LocalPermission } from "./server"
-
-type ProjectCall = (p:Project) => Project
-type DatabaseCall = () => Array<DatabaseContainer>
+import { Plugin } from "./plugin"
 
 /**
  * The websocket instance with extra information
@@ -57,10 +54,6 @@ export interface WebsocketPack {
     children?: Array<WebsocketPack>
 }
 
-export interface CronWebsocketPack {
-    websocket: WebsocketPack
-}
-
 /**
  * The data transfer packet header
  */
@@ -70,45 +63,73 @@ export interface Header {
      */
     name: string
     /**
-     * Token for encryption
+     * **Where Data Go**\
+     * The path to go\
+     * You might go to cluster and send to node children\
+     * This data specified the IP path\
+     * If undefined, it means it's destinations
+     * @example Use Space to seperate
+     * "192.168.10.1:50 192.168.10.7:8052"
+     */
+    destinations?: string
+    /**
+     * **Token Session**\
+     * Some request require token to access
      */
     token?: string
     /**
-     * Extra metadata
+     * **Extra Metadata**
      */
     meta?: string
     /**
-     * Print message
+     * **Print Message**
      */
     message?: string
     /**
-     * Resource channel
+     * **Resource channel**
      */
     channel?:string
     /**
-     * The data content
+     * **TData Content**\
+     * The content of the websocket package\
+     * Put everything you want to send in here
      */
     data?: any
 }
 
+/**
+ * **Data Format: Single Data**
+ */
 export interface Single {
     data: any
 }
 
+/**
+ * **Data Format: Path Data**
+ */
 export interface OnePath {
     path: string
 }
 
+/**
+ * **Data Format: Arrow Path**
+ */
 export interface TwoPath {
     from: string
     to: string
 }
 
+/**
+ * **Data Format: Map Setter**
+ */
 export interface Setter {
     key: string
     value: any
 }
 
+/**
+ * **Data Format: Feedback**
+ */
 export interface FeedBack {
     node_uuid?: string
     index?: number
@@ -118,15 +139,20 @@ export interface FeedBack {
     message: string
 }
 
+/**
+ * **Data Format: KeyValue**
+ */
 export interface KeyValue {
     key: any
     value: any
 }
 
+/**
+ * **Data Format: JWT Info**
+ */
 export interface JWT {
     user: string
     create: number
-    expire: number
 }
 
 export interface SystemLoad_GPU {
@@ -208,109 +234,6 @@ export interface ShellFolder {
     folders: Array<string>
 }
 
-export interface TemplateGroup {
-    value: number
-    group: string
-    title?: string
-    filename?: string
-    template?: ProjectCall
-}
-
-export interface TemplateGroup2 {
-    value: number
-    group: string
-    title?: string
-    filename?: string
-    template?: DatabaseCall
-}
-
-export interface PluginContent {
-    filename: string
-    url: string
-    platform: NodeJS.Platform
-    arch: NodeJS.Architecture
-}
-
-export interface Plugin {
-    name: string
-    description: string
-    version?: string
-    progress?: number
-    contents: Array<PluginContent>
-}
-
-export interface PluginWithToken extends Plugin {
-    token: Array<string>
-}
-
-export interface PluginList {
-    owner?: string
-    title?: string
-    url?: string
-    plugins: Array<Plugin>
-    /**
-     * **Local Permission**\
-     * Client-side only permission field\
-     * Server will check user token and defined its permission level\
-     * And modify this field and send back to user
-     */
-    permission?: LocalPermission
-    /**
-     * **Accessibility**\
-     * Could be public, protected, private
-     */
-    acl?: ACLType
-}
-
-export interface PluginState {
-    name: string
-    url: string
-    installed: boolean
-    supported: boolean
-}
-
-export interface PluginPageTemplate {
-    owner?: string
-    name: string
-    project: Array<TemplateGroup>
-    database: Array<TemplateGroup2>
-    url?: string
-    /**
-     * **Local Permission**\
-     * Client-side only permission field\
-     * Server will check user token and defined its permission level\
-     * And modify this field and send back to user
-     */
-    permission?: LocalPermission
-    /**
-     * **Accessibility**\
-     * Could be public, protected, private
-     */
-    acl?: ACLType
-}
-
-export interface PluginPageData {
-    plugins: Array<PluginList>
-    templates: Array<PluginPageTemplate>
-}
-
-export interface TemplateDataProject {
-    title: string
-    filename: string
-    group: string
-}
-
-export interface TemplateDataDatabase {
-    title: string
-    filename: string
-    group: string
-}
-
-export interface TemplateData {
-    url?: string
-    projects: Array<TemplateDataProject>
-    databases: Array<TemplateDataDatabase>
-}
 
 export interface BuildinAssetsContent {
     name: string
@@ -328,10 +251,40 @@ export interface ServiceConfig {
 
 export interface TaskLogicUnit {
     type: TaskLogicType
-    job: string
+    /**
+     * **Attach Job ID**
+     */
+    job_uuid?: string
+    /**
+     * **Attach Job Container (Runtime)**
+     */
+    job?: Job
+    /**
+     * **Common Logic Group**
+     */
     children: Array<TaskLogicUnit>
 }
 
+/**
+ * **Job Logic Container**\
+ * The strategy pattern for a single subtask to use\
+ * For example:
+ * - Group
+ *   - Condition
+ *     - Add
+ *       - Or
+ *         - Single
+ *         - Single
+ *       - Or
+ *         - Single
+ *         - Single
+ *   - Execution (True)
+ *     - Single
+ *     - Single
+ *   - Execution (False)
+ *     - Single
+ *     - Single
+ */
 export interface TaskLogic {
     group: Array<TaskLogicUnit>
 }

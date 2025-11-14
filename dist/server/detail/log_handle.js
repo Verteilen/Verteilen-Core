@@ -33,11 +33,11 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Util_Server_Log_Proxy = void 0;
+exports.Log_Proxy = void 0;
 const uuid_1 = require("uuid");
-const interface_1 = require("../interface");
+const interface_1 = require("../../interface");
 const fs = __importStar(require("fs"));
-class Util_Server_Log_Proxy {
+class Log_Proxy {
     model;
     logs;
     preference;
@@ -221,4 +221,4 @@ class Util_Server_Log_Proxy {
         return filename;
     };
 }
-exports.Util_Server_Log_Proxy = Util_Server_Log_Proxy;
+exports.Log_Proxy = Log_Proxy;

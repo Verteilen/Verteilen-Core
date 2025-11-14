@@ -1,6 +1,7 @@
-import { BusAnalysis, Execute_SocketManager, ExecutePair, ExecuteProxy, ExecuteRecord, ExecuteState, Messager, Preference, Record, ShellFolder, Single, UtilServer_Console, WebsocketPack } from "../interface";
+import { BusAnalysis, ExecutePair, ExecuteProxy, ExecuteRecord, ExecuteState, Messager, Preference, Record, ShellFolder, Single, WebsocketPack } from "../interface";
 import { PluginFeedback } from "./server";
 import { MemoryData, RecordIOBase } from './io';
+import { WebsocketManager } from '../script/socket_manager';
 export interface BackendAction {
     memory: MemoryData;
     GetPreference: (uuid?: string) => Preference;
@@ -30,8 +31,7 @@ export interface ServerDetailEvent {
 }
 export declare class ServerDetail {
     execute_manager: Array<ExecutePair>;
-    console: UtilServer_Console.Util_Server_Console;
-    websocket_manager: Execute_SocketManager.WebsocketManager | undefined;
+    websocket_manager: WebsocketManager | undefined;
     shellBind: Map<any, any>;
     loader: RecordIOBase | undefined;
     backend: BackendAction;
@@ -47,7 +47,6 @@ export declare class ServerDetail {
     Analysis: (d: BusAnalysis) => void;
     shellReply: (data: Single, p?: WebsocketPack) => void;
     folderReply: (data: ShellFolder, p?: WebsocketPack) => void;
-    console_update: () => any[];
     resource_start: (socket: any, uuid: string) => void;
     resource_end: (socket: any, uuid: string) => void;
     plugin_info: (socket: any, uuid: string) => void;
@@ -68,5 +67,6 @@ export declare class ServerDetail {
     console_clean: (socket: any, uuid: string) => void;
     console_skip: (socket: any, uuid: string, forward: boolean, type: number, state?: ExecuteState) => void;
     console_skip2: (socket: any, uuid: string, v: number) => void;
+    console_update: () => any[];
     CombineProxy: (eps: Array<ExecuteProxy>) => ExecuteProxy;
 }

@@ -1,49 +1,54 @@
-import { ConditionResult, ExecutePair, ExecuteProxy, ExecuteRecordTask, ExecuteState, FeedBack, Job, JobCategory, MESSAGE_LIMIT, Database, Project, Record, Task } from "../interface"
+import { ConditionResult, ExecutePair, ExecuteProxy, ExecuteRecordTask, ExecuteState, FeedBack, Job, JobCategory, MESSAGE_LIMIT, Database, Project, Record, Task } from "../../interface"
 
-export class Util_Server_Console { 
-
-    receivedPack = (model:ExecutePair, record:Record) => {
-        const pass = model.manager!.Register()
-        if(pass == -1){
-            model.record!.running = false
-            model.record!.stop = true
-            return false
-        }
-        model.record!.projects = record.projects
-        model.record!.nodes = record.nodes
-        model.record!.project_state = model.record!.projects.map(x => {
-            return {
-                uuid: x.uuid,
-                state: ExecuteState.NONE
-            }
-        })
-        model.record!.project_index = pass
-        model.record!.project = record.projects[pass].uuid
-        model.record!.task_index = 0
-        model.record!.task_state = model.record!.projects[0].tasks.map(x => {
-            return {
-                uuid: x.uuid,
-                state: ExecuteState.NONE
-            }
-        })
-        model.record!.task_state[0].state = ExecuteState.RUNNING
-        model.record!.task_detail = []
-        const task = model.record!.projects[model.record!.project_index]?.tasks[model.record!.task_index]
-        const count = task.cronjob ? (task?.jobs.length ?? 0) : 1
-        for(let i = 0; i < count; i++){
-            model.record!.task_detail.push({
-                index: i,
-                node: "",
-                message: [],
-                state: ExecuteState.NONE
-            })
-        }
-        model.manager!.Update()
-        return true
+/**
+ * The method to handle the init package {@link ExecutePair} process
+ */
+export const receivedPack = (model:ExecutePair, record:Record):boolean => {
+    const pass = model.manager!.Register()
+    if(pass == -1){
+        model.record!.running = false
+        model.record!.stop = true
+        return false
     }
+    model.record!.projects = record.projects
+    model.record!.nodes = record.nodes
+    model.record!.project_state = model.record!.projects.map(x => {
+        return {
+            uuid: x.uuid,
+            state: ExecuteState.NONE
+        }
+    })
+    model.record!.project_index = pass
+    model.record!.project = record.projects[pass].uuid
+    model.record!.task_index = 0
+    model.record!.task_state = model.record!.projects[0].tasks.map(x => {
+        return {
+            uuid: x.uuid,
+            state: ExecuteState.NONE
+        }
+    })
+    model.record!.task_state[0].state = ExecuteState.RUNNING
+    model.record!.task_detail = []
+    const task = model.record!.projects[model.record!.project_index]?.tasks[model.record!.task_index]
+    const count = task.cronjob ? (task?.jobs.length ?? 0) : 1
+    for(let i = 0; i < count; i++){
+        model.record!.task_detail.push({
+            index: i,
+            node: "",
+            message: [],
+            state: ExecuteState.NONE
+        })
+    }
+    model.manager!.Update()
+    return true
 }
 
-export class Util_Server_Console_Proxy {
+/**
+ * **Console Proxy Worker**\
+ * Process thread call proxy and throght {@link Console_Proxy.execute_proxy}\
+ * To communicate with outside record data
+ */
+export class Console_Proxy {
     model:ExecutePair
 
     constructor(_model:ExecutePair){

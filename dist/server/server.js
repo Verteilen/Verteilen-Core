@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Server = void 0;
+exports.ServerBase = void 0;
 const io_1 = require("./io");
 const project_1 = require("./module/project");
-class Server {
+class ServerBase {
     manager = [];
     memory = {
         projects: [],
@@ -16,17 +16,16 @@ class Server {
         user: [],
     };
     plugin = {
-        templates: [],
         plugins: [],
     };
     io = undefined;
     loader = undefined;
-    plugin_loader = undefined;
     memory_loader;
+    plugin_loader = undefined;
     detail;
     module_project;
     constructor() {
-        this.memory_loader = (0, io_1.CreateRecordMemoryLoader)(this.memory);
+        this.memory_loader = (0, io_1.CreateRecordMemoryLoader_Browser)(this.memory);
         this.module_project = new project_1.Project_Module(this);
     }
     get current_loader() {
@@ -36,14 +35,14 @@ class Server {
     }
     LoadFromDisk = () => {
         const ts = [
-            this.current_loader.project.load_all(),
-            this.current_loader.task.load_all(),
-            this.current_loader.job.load_all(),
-            this.current_loader.database.load_all(),
-            this.current_loader.node.load_all(),
-            this.current_loader.log.load_all(),
-            this.current_loader.lib.load_all(),
-            this.current_loader.user.load_all(),
+            this.current_loader.project.fetch_all(),
+            this.current_loader.task.fetch_all(),
+            this.current_loader.job.fetch_all(),
+            this.current_loader.database.fetch_all(),
+            this.current_loader.node.fetch_all(),
+            this.current_loader.log.fetch_all(),
+            this.current_loader.lib.fetch_all(),
+            this.current_loader.user.fetch_all(),
         ];
         return Promise.all(ts);
     };
@@ -57,4 +56,4 @@ class Server {
         });
     };
 }
-exports.Server = Server;
+exports.ServerBase = ServerBase;

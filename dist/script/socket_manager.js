@@ -39,16 +39,6 @@ const interface_1 = require("../interface");
 const jsEnv = __importStar(require("browser-or-node"));
 const ws = __importStar(require("ws"));
 const https = __importStar(require("https"));
-function isRenderer() {
-    if (typeof process === 'undefined')
-        return true;
-    if (!process)
-        return true;
-    if (!process.type)
-        return false;
-    return process.type === 'renderer';
-}
-console.log("isRenderer", isRenderer());
 class WebsocketManager {
     targets = [];
     newConnect;

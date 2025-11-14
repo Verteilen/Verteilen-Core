@@ -7,7 +7,7 @@ import * as path from 'path';
 import { check } from 'tcp-port-used';
 import { WebSocket } from 'ws';
 import * as ws from 'ws';
-import { CLIENT_UPDATETICK, DATA_FOLDER, Header, Messager, Messager_log, PluginList, PORT } from '../interface';
+import { CLIENT_UPDATETICK, DATA_FOLDER, Header, Messager, Messager_log, PluginNode, PORT } from '../interface';
 import { ClientAnalysis } from './analysis';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import * as os from 'os'
@@ -19,7 +19,7 @@ import * as https from 'https'
  * The calculation node worker
  */
 export class Client {
-    plugins: PluginList = { plugins: [] }
+    plugins: PluginNode = { plugins: [] }
     
     private httpss:https.Server<any> | undefined = undefined
     private client:ws.Server | undefined = undefined
@@ -143,7 +143,7 @@ export class Client {
     }
 
     private loadPlugins = () => {
-        const f = path.join(os.homedir(), DATA_FOLDER)
+        const f = path.join(os.homedir(), DATA_FOLDER, "node_plugin")
         const pluginPath = path.join(f, 'plugin.json')
         if(!existsSync(f)) mkdirSync(f, { recursive: true })
         if(!existsSync(pluginPath)){

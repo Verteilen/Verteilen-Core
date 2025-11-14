@@ -7,8 +7,13 @@
  * Enum library, including translation which will be use in Vue
  */
 
+/**
+ * **SubTask Logic Type**\
+ * Define the container logic type\
+ * It effect the decoder behaviour
+ */
 export enum TaskLogicType {
-    GROUP, ADD, OR
+    GROUP, CONDITION, EXECUTION, FAILED, SINGLE, ADD, OR, NOT
 }
 
 /**

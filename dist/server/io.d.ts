@@ -1,4 +1,4 @@
-import { Project, RecordType, Database, UserProfile, Library, ExecutionLog, Node, Task, Job } from "../interface";
+import { Project, Database, UserProfile, Library, ExecutionLog, Node, Task, Job } from "../interface";
 export interface MemoryData {
     projects: Array<Project>;
     tasks: Array<Task>;
@@ -10,23 +10,13 @@ export interface MemoryData {
     user: Array<UserProfile>;
 }
 export interface RecordIOLoader {
-    load_all: () => Promise<Array<string>>;
-    delete_all: () => Promise<void>;
-    list_all: () => Promise<Array<string>>;
-    save: (name: string, data: string) => Promise<void>;
-    load: (name: string, cache: boolean) => Promise<string>;
-    rename: (name: string, newname: string) => Promise<void>;
-    delete: (name: string) => Promise<void>;
-}
-export interface RecordLoader {
-    project: RecordIOLoader;
-    task: RecordIOLoader;
-    job: RecordIOLoader;
-    database: RecordIOLoader;
-    node: RecordIOLoader;
-    log: RecordIOLoader;
-    lib: RecordIOLoader;
-    user: RecordIOLoader;
+    fetch_all: () => Promise<Array<string>>;
+    load_all: (token?: string) => Promise<Array<string>>;
+    delete_all: (token?: string) => Promise<Array<string>>;
+    list_all: (token?: string) => Promise<Array<string>>;
+    save: (uuid: string, data: string, token?: string) => Promise<boolean>;
+    load: (uuid: string, token?: string) => Promise<string>;
+    delete: (uuid: string, token?: string) => Promise<boolean>;
 }
 export interface RecordIOBase {
     root: string;
@@ -41,10 +31,14 @@ export interface RecordIOBase {
     rm: (path: string) => Promise<void>;
     cp: (path: string, newpath: string) => Promise<void>;
 }
-export interface RecordMongoBase {
+export interface RecordLoader {
+    project: RecordIOLoader;
+    task: RecordIOLoader;
+    job: RecordIOLoader;
+    database: RecordIOLoader;
+    node: RecordIOLoader;
+    log: RecordIOLoader;
+    lib: RecordIOLoader;
+    user: RecordIOLoader;
 }
-export declare const _CreateRecordMemoryLoader: (loader: MemoryData, type: RecordType) => RecordIOLoader;
-export declare const _CreateRecordIOLoader: (loader: RecordIOBase, memory: MemoryData, type: RecordType, folder: string, ext?: string) => RecordIOLoader;
-export declare const CreateRecordMemoryLoader: (loader: MemoryData) => RecordLoader;
-export declare const CreateRecordIOLoader: (loader: RecordIOBase, memory: MemoryData) => RecordLoader;
-export declare const CreateRecordMongoLoader: (loader: RecordMongoBase, folder: string, ext?: string) => void;
+export declare const CreateRecordMemoryLoader_Browser: (loader: MemoryData) => RecordLoader;

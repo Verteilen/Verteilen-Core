@@ -17,12 +17,51 @@ export interface DatabaseConfigTrigger {
 /**
  * Storable Data Header
  */
-export interface DataHeader{
+export interface DataHeader {
     /**
      * **ID**\
      * Contains 36 characters
      */
     uuid: string
+}
+
+export interface ShareLevel {
+    user: string
+    permission: LocalPermission
+}
+
+export interface Shareable {
+    /**
+     * **User ID**\
+     * Who own this project\
+     * It will specified public if this field is undefined\
+     * This will getting detect before {@link Project.acl}
+     */
+    owner?: string
+    /**
+     * **Local Permission**\
+     * Client-side only permission field\
+     * Server will check user token and defined its permission level\
+     * And modify this field and send back to user
+     */
+    permission?: LocalPermission
+    /**
+     * **Accessibility**\
+     * Could be public, protected, private
+     * * PUBLIC: Everyone can see it
+     * * PRIVATE: Only owner can see it
+     * * PROTECTED: Only shared and owner can see it
+     */
+    acl?: ACLType
+    /**
+     * **Shared With Who**
+     */
+    shared?: Array<ShareLevel>
+}
+
+export interface DataTime {
+    createDate?: string
+    updateDate?: string
 }
 
 /**
@@ -65,7 +104,7 @@ export interface Property {
 /**
  * **Background Service Container**
  */
-export interface Service extends DataHeader {
+export interface Service extends DataHeader, DataTime {
     /**
      * **Service Name**\
      * The name of the task
@@ -105,46 +144,22 @@ export interface Service extends DataHeader {
      * What project does it run through
      */
     project: string
-    /**
-     * **Local Permission**\
-     * Client-side only permission field\
-     * Server will check user token and defined its permission level\
-     * And modify this field and send back to user
-     */
-    permission?: LocalPermission
-    /**
-     * **Accessibility**\
-     * Could be public, protected, private
-     */
-    acl?: ACLType
 }
 /**
  * **Data Database Bank**\
  * Store the data which will be reference in the execute stage
  */
-export interface Database extends DataHeader {
+export interface Database extends DataHeader, DataTime, Shareable {
     title: string
     canWrite: boolean
     containers: Array<DatabaseContainer>
-    /**
-     * **Local Permission**\
-     * Client-side only permission field\
-     * Server will check user token and defined its permission level\
-     * And modify this field and send back to user
-     */
-    permission?: LocalPermission
-    /**
-     * **Accessibility**\
-     * Could be public, protected, private
-     */
-    acl?: ACLType
 }
 /**
  * **Compute Instruction Container**\
  * Specifed the command, which show how does user want these compute to do\
  * Contains different arguments list, which could reference to database value
  */
-export interface Job extends DataHeader {
+export interface Job extends DataHeader, DataTime, Shareable {
     /**
      * **Order**\
      * Define the order in the list\
@@ -152,6 +167,8 @@ export interface Job extends DataHeader {
      * Database will store in the array.
      */
     index?:number
+    title: string
+    description: string
     /**
      * **Extra data**\
      * The extra metadata, just in case
@@ -205,24 +222,42 @@ export interface Job extends DataHeader {
      * In order to execute job, some type of job will require arguments
      */
     id_args: Array<boolean>
-    /**
-     * **Local Permission**\
-     * Client-side only permission field\
-     * Server will check user token and defined its permission level\
-     * And modify this field and send back to user
-     */
-    permission?: LocalPermission
-    /**
-     * **Accessibility**\
-     * Could be public, protected, private
-     */
-    acl?: ACLType
 }
 /**
- * **Task Container**\
- * Specified different stage of the compute process
+ * **Task Base Container**\
+ * For different view to submit task update data
  */
-export interface Task extends DataHeader {
+export interface TaskBase {
+    /**
+     * **Task Properties**\
+     * You could use properties to defined local region field
+     * And reference in the job execute context\
+     * **NOTICE: Order Matter**\
+     * The properties will generate base on the order in the list
+     */
+    properties: Array<Property>
+    /**
+     * **Task Logic**\
+     * Describe the logic flow of the task
+     */
+    logic?: TaskLogic
+    /**
+     * **Execute Jobs Context**\
+     * A list of jobs, define the context of the task\
+     * Base on the flags, task can run it in a different way
+     */
+    jobs: Array<Job>
+    /**
+     * **Jobs ID**\
+     * Store in disk
+     */
+    jobs_uuid: Array<string>
+}
+/**
+ * **Task Header Container**\
+ * For different view to submit task update data
+ */
+export interface TaskOption {
     /**
      * **Task Name**\
      * The name of the task
@@ -262,56 +297,19 @@ export interface Task extends DataHeader {
      * Reference a database number in database
      */
     multiKey: string
-    /**
-     * **Task Properties**\
-     * You could use properties to defined local region field
-     * And reference in the job execute context\
-     * **NOTICE: Order Matter**\
-     * The properties will generate base on the order in the list
-     */
-    properties: Array<Property>
-    /**
-     * **Task Logic**\
-     * Describe the logic flow of the task
-     */
-    logic?: TaskLogic
-    /**
-     * **Execute Jobs Context**\
-     * A list of jobs, define the context of the task\
-     * Base on the flags, task can run it in a different way
-     */
-    jobs: Array<Job>
-    /**
-     * **Jobs ID**\
-     * Store in disk
-     */
-    jobs_uuid: Array<string>
-    /**
-     * **Local Permission**\
-     * Client-side only permission field\
-     * Server will check user token and defined its permission level\
-     * And modify this field and send back to user
-     */
-    permission?: LocalPermission
-    /**
-     * **Accessibility**\
-     * Could be public, protected, private
-     */
-    acl?: ACLType
+}
+/**
+ * **Task Container**\
+ * Specified different stage of the compute process
+ */
+export interface Task extends DataHeader, DataTime, TaskBase, TaskOption, Shareable {
 }
 /**
  * **Compute Structure Container**\
  * It has reference to database And contains multiple task\
  * We grab this container structure to execute queue to execute one by one
  */
-export interface Project extends DataHeader {
-    /**
-     * **User ID**\
-     * Who own this project\
-     * It will specified public if this field is undefined\
-     * This will getting detect before {@link Project.acl}
-     */
-    owner?: string
+export interface Project extends DataHeader, DataTime, Shareable {
     /**
      * **Project Name**\
      * The name of the project
@@ -343,25 +341,13 @@ export interface Project extends DataHeader {
      * Store in disk
      */
     tasks_uuid: Array<string>
-    /**
-     * **Local Permission**\
-     * Client-side only permission field\
-     * Server will check user token and defined its permission level\
-     * And modify this field and send back to user
-     */
-    permission?: LocalPermission
-    /**
-     * **Accessibility**\
-     * Could be public, protected, private
-     */
-    acl?: ACLType
 }
 /**
  * **Compute Node Structure Container**\
  * In the execute stage, it will needs nodes to compute the task\
  * Which specified in this type of structure
  */
-export interface Node extends DataHeader {
+export interface Node extends DataHeader, DataTime, Shareable {
     /**
      * **Cluster Mode**\
      * Check if the node is cluster\
@@ -378,18 +364,6 @@ export interface Node extends DataHeader {
      * The address to the compute node
      */
     url: string
-    /**
-     * **Local Permission**\
-     * Client-side only permission field\
-     * Server will check user token and defined its permission level\
-     * And modify this field and send back to user
-     */
-    permission?: LocalPermission
-    /**
-     * **Accessibility**\
-     * Could be public, protected, private
-     */
-    acl?: ACLType
 }
 
 
@@ -423,6 +397,8 @@ export const CreateDefaultTask = () : Task => {
 export const CreateDefaultJob = () : Job => {
     return {
         uuid: uuidv6(),
+        title: "",
+        description: "",
         category: JobCategory.Execution,
         type: JobType.JAVASCRIPT,
         script: "",
@@ -430,5 +406,14 @@ export const CreateDefaultJob = () : Job => {
         number_args: [],
         boolean_args: [],
         id_args: [],
+    }
+}
+
+export const CreateDefaultDatabase = () : Database => {
+    return {
+        uuid: uuidv6(),
+        title: "",
+        canWrite: true,
+        containers: [],
     }
 }

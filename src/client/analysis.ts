@@ -5,11 +5,11 @@
 // ========================
 import { ChildProcess, exec, spawn } from 'child_process';
 import { WebSocket } from 'ws';
-import { DATA_FOLDER, Header, Job, Libraries, Messager, Messager_log, Database, Plugin, PluginList, PluginToken, PluginWithToken } from "../interface";
+import { DATA_FOLDER, Header, Job, Libraries, Messager, Messager_log, Database, Plugin, PluginWithToken, PluginNode } from "../interface";
 import { Client } from './client';
 import { ClientExecute } from "./execute";
 import { ClientShell } from './shell';
-import { createWriteStream, existsSync, mkdir, mkdirSync, readFileSync, rmSync, writeFileSync } from 'fs';
+import { createWriteStream, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 
@@ -132,13 +132,13 @@ export class ClientAnalysis {
     }
 
     private plugin_info = (data:number, source: WebSocket) => {
-        const pat = path.join(os.homedir(), DATA_FOLDER, "plugin.json")
+        const pat = path.join(os.homedir(), DATA_FOLDER, "node_plugin", "plugin.json")
         if(existsSync(pat)){
-            const p:PluginList = JSON.parse(readFileSync(pat).toString())
+            const p:PluginNode = JSON.parse(readFileSync(pat).toString())
             const h:Header = { name: 'plugin_info_reply', data: p.plugins }
             source.send(JSON.stringify(h))
         }else{
-            const p:PluginList = { plugins: [] }
+            const p:PluginNode = { plugins: [] }
             const h:Header = { name: 'plugin_info_reply', data: p.plugins }
             writeFileSync(pat, JSON.stringify(p))
             source.send(JSON.stringify(h))
@@ -202,7 +202,7 @@ export class ClientAnalysis {
         const filename = links[links.length - 1]
         const version = links[links.length - 2]
         const REPO = `${links[3]}/${links[4]}`
-        const dir = path.join(os.homedir(), DATA_FOLDER, "exe")
+        const dir = path.join(os.homedir(), DATA_FOLDER, "node_plugin", plugin.name)
         if(!existsSync(dir)) mkdirSync(dir, { recursive: true })
         let req:RequestInit = {}
         const tokens = [undefined, ...plugin.token]
@@ -255,13 +255,11 @@ export class ClientAnalysis {
     private plugin_remove = (plugin:Plugin, source: WebSocket) => {
         this.client.plugins.plugins = this.client.plugins.plugins.filter(x => x.name != plugin.name)
         this.client.savePlugin()
-        const dir = path.join(os.homedir(), DATA_FOLDER, "exe")
+        const dir = path.join(os.homedir(), DATA_FOLDER, "node_plugin")
         if(!existsSync(dir)) mkdirSync(dir, { recursive: true })
-        plugin.contents.forEach(x => {
-            if(existsSync(path.join(dir, x.filename))){
-                rmSync(path.join(dir, x.filename))
-            }
-        })
+        if(existsSync(path.join(dir, plugin.name))){
+            rmSync(path.join(dir, plugin.name), { recursive: true })
+        }
         this.plugin_info(0, source)
     }
 

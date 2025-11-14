@@ -1,7 +1,12 @@
 export declare enum TaskLogicType {
     GROUP = 0,
-    ADD = 1,
-    OR = 2
+    CONDITION = 1,
+    EXECUTION = 2,
+    FAILED = 3,
+    SINGLE = 4,
+    ADD = 5,
+    OR = 6,
+    NOT = 7
 }
 export declare enum SocketState {
     CONNECTING = 0,

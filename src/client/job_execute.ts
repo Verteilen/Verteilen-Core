@@ -4,7 +4,7 @@
 //                           
 // ========================
 import WebSocket from "ws";
-import { Job, JobCategory, JobType, JobType2, JobType2Text, JobTypeText, Libraries, Messager, Messager_log, OnePath, Database, PluginList, TwoPath } from "../interface";
+import { Job, JobCategory, JobType, JobType2, JobType2Text, JobTypeText, Libraries, Messager, Messager_log, OnePath, Database, PluginNode, TwoPath } from "../interface";
 import { i18n } from "../plugins/i18n";
 import { ClientJavascript } from "./javascript";
 import { ClientJobDatabase } from "./job_database";
@@ -36,9 +36,9 @@ export class ClientJobExecute {
     private os:ClientOS
     private para:ClientJobDatabase
     private job:Job
-    private plugin:PluginList
+    private plugin:PluginNode
 
-    constructor(_messager:Messager, _messager_log:Messager_log, _job:Job, _source:WebSocket | undefined, _plugin:PluginList){
+    constructor(_messager:Messager, _messager_log:Messager_log, _job:Job, _source:WebSocket | undefined, _plugin:PluginNode){
         this.messager = _messager
         this.messager_log = _messager_log
         this.tag = _job.uuid

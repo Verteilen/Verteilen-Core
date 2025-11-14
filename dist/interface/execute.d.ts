@@ -1,7 +1,7 @@
 import { ExecuteManager } from "../script/execute_manager";
 import { Job } from "./base";
 import { ExecuteState } from "./enum";
-import { ExecuteRecord } from "./record";
+import { ExecuteRecord } from "./log";
 export interface ExecutePair {
     manager?: ExecuteManager;
     record?: ExecuteRecord;

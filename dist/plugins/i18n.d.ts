@@ -7,11 +7,17 @@ export declare const i18nDefaultData: {
     fallbackFormat: string;
     messages: {
         en: {
+            acl: {
+                success: string;
+                unverify: string;
+                "no-permission-action": string;
+            };
             login: {
                 title: string;
                 submit: string;
                 account: string;
                 password: string;
+                failed: string;
             };
             guides: {
                 workflow: string;
@@ -111,10 +117,10 @@ export declare const i18nDefaultData: {
                 "enter-task-name": string;
                 "enter-task-description": string;
                 "new-job": string;
-                "new-database": string;
-                "edit-database": string;
+                "new-Variable": string;
+                "edit-Variable": string;
                 "delete-database": string;
-                "enter-database-name": string;
+                "enter-Variable-name": string;
                 "new-database-set": string;
                 "clone-database-set": string;
                 "edit-database-set": string;
@@ -141,10 +147,16 @@ export declare const i18nDefaultData: {
                 "delete-template": string;
                 "delete-plugin-confirm": string;
                 "delete-template-confirm": string;
+                "job-title": string;
+                "job-description": string;
                 "delete-job": string;
                 "delete-job-confirm": string;
                 "delete-task": string;
                 "delete-task-confirm": string;
+                "create-service": string;
+                "delete-service": string;
+                "delete-service-confirm": string;
+                "new-condition": string;
             };
             toolbar: {
                 server: string;
@@ -279,6 +291,9 @@ export declare const i18nDefaultData: {
                 cronjob: string;
                 "task-count": string;
                 "job-count": string;
+                hidden: string;
+                runtime: string;
+                value: string;
             };
             codehint: {
                 v_path: string;
@@ -349,12 +364,23 @@ export declare const i18nDefaultData: {
                     messager_log: string;
                 };
             };
+            condition: {
+                group: string;
+                condition: string;
+                execution: string;
+                failed: string;
+                single: string;
+                or: string;
+                and: string;
+                not: string;
+            };
             token: string;
             info: string;
             search: string;
             selectall: string;
             unselectall: string;
             project: string;
+            service: string;
             task: string;
             job: string;
             database: string;
@@ -391,6 +417,7 @@ export declare const i18nDefaultData: {
             useTemplate: string;
             useExistDatabase: string;
             "execute-keep": string;
+            select: string;
             "database-setting": string;
             "database-select": string;
             "is-running": string;
@@ -421,13 +448,26 @@ export declare const i18nDefaultData: {
             next: string;
             previous: string;
             goback: string;
+            logic: string;
+            use_logic: string;
+            remove_logic: string;
+            state: string;
+            delay: string;
+            zoom: string;
+            unzoom: string;
         };
         zh_TW: {
+            acl: {
+                success: string;
+                unverify: string;
+                "no-permission-action": string;
+            };
             login: {
                 title: string;
                 submit: string;
                 account: string;
                 password: string;
+                failed: string;
             };
             guides: {
                 workflow: string;
@@ -527,10 +567,10 @@ export declare const i18nDefaultData: {
                 "enter-task-name": string;
                 "enter-task-description": string;
                 "new-job": string;
-                "new-database": string;
-                "edit-database": string;
+                "new-Variable": string;
+                "edit-Variable": string;
                 "delete-database": string;
-                "enter-database-name": string;
+                "enter-Variable-name": string;
                 "new-database-set": string;
                 "clone-database-set": string;
                 "edit-database-set": string;
@@ -557,10 +597,16 @@ export declare const i18nDefaultData: {
                 "delete-template": string;
                 "delete-plugin-confirm": string;
                 "delete-template-confirm": string;
+                "job-title": string;
+                "job-description": string;
                 "delete-job": string;
                 "delete-job-confirm": string;
                 "delete-task": string;
                 "delete-task-confirm": string;
+                "create-service": string;
+                "delete-service": string;
+                "delete-service-confirm": string;
+                "new-condition": string;
             };
             toolbar: {
                 server: string;
@@ -695,6 +741,9 @@ export declare const i18nDefaultData: {
                 cronjob: string;
                 "task-count": string;
                 "job-count": string;
+                hidden: string;
+                runtime: string;
+                value: string;
             };
             codehint: {
                 v_path: string;
@@ -765,12 +814,23 @@ export declare const i18nDefaultData: {
                     messager_log: string;
                 };
             };
+            condition: {
+                group: string;
+                condition: string;
+                execution: string;
+                failed: string;
+                single: string;
+                or: string;
+                and: string;
+                not: string;
+            };
             token: string;
             info: string;
             search: string;
             selectall: string;
             unselectall: string;
             project: string;
+            service: string;
             task: string;
             job: string;
             database: string;
@@ -805,8 +865,9 @@ export declare const i18nDefaultData: {
             export: string;
             import: string;
             useTemplate: string;
-            useExistParameter: string;
+            useExistDatabase: string;
             "execute-keep": string;
+            select: string;
             "database-setting": string;
             "database-select": string;
             "is-running": string;
@@ -837,16 +898,29 @@ export declare const i18nDefaultData: {
             next: string;
             previous: string;
             goback: string;
+            logic: string;
+            use_logic: string;
+            remove_logic: string;
+            state: string;
+            delay: string;
+            zoom: string;
+            unzoom: string;
         };
     };
 };
 export declare const i18n: import("vue-i18n").I18n<{
     en: {
+        acl: {
+            success: string;
+            unverify: string;
+            "no-permission-action": string;
+        };
         login: {
             title: string;
             submit: string;
             account: string;
             password: string;
+            failed: string;
         };
         guides: {
             workflow: string;
@@ -946,10 +1020,10 @@ export declare const i18n: import("vue-i18n").I18n<{
             "enter-task-name": string;
             "enter-task-description": string;
             "new-job": string;
-            "new-database": string;
-            "edit-database": string;
+            "new-Variable": string;
+            "edit-Variable": string;
             "delete-database": string;
-            "enter-database-name": string;
+            "enter-Variable-name": string;
             "new-database-set": string;
             "clone-database-set": string;
             "edit-database-set": string;
@@ -976,10 +1050,16 @@ export declare const i18n: import("vue-i18n").I18n<{
             "delete-template": string;
             "delete-plugin-confirm": string;
             "delete-template-confirm": string;
+            "job-title": string;
+            "job-description": string;
             "delete-job": string;
             "delete-job-confirm": string;
             "delete-task": string;
             "delete-task-confirm": string;
+            "create-service": string;
+            "delete-service": string;
+            "delete-service-confirm": string;
+            "new-condition": string;
         };
         toolbar: {
             server: string;
@@ -1114,6 +1194,9 @@ export declare const i18n: import("vue-i18n").I18n<{
             cronjob: string;
             "task-count": string;
             "job-count": string;
+            hidden: string;
+            runtime: string;
+            value: string;
         };
         codehint: {
             v_path: string;
@@ -1184,12 +1267,23 @@ export declare const i18n: import("vue-i18n").I18n<{
                 messager_log: string;
             };
         };
+        condition: {
+            group: string;
+            condition: string;
+            execution: string;
+            failed: string;
+            single: string;
+            or: string;
+            and: string;
+            not: string;
+        };
         token: string;
         info: string;
         search: string;
         selectall: string;
         unselectall: string;
         project: string;
+        service: string;
         task: string;
         job: string;
         database: string;
@@ -1226,6 +1320,7 @@ export declare const i18n: import("vue-i18n").I18n<{
         useTemplate: string;
         useExistDatabase: string;
         "execute-keep": string;
+        select: string;
         "database-setting": string;
         "database-select": string;
         "is-running": string;
@@ -1256,13 +1351,26 @@ export declare const i18n: import("vue-i18n").I18n<{
         next: string;
         previous: string;
         goback: string;
+        logic: string;
+        use_logic: string;
+        remove_logic: string;
+        state: string;
+        delay: string;
+        zoom: string;
+        unzoom: string;
     };
     zh_TW: {
+        acl: {
+            success: string;
+            unverify: string;
+            "no-permission-action": string;
+        };
         login: {
             title: string;
             submit: string;
             account: string;
             password: string;
+            failed: string;
         };
         guides: {
             workflow: string;
@@ -1362,10 +1470,10 @@ export declare const i18n: import("vue-i18n").I18n<{
             "enter-task-name": string;
             "enter-task-description": string;
             "new-job": string;
-            "new-database": string;
-            "edit-database": string;
+            "new-Variable": string;
+            "edit-Variable": string;
             "delete-database": string;
-            "enter-database-name": string;
+            "enter-Variable-name": string;
             "new-database-set": string;
             "clone-database-set": string;
             "edit-database-set": string;
@@ -1392,10 +1500,16 @@ export declare const i18n: import("vue-i18n").I18n<{
             "delete-template": string;
             "delete-plugin-confirm": string;
             "delete-template-confirm": string;
+            "job-title": string;
+            "job-description": string;
             "delete-job": string;
             "delete-job-confirm": string;
             "delete-task": string;
             "delete-task-confirm": string;
+            "create-service": string;
+            "delete-service": string;
+            "delete-service-confirm": string;
+            "new-condition": string;
         };
         toolbar: {
             server: string;
@@ -1530,6 +1644,9 @@ export declare const i18n: import("vue-i18n").I18n<{
             cronjob: string;
             "task-count": string;
             "job-count": string;
+            hidden: string;
+            runtime: string;
+            value: string;
         };
         codehint: {
             v_path: string;
@@ -1600,12 +1717,23 @@ export declare const i18n: import("vue-i18n").I18n<{
                 messager_log: string;
             };
         };
+        condition: {
+            group: string;
+            condition: string;
+            execution: string;
+            failed: string;
+            single: string;
+            or: string;
+            and: string;
+            not: string;
+        };
         token: string;
         info: string;
         search: string;
         selectall: string;
         unselectall: string;
         project: string;
+        service: string;
         task: string;
         job: string;
         database: string;
@@ -1640,8 +1768,9 @@ export declare const i18n: import("vue-i18n").I18n<{
         export: string;
         import: string;
         useTemplate: string;
-        useExistParameter: string;
+        useExistDatabase: string;
         "execute-keep": string;
+        select: string;
         "database-setting": string;
         "database-select": string;
         "is-running": string;
@@ -1672,6 +1801,13 @@ export declare const i18n: import("vue-i18n").I18n<{
         next: string;
         previous: string;
         goback: string;
+        logic: string;
+        use_logic: string;
+        remove_logic: string;
+        state: string;
+        delay: string;
+        zoom: string;
+        unzoom: string;
     };
 }, {}, {}, string, true>;
 export declare const raw_i18n: I18n;

@@ -1,5 +1,6 @@
 import { Node, Database, Project, Task, Job } from './base';
-import { Plugin, SystemLoad } from './struct';
+import { Plugin } from './plugin';
+import { SystemLoad } from './struct';
 export interface JobTable extends Job {
     s?: boolean;
 }

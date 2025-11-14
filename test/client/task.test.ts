@@ -1,6 +1,6 @@
 import { ClientJobDatabase } from '../../src/client/job_database';
 import { ClientOS } from '../../src/client/os';
-import { DataType, Job, JobCategory, Libraries, JobType, Database, Property, Task } from '../../src/interface';
+import { DataType, Job, JobCategory, Libraries, JobType, Database, Property, Task, CreateDefaultTask, CreateDefaultJob } from '../../src/interface';
 import { ExecuteManager_Base } from '../../src/script/execute/base';
 
 describe("Express Test", () => {
@@ -11,6 +11,7 @@ describe("Express Test", () => {
     
     const generateJob = (str:Array<string>):Job => {
         return {
+            ...CreateDefaultJob(),
             uuid: "test-job",
             category: JobCategory.Execution,
             type: JobType.JAVASCRIPT,
@@ -23,6 +24,7 @@ describe("Express Test", () => {
     }
     const generateTask = (Job:Job, property:Array<Property>, cronjob?:string):Task => {
         return {
+            ...CreateDefaultTask(),
             uuid: "test-task",
             title: "Test Task",
             description: "This is a test task",

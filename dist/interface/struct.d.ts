@@ -1,9 +1,7 @@
-import { DatabaseContainer, Project } from "./base";
+import { Job } from "./base";
 import ws from 'ws';
 import { ServiceMode, TaskLogicType } from "./enum";
-import { ACLType, LocalPermission } from "./server";
-type ProjectCall = (p: Project) => Project;
-type DatabaseCall = () => Array<DatabaseContainer>;
+import { Plugin } from "./plugin";
 export interface WebsocketPack {
     s?: boolean;
     uuid: string;
@@ -17,11 +15,9 @@ export interface WebsocketPack {
     plugins?: Array<Plugin>;
     children?: Array<WebsocketPack>;
 }
-export interface CronWebsocketPack {
-    websocket: WebsocketPack;
-}
 export interface Header {
     name: string;
+    destinations?: string;
     token?: string;
     meta?: string;
     message?: string;
@@ -57,7 +53,6 @@ export interface KeyValue {
 export interface JWT {
     user: string;
     create: number;
-    expire: number;
 }
 export interface SystemLoad_GPU {
     gpu_name: string;
@@ -103,78 +98,6 @@ export interface ShellFolder {
     files: Array<string>;
     folders: Array<string>;
 }
-export interface TemplateGroup {
-    value: number;
-    group: string;
-    title?: string;
-    filename?: string;
-    template?: ProjectCall;
-}
-export interface TemplateGroup2 {
-    value: number;
-    group: string;
-    title?: string;
-    filename?: string;
-    template?: DatabaseCall;
-}
-export interface PluginContent {
-    filename: string;
-    url: string;
-    platform: NodeJS.Platform;
-    arch: NodeJS.Architecture;
-}
-export interface Plugin {
-    name: string;
-    description: string;
-    version?: string;
-    progress?: number;
-    contents: Array<PluginContent>;
-}
-export interface PluginWithToken extends Plugin {
-    token: Array<string>;
-}
-export interface PluginList {
-    owner?: string;
-    title?: string;
-    url?: string;
-    plugins: Array<Plugin>;
-    permission?: LocalPermission;
-    acl?: ACLType;
-}
-export interface PluginState {
-    name: string;
-    url: string;
-    installed: boolean;
-    supported: boolean;
-}
-export interface PluginPageTemplate {
-    owner?: string;
-    name: string;
-    project: Array<TemplateGroup>;
-    database: Array<TemplateGroup2>;
-    url?: string;
-    permission?: LocalPermission;
-    acl?: ACLType;
-}
-export interface PluginPageData {
-    plugins: Array<PluginList>;
-    templates: Array<PluginPageTemplate>;
-}
-export interface TemplateDataProject {
-    title: string;
-    filename: string;
-    group: string;
-}
-export interface TemplateDataDatabase {
-    title: string;
-    filename: string;
-    group: string;
-}
-export interface TemplateData {
-    url?: string;
-    projects: Array<TemplateDataProject>;
-    databases: Array<TemplateDataDatabase>;
-}
 export interface BuildinAssetsContent {
     name: string;
     description: string;
@@ -188,10 +111,10 @@ export interface ServiceConfig {
 }
 export interface TaskLogicUnit {
     type: TaskLogicType;
-    job: string;
+    job_uuid?: string;
+    job?: Job;
     children: Array<TaskLogicUnit>;
 }
 export interface TaskLogic {
     group: Array<TaskLogicUnit>;
 }
-export {};

@@ -7,6 +7,20 @@ export interface DatabaseConfigTrigger {
 export interface DataHeader {
     uuid: string;
 }
+export interface ShareLevel {
+    user: string;
+    permission: LocalPermission;
+}
+export interface Shareable {
+    owner?: string;
+    permission?: LocalPermission;
+    acl?: ACLType;
+    shared?: Array<ShareLevel>;
+}
+export interface DataTime {
+    createDate?: string;
+    updateDate?: string;
+}
 export interface DatabaseContainer {
     name: string;
     meta?: any;
@@ -21,25 +35,23 @@ export interface Property {
     expression: string;
     deep?: number;
 }
-export interface Service extends DataHeader {
+export interface Service extends DataHeader, DataTime {
     title: string;
     description: string;
     meta: any;
     type: ServiceMode;
     timer: string;
     project: string;
-    permission?: LocalPermission;
-    acl?: ACLType;
 }
-export interface Database extends DataHeader {
+export interface Database extends DataHeader, DataTime, Shareable {
     title: string;
     canWrite: boolean;
     containers: Array<DatabaseContainer>;
-    permission?: LocalPermission;
-    acl?: ACLType;
 }
-export interface Job extends DataHeader {
+export interface Job extends DataHeader, DataTime, Shareable {
     index?: number;
+    title: string;
+    description: string;
     meta?: any;
     runtime_uuid?: string;
     category: number;
@@ -49,10 +61,14 @@ export interface Job extends DataHeader {
     number_args: Array<number>;
     boolean_args: Array<boolean>;
     id_args: Array<boolean>;
-    permission?: LocalPermission;
-    acl?: ACLType;
 }
-export interface Task extends DataHeader {
+export interface TaskBase {
+    properties: Array<Property>;
+    logic?: TaskLogic;
+    jobs: Array<Job>;
+    jobs_uuid: Array<string>;
+}
+export interface TaskOption {
     title: string;
     description: string;
     setupjob: boolean;
@@ -60,31 +76,23 @@ export interface Task extends DataHeader {
     cronjobKey: string;
     multi: boolean;
     multiKey: string;
-    properties: Array<Property>;
-    logic?: TaskLogic;
-    jobs: Array<Job>;
-    jobs_uuid: Array<string>;
-    permission?: LocalPermission;
-    acl?: ACLType;
 }
-export interface Project extends DataHeader {
-    owner?: string;
+export interface Task extends DataHeader, DataTime, TaskBase, TaskOption, Shareable {
+}
+export interface Project extends DataHeader, DataTime, Shareable {
     title: string;
     description?: string;
     database_uuid: string;
     database?: Database;
     tasks: Array<Task>;
     tasks_uuid: Array<string>;
-    permission?: LocalPermission;
-    acl?: ACLType;
 }
-export interface Node extends DataHeader {
+export interface Node extends DataHeader, DataTime, Shareable {
     cluster: boolean;
     parent?: string;
     url: string;
-    permission?: LocalPermission;
-    acl?: ACLType;
 }
 export declare const CreateDefaultProject: () => Project;
 export declare const CreateDefaultTask: () => Task;
 export declare const CreateDefaultJob: () => Job;
+export declare const CreateDefaultDatabase: () => Database;

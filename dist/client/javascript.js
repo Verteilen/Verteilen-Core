@@ -385,6 +385,7 @@ class ClientJavascript {
                 parse: JSON.parse,
                 stringify: JSON.stringify
             },
+            Promise: Promise,
             math: {
                 floor: Math.floor,
                 abs: Math.abs,
