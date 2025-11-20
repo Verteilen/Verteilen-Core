@@ -104,11 +104,14 @@
         "delete-project-binding": "Delete the binding database set as well",
         "enter-project-name": "Enter Project Name",
         "enter-project-description": "Enter Project Description",
+
         "new-task": "New Task",
         "modify-task": "Modify Task",
         "enter-task-name": "Enter Task Name",
         "enter-task-description": "Enter Task Description",
+
         "new-job": "New Job",
+
         "new-Variable": "New Variable",
         "edit-Variable": "Modify Variable",
         "delete-database": "Delete Database",
@@ -120,9 +123,11 @@
         "import-database": "Delete Database",
         "delete-database-confirm": "Are you sure delete database you selected",
         "database-datatype": "Datatype",
+
         "create-library": "Create Lib",
         "enter-library-name": "Enter Lib Name",
         "enter-library-type": "Enter Lib Type",
+
         "new-node": "New Node",
         "enter-node-address": "Enter Node Address",
         "skip-step": "Skip Step",
@@ -148,7 +153,8 @@
         "create-service": "Create Service",
         "delete-service": "Delete Service",
         "delete-service-confirm": "Are you sure you want to delete these services?",
-        "new-condition": "Create Condition"
+        "new-condition": "Create Condition",
+        "generate-database": "Generate Database"
     },
     "toolbar": {
         "server": "Server",

@@ -148,7 +148,8 @@
         "create-service": "Create Service",
         "delete-service": "Delete Service",
         "delete-service-confirm": "Are you sure you want to delete these services?",
-        "new-condition": "Create Condition"
+        "new-condition": "Create Condition",
+        "generate-database": "Generate Database"
     },
     "toolbar": {
         "server": "Server",

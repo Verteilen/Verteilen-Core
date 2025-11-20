@@ -148,7 +148,8 @@
         "create-service": "建立服務",
         "delete-service": "刪除服務",
         "delete-service-confirm": "確定刪除選取的服務嗎?",
-        "new-condition": "建立條件"
+        "new-condition": "建立條件",
+        "generate-database": "生成資料庫"
     },
     "toolbar": {
         "server": "伺服器",

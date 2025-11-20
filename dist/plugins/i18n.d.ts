@@ -157,6 +157,7 @@ export declare const i18nDefaultData: {
                 "delete-service": string;
                 "delete-service-confirm": string;
                 "new-condition": string;
+                "generate-database": string;
             };
             toolbar: {
                 server: string;
@@ -607,6 +608,7 @@ export declare const i18nDefaultData: {
                 "delete-service": string;
                 "delete-service-confirm": string;
                 "new-condition": string;
+                "generate-database": string;
             };
             toolbar: {
                 server: string;
@@ -1060,6 +1062,7 @@ export declare const i18n: import("vue-i18n").I18n<{
             "delete-service": string;
             "delete-service-confirm": string;
             "new-condition": string;
+            "generate-database": string;
         };
         toolbar: {
             server: string;
@@ -1510,6 +1513,7 @@ export declare const i18n: import("vue-i18n").I18n<{
             "delete-service": string;
             "delete-service-confirm": string;
             "new-condition": string;
+            "generate-database": string;
         };
         toolbar: {
             server: string;

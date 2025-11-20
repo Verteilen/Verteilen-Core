@@ -147,6 +147,10 @@ export interface PluginContainer extends DataTime {
      */
     gen_databases?: Array<TemplateGroup_Database>
     /**
+     * **Version label**
+     */
+    version: string
+    /**
      * **Local Permission**\
      * Client-side only permission field\
      * Server will check user token and defined its permission level\
