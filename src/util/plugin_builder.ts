@@ -1,8 +1,8 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { CreateDefaultProject, DatabaseContainer, PluginContainer, PluginGenData, PluginNode, Project } from '../interface'
+import { CreateDefaultProject, DatabaseContainer, KeyValue, PluginContainer, PluginGenData, PluginNode, Project } from '../interface'
 
-export const PluginBuild = (root:string, plugins:PluginNode, templates:PluginGenData) => {
+export const PluginBuild = (root:string, plugins:PluginNode, templates:PluginGenData, version:string = "1.0.0", language:Array<KeyValue> = []) => {
     console.log("Activate Plugin Build Process...")
     const root_p = path.join(root, 'project')
     const root_d = path.join(root, 'database')
@@ -17,8 +17,8 @@ export const PluginBuild = (root:string, plugins:PluginNode, templates:PluginGen
         icon: "",
         owner: "",
         title: "",
-        version: "1.0.0",
-        i18n: [],
+        version: version,
+        i18n: language,
         plugins: [],
         projects: [],
         databases: []

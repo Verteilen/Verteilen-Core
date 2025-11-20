@@ -37,7 +37,7 @@ exports.PluginBuild = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const interface_1 = require("../interface");
-const PluginBuild = (root, plugins, templates) => {
+const PluginBuild = (root, plugins, templates, version = "1.0.0", language = []) => {
     console.log("Activate Plugin Build Process...");
     const root_p = path.join(root, 'project');
     const root_d = path.join(root, 'database');
@@ -54,8 +54,8 @@ const PluginBuild = (root, plugins, templates) => {
         icon: "",
         owner: "",
         title: "",
-        version: "1.0.0",
-        i18n: [],
+        version: version,
+        i18n: language,
         plugins: [],
         projects: [],
         databases: []
