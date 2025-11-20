@@ -16,6 +16,11 @@ type ProjectCall = (p:Project) => Project
  */
 type DatabaseCall = () => Array<DatabaseContainer>
 
+export interface PluginI18N {
+    key: string
+    value: any
+}
+
 /**
  * **Plugin Content**\
  * For single file specification
@@ -46,12 +51,12 @@ export interface Plugin {
      * **Plugin Title**\
      * Support i18n config
      */
-    name: string | any
+    name: string 
     /**
      * **Plugin Description**\
      * Support i18n config
      */
-    description: string | any
+    description: string 
     /**
      * **Minimum Require Application Version**
      */
@@ -93,11 +98,7 @@ export interface PluginWithToken extends Plugin {
     token: Array<string>
 }
 
-/**
- * **Plugin Group**\
- * User can upload a group of plugin with author and thumbnail etc...\
- */
-export interface PluginContainer extends DataTime {
+export interface PluginBase {
     /**
      * **Thumbnail URL**\
      * The relative link for the thumbnail
@@ -117,11 +118,41 @@ export interface PluginContainer extends DataTime {
      * **Plugin Group Name**\
      * Support i18n config
      */
-    title?: string | any
+    title?: string
     /**
      * **Plugin Group Description**
      */
     description?: string
+    /**
+     * **Version label**
+     */
+    version: string
+    /**
+     * **Language key value set**\
+     * @example
+     * [
+     *  {
+     *    key: "en",
+     *    value: {
+     *      "Key1": "KEY ONE"
+     *    }
+     *  },
+     *  {
+     *    key: "zh-TW",
+     *    value: {
+     *      "Key1": "金鑰一"
+     *    }
+     *  }
+     * ]
+     */
+    i18n: Array<PluginI18N>
+}
+
+/**
+ * **Plugin Group**\
+ * User can upload a group of plugin with author and thumbnail etc...\
+ */
+export interface PluginContainer extends DataTime, PluginBase {
     /**
      * **Plugin Header URL**
      */
@@ -150,14 +181,6 @@ export interface PluginContainer extends DataTime {
      * Only exist in server side
      */
     gen_databases?: Array<TemplateGroup_Database>
-    /**
-     * **Version label**
-     */
-    version: string
-    /**
-     * **Language key value set**
-     */
-    i18n: Array<KeyValue>
     /**
      * **Local Permission**\
      * Client-side only permission field\
@@ -193,7 +216,7 @@ export interface PluginState {
      * **Plugin Name**\
      * Support i18n config
      */
-    name: string | any
+    name: string 
     /**
      * **Plugin Manifest URL Name**
      */
@@ -216,7 +239,7 @@ export interface TemplateData_Project {
      * **Project Template Name**\
      * Support i18n config
      */
-    title: string | any
+    title: string 
     /**
      * **Filename Name**
      */
@@ -239,7 +262,7 @@ export interface TemplateData_Database {
      * **Database Template Name**\
      * Support i18n config
      */
-    title: string | any
+    title: string 
     /**
      * **Filename Name**
      */

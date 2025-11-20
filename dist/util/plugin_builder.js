@@ -37,7 +37,7 @@ exports.PluginBuild = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const interface_1 = require("../interface");
-const PluginBuild = (root, plugins, templates, version = "1.0.0", language = []) => {
+const PluginBuild = (root, plugins, templates, data) => {
     console.log("Activate Plugin Build Process...");
     const root_p = path.join(root, 'project');
     const root_d = path.join(root, 'database');
@@ -50,12 +50,7 @@ const PluginBuild = (root, plugins, templates, version = "1.0.0", language = [])
     if (!fs.existsSync(root_d))
         fs.mkdirSync(root_d, { recursive: true });
     let manifest = {
-        thumbnail: "",
-        icon: "",
-        owner: "",
-        title: "",
-        version: version,
-        i18n: language,
+        ...data,
         plugins: [],
         projects: [],
         databases: []
@@ -80,16 +75,25 @@ const PluginBuild = (root, plugins, templates, version = "1.0.0", language = [])
     delete manifest.acl;
     delete manifest.permission;
     console.log("Output manifest.json");
+    if (fs.existsSync(m_path))
+        fs.unlinkSync(m_path);
     fs.writeFileSync(m_path, JSON.stringify(manifest, null, 4));
     console.log("Output project templates");
     templates.projects.forEach(item => {
         const result = item.template((0, interface_1.CreateDefaultProject)());
-        fs.writeFileSync(path.join(root_p, `${item.filename}.json`), JSON.stringify(result, null, 4), 'utf-8');
+        const n_patn = path.join(root_p, `${item.filename}.json`);
+        if (fs.existsSync(n_patn))
+            fs.unlinkSync(n_patn);
+        fs.writeFileSync(n_patn, JSON.stringify(result, null, 4), 'utf-8');
     });
     console.log("Output database templates");
     templates.databases.forEach(item => {
         const result = item.template();
-        fs.writeFileSync(path.join(root_d, `${item.filename}.json`), JSON.stringify(result, null, 4), 'utf-8');
+        const n_patn = path.join(root_d, `${item.filename}.json`);
+        if (fs.existsSync(n_patn))
+            fs.unlinkSync(n_patn);
+        fs.writeFileSync(n_patn, JSON.stringify(result, null, 4), 'utf-8');
     });
+    console.log("Finish build");
 };
 exports.PluginBuild = PluginBuild;

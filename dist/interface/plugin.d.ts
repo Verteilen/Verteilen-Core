@@ -1,8 +1,11 @@
 import { DatabaseContainer, DataTime, Project } from "./base";
 import { ACLType, LocalPermission } from "./server";
-import { KeyValue } from "./struct";
 type ProjectCall = (p: Project) => Project;
 type DatabaseCall = () => Array<DatabaseContainer>;
+export interface PluginI18N {
+    key: string;
+    value: any;
+}
 export interface PluginContent {
     filename: string;
     url: string;
@@ -12,8 +15,8 @@ export interface PluginContent {
 }
 export interface Plugin {
     icon?: string;
-    name: string | any;
-    description: string | any;
+    name: string;
+    description: string;
     requireVersion: string;
     version?: string;
     progress?: number;
@@ -25,20 +28,22 @@ export interface PluginNode {
 export interface PluginWithToken extends Plugin {
     token: Array<string>;
 }
-export interface PluginContainer extends DataTime {
+export interface PluginBase {
     thumbnail?: string;
     icon?: string;
     owner?: string;
-    title?: string | any;
+    title?: string;
     description?: string;
+    version: string;
+    i18n: Array<PluginI18N>;
+}
+export interface PluginContainer extends DataTime, PluginBase {
     url?: string;
     plugins: Array<Plugin>;
     projects: Array<TemplateData_Project>;
     databases: Array<TemplateData_Database>;
     gen_projects?: Array<TemplateGroup_Project>;
     gen_databases?: Array<TemplateGroup_Database>;
-    version: string;
-    i18n: Array<KeyValue>;
     permission?: LocalPermission;
     acl?: ACLType;
 }
@@ -46,19 +51,19 @@ export interface PluginPageData {
     plugins: Array<PluginContainer>;
 }
 export interface PluginState {
-    name: string | any;
+    name: string;
     url: string;
     installed: boolean;
     supported: boolean;
 }
 export interface TemplateData_Project {
-    title: string | any;
+    title: string;
     filename: string;
     group: string;
     value: number;
 }
 export interface TemplateData_Database {
-    title: string | any;
+    title: string;
     filename: string;
     group: string;
     value: number;

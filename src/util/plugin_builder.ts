@@ -1,8 +1,8 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { CreateDefaultProject, DatabaseContainer, KeyValue, PluginContainer, PluginGenData, PluginNode, Project } from '../interface'
+import { CreateDefaultProject, DatabaseContainer, PluginBase, PluginContainer, PluginGenData, PluginNode, Project } from '../interface'
 
-export const PluginBuild = (root:string, plugins:PluginNode, templates:PluginGenData, version:string = "1.0.0", language:Array<KeyValue> = []) => {
+export const PluginBuild = (root:string, plugins:PluginNode, templates:PluginGenData, data:PluginBase) => {
     console.log("Activate Plugin Build Process...")
     const root_p = path.join(root, 'project')
     const root_d = path.join(root, 'database')
@@ -13,12 +13,7 @@ export const PluginBuild = (root:string, plugins:PluginNode, templates:PluginGen
     if(!fs.existsSync(root_d)) fs.mkdirSync(root_d, { recursive: true })
 
     let manifest:PluginContainer = {
-        thumbnail: "",
-        icon: "",
-        owner: "",
-        title: "",
-        version: version,
-        i18n: language,
+        ...data,
         plugins: [],
         projects: [],
         databases: []
@@ -46,21 +41,27 @@ export const PluginBuild = (root:string, plugins:PluginNode, templates:PluginGen
     delete manifest.acl
     delete manifest.permission
     console.log("Output manifest.json")
+    if(fs.existsSync(m_path)) fs.unlinkSync(m_path)
     fs.writeFileSync(m_path, JSON.stringify(manifest, null, 4))
 
     console.log("Output project templates")
     templates.projects.forEach(item => {
         const result:Project = item.template(CreateDefaultProject())
+        const n_patn = path.join(root_p, `${item.filename}.json`)
+        if(fs.existsSync(n_patn)) fs.unlinkSync(n_patn)
         fs.writeFileSync(
-            path.join(root_p, `${item.filename}.json`), 
+            n_patn, 
             JSON.stringify(result, null, 4), 'utf-8')
     })
 
     console.log("Output database templates")
     templates.databases.forEach(item => {
         const result:Array<DatabaseContainer> = item.template()
+        const n_patn = path.join(root_d, `${item.filename}.json`)
+        if(fs.existsSync(n_patn)) fs.unlinkSync(n_patn)
         fs.writeFileSync(
-            path.join(root_d, `${item.filename}.json`), 
+            n_patn, 
             JSON.stringify(result, null, 4), 'utf-8')
     })
+    console.log("Finish build")
 }
