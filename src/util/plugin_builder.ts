@@ -17,6 +17,8 @@ export const PluginBuild = (root:string, plugins:PluginNode, templates:PluginGen
         icon: "",
         owner: "",
         title: "",
+        version: "1.0.0",
+        i18n: [],
         plugins: [],
         projects: [],
         databases: []

@@ -5,6 +5,7 @@
 // ========================
 import { DatabaseContainer, DataTime, Project } from "./base"
 import { ACLType, LocalPermission } from "./server"
+import { KeyValue } from "./struct"
 
 /**
  * Method to generate project template (populate)
@@ -42,13 +43,15 @@ export interface Plugin {
      */
     icon?: string
     /**
-     * **Plugin Title**
+     * **Plugin Title**\
+     * Support i18n config
      */
-    name: string
+    name: string | any
     /**
-     * **Plugin Description**
+     * **Plugin Description**\
+     * Support i18n config
      */
-    description: string
+    description: string | any
     /**
      * **Minimum Require Application Version**
      */
@@ -111,9 +114,10 @@ export interface PluginContainer extends DataTime {
      */
     owner?: string
     /**
-     * **Plugin Group Name**
+     * **Plugin Group Name**\
+     * Support i18n config
      */
-    title?: string
+    title?: string | any
     /**
      * **Plugin Group Description**
      */
@@ -151,6 +155,10 @@ export interface PluginContainer extends DataTime {
      */
     version: string
     /**
+     * **Language key value set**
+     */
+    i18n: Array<KeyValue>
+    /**
      * **Local Permission**\
      * Client-side only permission field\
      * Server will check user token and defined its permission level\
@@ -182,9 +190,10 @@ export interface PluginPageData {
  */
 export interface PluginState {
     /**
-     * **Plugin Name**
+     * **Plugin Name**\
+     * Support i18n config
      */
-    name: string
+    name: string | any
     /**
      * **Plugin Manifest URL Name**
      */
@@ -204,9 +213,10 @@ export interface PluginState {
  */
 export interface TemplateData_Project {
     /**
-     * **Project Template Name**
+     * **Project Template Name**\
+     * Support i18n config
      */
-    title: string
+    title: string | any
     /**
      * **Filename Name**
      */
@@ -226,9 +236,10 @@ export interface TemplateData_Project {
  */
 export interface TemplateData_Database {
     /**
-     * **Database Template Name**
+     * **Database Template Name**\
+     * Support i18n config
      */
-    title: string
+    title: string | any
     /**
      * **Filename Name**
      */

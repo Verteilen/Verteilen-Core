@@ -54,6 +54,8 @@ const PluginBuild = (root, plugins, templates) => {
         icon: "",
         owner: "",
         title: "",
+        version: "1.0.0",
+        i18n: [],
         plugins: [],
         projects: [],
         databases: []
