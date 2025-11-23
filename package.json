@@ -1,18 +1,20 @@
 {
   "name": "verteilen-core",
-  "version": "1.4.15",
+  "version": "1.4.28",
   "license": "MIT",
-  "type": "module",
   "homepage": "https://verteilen.github.io/wiki/",
   "author": "Elly",
   "repository": "https://github.com/Verteilen/Verteilen-Core",
   "description": "The core library help verteilen software to work",
+  "types": "dist/index.d.ts",
   "main": "dist/index.js",
+  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/Verteilen/Verteilen-Core/issues"
   },
   "scripts": {
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "test:init": "ts-jest config:init"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

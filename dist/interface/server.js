@@ -78,3 +78,4 @@ const CreateRootUser = () => {
     };
 };
 exports.CreateRootUser = CreateRootUser;
+//# sourceMappingURL=server.js.map

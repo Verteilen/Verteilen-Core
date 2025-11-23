@@ -11,3 +11,4 @@ const CreatePreference = () => ({
     animation: true,
 });
 exports.CreatePreference = CreatePreference;
+//# sourceMappingURL=record.js.map

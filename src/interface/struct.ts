@@ -7,8 +7,8 @@
  * All kinds of data structure
  * It's a mess, i know
  */
+import * as ws from 'ws'
 import { Job } from "./base"
-import ws from 'ws'
 import { ServiceMode, TaskLogicType } from "./enum"
 import { Plugin } from "./plugin"
 

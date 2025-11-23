@@ -1,4 +1,4 @@
-import { Execute_ConsoleServerManager, PluginPageData } from "../interface";
+import { ConsoleServerManager, PluginPageData } from "../interface";
 import { ServerDetail } from "./detail";
 import { MemoryData, RecordIOBase, RecordLoader } from "./io";
 import { Project_Module } from "./module/project";
@@ -16,7 +16,7 @@ export interface PluginFeedback {
     socket: Caller_Socket | undefined;
 }
 export declare class ServerBase {
-    manager: Array<Execute_ConsoleServerManager.ConsoleServerManager>;
+    manager: Array<ConsoleServerManager>;
     memory: MemoryData;
     plugin: PluginPageData;
     io: RecordIOBase | undefined;

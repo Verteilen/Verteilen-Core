@@ -39,7 +39,7 @@ export class WebhookServerManager {
             res.end('HTTPS server is running');
         })
         this.httpss.addListener('upgrade', (req, res, head) => console.log('UPGRADE:', req.url))
-        this.server = new ws.Server({server: this.httpss})
+        this.server = new ws.WebSocketServer({server: this.httpss})
         this.server.on('listening', () => {
             this.messager_log('[Server] Listen PORT: ' + port_result.toString())
         })

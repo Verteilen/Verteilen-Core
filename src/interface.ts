@@ -59,14 +59,14 @@ export * as I18N from './plugins/i18n'
 /**
  * Scripts
  */
-export * as Execute_PART from './script/execute'
-export * as Execute_ConsoleManager from './script/console_manager'
-export * as Execute_ConsoleServerManager from './script/console_server_manager'
-export * as Execute_ExecuteManager from './script/execute_manager'
-export * as Execute_SocketManager from './script/socket_manager'
-export * as Execute_WebhookManager from './script/webhook_manager'
+export * from './script/execute'
+export * from './script/console_manager'
+export * from './script/console_server_manager'
+export * from './script/execute_manager'
+export * from './script/socket_manager'
+export * from './script/webhook_manager'
 /**
  * Util
  */
-export * as UtilServer_Console from './server/detail/console_handle'
-export * as UtilServer_Log from './server/detail/log_handle'
+export * from './server/detail/console_handle'
+export * from './server/detail/log_handle'

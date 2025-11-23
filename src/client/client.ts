@@ -75,7 +75,7 @@ export class Client {
             res.end('HTTPS server is running');
         })
         this.httpss.addListener('upgrade', (req, res, head) => console.log('UPGRADE:', req.url))
-        this.client = new ws.Server({server: this.httpss})
+        this.client = new ws.WebSocketServer({server: this.httpss})
         this.client.on('listening', () => {
             this.messager_log('[Server] Listen PORT: ' + port_result.toString())
         })

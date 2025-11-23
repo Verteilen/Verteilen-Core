@@ -54,3 +54,4 @@ const CreateDefaultDatabase = () => {
     };
 };
 exports.CreateDefaultDatabase = CreateDefaultDatabase;
+//# sourceMappingURL=base.js.map

@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -27,17 +36,17 @@ const permissionHelper = (x, uuid) => {
 const permissionGetPublic = (v) => {
     return v.filter(x => x.owner == undefined || x.acl == interface_1.ACLType.PUBLIC);
 };
-const obsoleteSupport = async (loader, type, folder) => {
+const obsoleteSupport = (loader, type, folder) => __awaiter(void 0, void 0, void 0, function* () {
     if (type == interface_1.RecordType.PROJECT) {
         const path = loader.join(loader.root, "record");
         if (!loader.exists(path))
             return;
-        const p = await loader.read_dir_file(path);
+        const p = yield loader.read_dir_file(path);
         const ps = p.filter(x => x.endsWith(".json")).map(x => {
             const path_r = loader.join(path, x);
             return loader.read_string(path_r);
         });
-        const allRecordText = await Promise.all(ps);
+        const allRecordText = yield Promise.all(ps);
         const allRecord = allRecordText.map(x => JSON.parse(x));
         const execute_project = [];
         const execute_task = [];
@@ -64,25 +73,25 @@ const obsoleteSupport = async (loader, type, folder) => {
             const d1 = loader.join(loader.root, "project", `${x.uuid}.json`);
             execute_project.push(loader.write_string(d1, JSON.stringify(x, null, 4)));
         }
-        await Promise.all(execute_project);
-        await Promise.all(execute_task);
-        await Promise.all(execute_job);
-        await loader.rm(path);
+        yield Promise.all(execute_project);
+        yield Promise.all(execute_task);
+        yield Promise.all(execute_job);
+        yield loader.rm(path);
     }
     else if (type == interface_1.RecordType.DATABASE) {
         const path = loader.join(loader.root, "parameter");
         if (!loader.exists(path))
             return;
-        const p = await loader.read_dir_file(path);
+        const p = yield loader.read_dir_file(path);
         const ps = p.filter(x => x.endsWith(".json")).map(x => {
             const path2 = loader.join(path, x);
             const path3 = loader.join(loader.root, folder, x);
             return loader.cp(path2, path3);
         });
-        await Promise.all(ps);
+        yield Promise.all(ps);
         loader.rm(path);
     }
-};
+});
 const _CreateRecordMemoryLoader = (loader, type) => {
     const get_array = (type) => {
         switch (type) {
@@ -98,11 +107,11 @@ const _CreateRecordMemoryLoader = (loader, type) => {
         }
     };
     return {
-        fetch_all: async () => {
+        fetch_all: () => __awaiter(void 0, void 0, void 0, function* () {
             const arr = get_array(type);
             return arr.map(x => JSON.stringify(x));
-        },
-        load_all: async (token) => {
+        }),
+        load_all: (token) => __awaiter(void 0, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
                 const arr = get_array(type);
                 const pub = permissionGetPublic(arr).map(x => JSON.stringify(x));
@@ -125,8 +134,8 @@ const _CreateRecordMemoryLoader = (loader, type) => {
                         .map(x => JSON.stringify(x));
                 });
             });
-        },
-        delete_all: async (token) => {
+        }),
+        delete_all: (token) => __awaiter(void 0, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
                 const arr = get_array(type);
                 const pub = permissionGetPublic(arr);
@@ -156,8 +165,8 @@ const _CreateRecordMemoryLoader = (loader, type) => {
                     default_behaviour(targets);
                 });
             });
-        },
-        list_all: async (token) => {
+        }),
+        list_all: (token) => __awaiter(void 0, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
                 const arr = get_array(type);
                 const pub = permissionGetPublic(arr);
@@ -182,8 +191,8 @@ const _CreateRecordMemoryLoader = (loader, type) => {
                     resolve(targets.map(x => x.uuid));
                 });
             });
-        },
-        save: async (uuid, data, token) => {
+        }),
+        save: (uuid, data, token) => __awaiter(void 0, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
                 const arr = get_array(type);
                 const index = arr.findIndex(x => x.uuid == uuid);
@@ -221,8 +230,8 @@ const _CreateRecordMemoryLoader = (loader, type) => {
                     }
                 });
             });
-        },
-        load: async (uuid, token) => {
+        }),
+        load: (uuid, token) => __awaiter(void 0, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
                 const arr = get_array(type);
                 const index = arr.findIndex(x => uuid == x.uuid);
@@ -258,8 +267,8 @@ const _CreateRecordMemoryLoader = (loader, type) => {
                     }
                 });
             });
-        },
-        delete: async (uuid, token) => {
+        }),
+        delete: (uuid, token) => __awaiter(void 0, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
                 const arr = get_array(type);
                 const index = arr.findIndex(x => uuid == x.uuid);
@@ -299,130 +308,130 @@ const _CreateRecordMemoryLoader = (loader, type) => {
                     }
                 });
             });
-        }
+        })
     };
 };
 const _CreateRecordIOLoader = (loader, memory, type, folder, ext = ".json") => {
     const mem = _CreateRecordMemoryLoader(memory, type);
     return {
-        fetch_all: async () => {
+        fetch_all: () => __awaiter(void 0, void 0, void 0, function* () {
             const root = loader.join(loader.root, folder);
             if (!loader.exists(root))
-                await loader.mkdir(root);
-            await obsoleteSupport(loader, type, folder);
-            const files = await loader.read_dir_file(root);
+                yield loader.mkdir(root);
+            yield obsoleteSupport(loader, type, folder);
+            const files = yield loader.read_dir_file(root);
             const r = files.map(x => loader.read_string(loader.join(root, x), { encoding: 'utf8', flag: 'r' }));
-            const p = await Promise.all(r);
+            const p = yield Promise.all(r);
             const saver = p.map(x => {
                 const data = JSON.parse(x);
                 return mem.save(data.uuid, x);
             });
-            await Promise.all(saver);
+            yield Promise.all(saver);
             return mem.fetch_all();
-        },
-        load_all: async (token) => {
+        }),
+        load_all: (token) => __awaiter(void 0, void 0, void 0, function* () {
             const root = loader.join(loader.root, folder);
             if (!loader.exists(root))
-                await loader.mkdir(root);
+                yield loader.mkdir(root);
             return mem.load_all(token);
-        },
-        delete_all: async (token) => {
+        }),
+        delete_all: (token) => __awaiter(void 0, void 0, void 0, function* () {
             const root = loader.join(loader.root, folder);
-            const c = await mem.delete_all(token);
+            const c = yield mem.delete_all(token);
             const kill_all = c.map(x => {
                 return loader.rm(loader.join(root, x + ext));
             });
-            await Promise.all(kill_all);
+            yield Promise.all(kill_all);
             return c;
-        },
-        list_all: async (token) => {
+        }),
+        list_all: (token) => __awaiter(void 0, void 0, void 0, function* () {
             const root = loader.join(loader.root, folder);
             if (!loader.exists(root))
-                await loader.mkdir(root);
+                yield loader.mkdir(root);
             return mem.list_all(token);
-        },
-        save: async (uuid, data, token) => {
+        }),
+        save: (uuid, data, token) => __awaiter(void 0, void 0, void 0, function* () {
             const root = loader.join(loader.root, folder);
             if (!loader.exists(root))
-                await loader.mkdir(root);
-            const r = await mem.save(uuid, data, token);
+                yield loader.mkdir(root);
+            const r = yield mem.save(uuid, data, token);
             if (!r)
                 return false;
             const file = loader.join(root, uuid + ext);
-            await loader.write_string(file, data);
+            yield loader.write_string(file, data);
             return true;
-        },
-        load: async (uuid, token) => {
+        }),
+        load: (uuid, token) => __awaiter(void 0, void 0, void 0, function* () {
             const root = loader.join(loader.root, folder);
             if (!loader.exists(root))
-                await loader.mkdir(root);
+                yield loader.mkdir(root);
             return mem.load(uuid, token);
-        },
-        delete: async (uuid, token) => {
+        }),
+        delete: (uuid, token) => __awaiter(void 0, void 0, void 0, function* () {
             const root = loader.join(loader.root, folder);
             if (!loader.exists(root))
-                await loader.mkdir(root);
-            const r = await mem.delete(uuid, token);
+                yield loader.mkdir(root);
+            const r = yield mem.delete(uuid, token);
             if (!r)
                 return false;
             const file = loader.join(root, uuid + ext);
             if (loader.exists(file)) {
-                await loader.rm(file);
+                yield loader.rm(file);
             }
             return true;
-        }
+        })
     };
 };
 const _CreateRecordMongoLoader = (loader, memory, type, db, collection) => {
     const mem = _CreateRecordMemoryLoader(memory, type);
     return {
-        fetch_all: async () => {
+        fetch_all: () => __awaiter(void 0, void 0, void 0, function* () {
             const database = loader.db(db);
             const col = database.collection(collection);
-            const data = await col.find({}).toArray();
+            const data = yield col.find({}).toArray();
             const exec = data.map(x => {
                 return mem.save(x.uuid, JSON.stringify(x));
             });
-            await Promise.all(exec);
+            yield Promise.all(exec);
             return mem.fetch_all();
-        },
-        load_all: async (token) => {
+        }),
+        load_all: (token) => __awaiter(void 0, void 0, void 0, function* () {
             return mem.load_all(token);
-        },
-        delete_all: async (token) => {
-            const c = await mem.delete_all(token);
+        }),
+        delete_all: (token) => __awaiter(void 0, void 0, void 0, function* () {
+            const c = yield mem.delete_all(token);
             const database = loader.db(db);
             const col = database.collection(collection);
             const exec = c.map(x => {
                 return col.deleteOne({ uuid: x });
             });
-            await Promise.all(exec);
+            yield Promise.all(exec);
             return c;
-        },
-        list_all: async (token) => {
+        }),
+        list_all: (token) => __awaiter(void 0, void 0, void 0, function* () {
             return mem.list_all(token);
-        },
-        save: async (uuid, data, token) => {
-            const r = await mem.save(uuid, data, token);
+        }),
+        save: (uuid, data, token) => __awaiter(void 0, void 0, void 0, function* () {
+            const r = yield mem.save(uuid, data, token);
             if (!r)
                 return false;
             const database = loader.db(db);
             const col = database.collection(collection);
             col.findOneAndUpdate({ uuid: uuid }, JSON.parse(data));
             return true;
-        },
-        load: async (uuid, token) => {
+        }),
+        load: (uuid, token) => __awaiter(void 0, void 0, void 0, function* () {
             return mem.load(uuid, token);
-        },
-        delete: async (uuid, token) => {
-            const r = await mem.delete(uuid, token);
+        }),
+        delete: (uuid, token) => __awaiter(void 0, void 0, void 0, function* () {
+            const r = yield mem.delete(uuid, token);
             if (!r)
                 return false;
             const database = loader.db(db);
             const col = database.collection(collection);
-            await col.deleteOne({ uuid: uuid });
+            yield col.deleteOne({ uuid: uuid });
             return true;
-        }
+        })
     };
 };
 const CreateRecordMemoryLoader = (loader) => {
@@ -465,3 +474,4 @@ const CreateRecordMongoLoader = (url, memory) => {
     };
 };
 exports.CreateRecordMongoLoader = CreateRecordMongoLoader;
+//# sourceMappingURL=io2.js.map

@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es2024",
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
+    "module": "commonjs",
+    "target": "es2016",
+    "jsx": "preserve",
+    "sourceMap": true,
     "strict": true,
     "declaration": true,
     "esModuleInterop": true,
@@ -15,5 +16,5 @@
     "removeComments": true,
     "noImplicitAny": false
   },
-  "exclude": ["coverage", "test", "index.ts", "jest.config.js", "dist"]
+  "exclude": ["coverage", "test", "jest.config.js", "dist"]
 }

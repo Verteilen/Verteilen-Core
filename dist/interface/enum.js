@@ -206,3 +206,4 @@ exports.ProjectTemplateText = {
 exports.DatabaseTemplateText = {
     0: 'enum.database.default'
 };
+//# sourceMappingURL=enum.js.map

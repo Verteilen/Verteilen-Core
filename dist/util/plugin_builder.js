@@ -49,12 +49,7 @@ const PluginBuild = (root, plugins, templates, data) => {
         fs.mkdirSync(root_p, { recursive: true });
     if (!fs.existsSync(root_d))
         fs.mkdirSync(root_d, { recursive: true });
-    let manifest = {
-        ...data,
-        plugins: [],
-        projects: [],
-        databases: []
-    };
+    let manifest = Object.assign(Object.assign({}, data), { plugins: [], projects: [], databases: [] });
     if (fs.existsSync(m_path)) {
         console.log("Detected manifest.json");
         manifest = JSON.parse(fs.readFileSync(m_path).toString());
@@ -97,3 +92,4 @@ const PluginBuild = (root, plugins, templates, data) => {
     console.log("Finish build");
 };
 exports.PluginBuild = PluginBuild;
+//# sourceMappingURL=plugin_builder.js.map

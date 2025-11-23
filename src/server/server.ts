@@ -3,7 +3,7 @@
 //      Share Codebase     
 //                           
 // ========================
-import { Execute_ConsoleServerManager, Header, PluginPageData } from "../interface";
+import { ConsoleServerManager, Header, PluginPageData } from "../interface";
 import { ServerDetail } from "./detail";
 import { CreateRecordMemoryLoader_Browser, MemoryData, RecordIOBase, RecordLoader } from "./io";
 import { Project_Module } from "./module/project";
@@ -33,7 +33,7 @@ export interface PluginFeedback {
 }
 
 export class ServerBase {
-    manager:Array<Execute_ConsoleServerManager.ConsoleServerManager> = []
+    manager:Array<ConsoleServerManager> = []
     memory: MemoryData = {
         projects: [],
         tasks: [],

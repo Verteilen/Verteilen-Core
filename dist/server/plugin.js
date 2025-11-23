@@ -1,23 +1,32 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreatePluginLoader = exports.GetCurrentPlugin = void 0;
-const GetCurrentPlugin = async (loader) => {
-    return new Promise(async (resolve) => {
+const GetCurrentPlugin = (loader) => __awaiter(void 0, void 0, void 0, function* () {
+    return new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
         const b = {
             plugins: []
         };
         const root = loader.join(loader.root, 'plugin');
         if (!loader.exists(root))
-            await loader.mkdir(root);
-        const plugin_folder = await loader.read_dir_dir(root);
-        const plugin_folder_files = await Promise.all(plugin_folder.map(x => loader.read_dir_file(loader.join(root, x))));
+            yield loader.mkdir(root);
+        const plugin_folder = yield loader.read_dir_dir(root);
+        const plugin_folder_files = yield Promise.all(plugin_folder.map(x => loader.read_dir_file(loader.join(root, x))));
         for (let i = 0; i < plugin_folder_files.length; i++) {
             const files = plugin_folder_files[i];
             const dirname = plugin_folder[i];
             if (!files.includes("manifest.json"))
                 continue;
             const manifest_path = loader.join(root, dirname, "manifest.json");
-            const manifest = await loader.read_string(manifest_path);
+            const manifest = yield loader.read_string(manifest_path);
             let header = undefined;
             try {
                 header = JSON.parse(manifest);
@@ -44,19 +53,19 @@ const GetCurrentPlugin = async (loader) => {
         }
         resolve(b);
         return b;
-    });
-};
+    }));
+});
 exports.GetCurrentPlugin = GetCurrentPlugin;
 const CreatePluginLoader = (loader, memory, socket, feedback) => {
     return {
-        load_all: async () => {
-            const cp = await (0, exports.GetCurrentPlugin)(loader);
+        load_all: () => __awaiter(void 0, void 0, void 0, function* () {
+            const cp = yield (0, exports.GetCurrentPlugin)(loader);
             memory.plugins = cp.plugins;
             return cp;
-        },
-        get_plugins: async () => {
+        }),
+        get_plugins: () => __awaiter(void 0, void 0, void 0, function* () {
             return memory;
-        },
+        }),
         get_project: (name, group, filename) => {
             const path = loader.join(loader.root, "plugin", name, "project", filename);
             return loader.exists(path) ? loader.read_string(path) : undefined;
@@ -65,17 +74,18 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
             const path = loader.join(loader.root, "plugin", name, "database", filename);
             return loader.exists(path) ? loader.read_string(path) : undefined;
         },
-        import_plugin: async (name, url, token) => {
+        import_plugin: (name, url, token) => __awaiter(void 0, void 0, void 0, function* () {
+            var _a, _b;
             const error_children = [];
             const root = loader.join(loader.root, 'plugin');
             const project_folder = loader.join(root, name, 'project');
             const database_folder = loader.join(root, name, 'database');
             if (!loader.exists(root))
-                await loader.mkdir(root);
+                yield loader.mkdir(root);
             if (!loader.exists(project_folder))
-                await loader.mkdir(project_folder);
+                yield loader.mkdir(project_folder);
             if (!loader.exists(database_folder))
-                await loader.mkdir(database_folder);
+                yield loader.mkdir(database_folder);
             const tokens = [undefined, ...token.split(' ')];
             let req = {};
             let ob = undefined;
@@ -89,8 +99,8 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
                 };
                 let tex = "";
                 try {
-                    const res = await fetch(url, req);
-                    tex = await res.text();
+                    const res = yield fetch(url, req);
+                    tex = yield res.text();
                     ob = JSON.parse(tex);
                     console.log("Fetch plugin json successfully");
                     break;
@@ -103,7 +113,7 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
                 const p = { title: "Import Failed", type: "error", message: `Cannot find the json from url ${url}, or maybe just the wrong token` };
                 const h = { name: "makeToast", data: JSON.stringify(p) };
                 if (feedback.electron) {
-                    feedback.electron()?.send("makeToast", JSON.stringify(p));
+                    (_a = feedback.electron()) === null || _a === void 0 ? void 0 : _a.send("makeToast", JSON.stringify(p));
                 }
                 if (feedback.socket) {
                     feedback.socket(JSON.stringify(h));
@@ -115,9 +125,9 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
             const folder = url.substring(0, url.lastIndexOf('/'));
             const project_calls = ob.projects.map(p => fetch(folder + "/project/" + p.filename + '.json', req));
             const database_calls = ob.databases.map(p => fetch(folder + "/database/" + p.filename + '.json', req));
-            const pss = await Promise.all(project_calls);
+            const pss = yield Promise.all(project_calls);
             const project_calls2 = pss.map(x => x.text());
-            const pss_result = await Promise.all(project_calls2);
+            const pss_result = yield Promise.all(project_calls2);
             pss_result.forEach((text, index) => {
                 const n = ob.projects[index].filename + '.json';
                 try {
@@ -129,9 +139,9 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
                     error_children.push([`Import Project ${n} Error`, error.message]);
                 }
             });
-            const pss2 = await Promise.all(database_calls);
+            const pss2 = yield Promise.all(database_calls);
             const database_calls2 = pss2.map(x => x.text());
-            const pss_result2 = await Promise.all(database_calls2);
+            const pss_result2 = yield Promise.all(database_calls2);
             pss_result2.forEach((text, index) => {
                 const n = ob.databases[index].filename + '.json';
                 try {
@@ -147,35 +157,36 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
                 const p = { title: x[0], type: "error", message: x[1] };
                 const h = { name: "makeToast", data: JSON.stringify(p) };
                 if (feedback.electron) {
-                    feedback.electron()?.send("makeToast", JSON.stringify(p));
+                    (_b = feedback.electron()) === null || _b === void 0 ? void 0 : _b.send("makeToast", JSON.stringify(p));
                 }
                 if (feedback.socket) {
                     feedback.socket(JSON.stringify(h));
                 }
                 return memory;
             }
-            const cp = await (0, exports.GetCurrentPlugin)(loader);
+            const cp = yield (0, exports.GetCurrentPlugin)(loader);
             memory.plugins = cp.plugins;
             return cp;
-        },
-        delete_plugin: async (name) => {
+        }),
+        delete_plugin: (name) => __awaiter(void 0, void 0, void 0, function* () {
             const root = loader.join(loader.root, 'plugin', name);
             if (loader.exists(root))
-                await loader.rm(root);
-        },
-        plugin_download: async (uuid, plugin, tokens) => {
+                yield loader.rm(root);
+        }),
+        plugin_download: (uuid, plugin, tokens) => __awaiter(void 0, void 0, void 0, function* () {
             const p = JSON.parse(plugin);
-            const p2 = { ...p, token: tokens.split(' ') };
+            const p2 = Object.assign(Object.assign({}, p), { token: tokens.split(' ') });
             const t = socket(uuid);
             const h = { name: 'plugin_download', data: p2 };
-            t?.websocket.send(JSON.stringify(h));
-        },
-        plugin_remove: async (uuid, plugin) => {
+            t === null || t === void 0 ? void 0 : t.websocket.send(JSON.stringify(h));
+        }),
+        plugin_remove: (uuid, plugin) => __awaiter(void 0, void 0, void 0, function* () {
             const p = JSON.parse(plugin);
             const t = socket(uuid);
             const h = { name: 'plugin_remove', data: p };
-            t?.websocket.send(JSON.stringify(h));
-        },
+            t === null || t === void 0 ? void 0 : t.websocket.send(JSON.stringify(h));
+        }),
     };
 };
 exports.CreatePluginLoader = CreatePluginLoader;
+//# sourceMappingURL=plugin.js.map

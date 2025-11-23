@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateRecordMemoryLoader_Browser = void 0;
 const interface_1 = require("../interface");
@@ -17,24 +26,24 @@ const _CreateRecordMemoryLoader = (loader, type) => {
         }
     };
     return {
-        fetch_all: async () => {
+        fetch_all: () => __awaiter(void 0, void 0, void 0, function* () {
             const arr = get_array(type);
             return arr.map(x => JSON.stringify(x));
-        },
-        load_all: async () => {
+        }),
+        load_all: () => __awaiter(void 0, void 0, void 0, function* () {
             const arr = get_array(type);
             return arr.map(x => JSON.stringify(x));
-        },
-        delete_all: async () => {
+        }),
+        delete_all: () => __awaiter(void 0, void 0, void 0, function* () {
             const arr = get_array(type);
             const p = arr.splice(0, arr.length);
             return p.map(x => x.uuid);
-        },
-        list_all: async () => {
+        }),
+        list_all: () => __awaiter(void 0, void 0, void 0, function* () {
             const arr = get_array(type);
             return arr.map(x => x.uuid);
-        },
-        save: async (uuid, data) => {
+        }),
+        save: (uuid, data) => __awaiter(void 0, void 0, void 0, function* () {
             const arr = get_array(type);
             const index = arr.findIndex(x => x.uuid == uuid);
             if (index != -1)
@@ -42,21 +51,21 @@ const _CreateRecordMemoryLoader = (loader, type) => {
             else
                 arr.push(JSON.parse(data));
             return true;
-        },
-        load: async (uuid) => {
+        }),
+        load: (uuid) => __awaiter(void 0, void 0, void 0, function* () {
             const arr = get_array(type);
             const p = arr.find(x => x.uuid == uuid);
             if (p == undefined)
                 throw new Error("Item do not exists");
             return JSON.stringify(p);
-        },
-        delete: async (uuid) => {
+        }),
+        delete: (uuid) => __awaiter(void 0, void 0, void 0, function* () {
             const arr = get_array(type);
             const index = arr.findIndex(x => x.uuid == uuid);
             if (index != -1)
                 arr.splice(index, 1);
             return true;
-        }
+        })
     };
 };
 const CreateRecordMemoryLoader_Browser = (loader) => {
@@ -72,3 +81,4 @@ const CreateRecordMemoryLoader_Browser = (loader) => {
     };
 };
 exports.CreateRecordMemoryLoader_Browser = CreateRecordMemoryLoader_Browser;
+//# sourceMappingURL=io.js.map

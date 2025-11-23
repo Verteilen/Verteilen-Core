@@ -1,8 +1,11 @@
-/** @type {import('ts-jest').JestConfigWithTsJest} **/
-module.exports = {
-  verbose: true,
+import { createDefaultPreset } from "ts-jest"
+
+const tsJestTransformCfg = createDefaultPreset().transform;
+
+/** @type {import("jest").Config} **/
+export default {
   testEnvironment: "node",
   transform: {
-    "^.+\.tsx?$": ["ts-jest",{}],
-  }
+    ...tsJestTransformCfg,
+  },
 };
