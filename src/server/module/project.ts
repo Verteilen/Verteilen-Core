@@ -155,9 +155,10 @@ export class Project_Module {
         await this.loader.project.load(uuid)
         const p:Project = this.memory.projects.find(p=> p.uuid == uuid)!
         if(!p) return
-        const ps = p.tasks_uuid.map(t_uuid => this.CascadeDeleteTask(t_uuid))
+        const ps = p.tasks_uuid.map(t_uuid => this.CascadeDeleteTask(t_uuid, false))
         await Promise.all(ps)
-        await this.loader.project.delete(uuid)
+        const del = await this.loader.project.delete(uuid)
+        console.log("Delete project: ", del)
         const db = p.database_uuid
         if(bind) await this.Delete_Database_Idle(db)
     }
@@ -165,29 +166,40 @@ export class Project_Module {
      * Delete Task related data and project itself
      * @param uuid Task UUID
      */
-    async CascadeDeleteTask(uuid:string):Promise<void>{
+    async CascadeDeleteTask(uuid:string, project_change:boolean = true):Promise<void>{
         await this.loader.task.load(uuid)
         const p:Task = this.memory.tasks.find(p=> p.uuid == uuid)!
         if(!p) return
-        const ps = p.jobs_uuid.map(j_uuid => this.loader.job.delete(j_uuid))
+        const ps = p.jobs_uuid.map(j_uuid => this.CascadeDeleteJob(j_uuid, project_change))
         await Promise.all(ps)
         await this.loader.task.delete(uuid)
+        // The project with task uuid includes
+        if(!project_change) return
         const ps2 = this.memory.projects.filter(x => x.tasks_uuid.includes(uuid)).map(x => x.uuid)
         for(let u of ps2){
             const index = this.memory.projects.findIndex(x => x.uuid == u)
-            if(index != -1) this.memory.projects.splice(index, 1)
+            if(index == -1) continue
+            const buffer = this.memory.projects[index]
+            const task_index = buffer.tasks_uuid.findIndex(x => x == uuid)
+            buffer.tasks_uuid.splice(task_index, 1)
+            this.loader.project.save(u, JSON.stringify(buffer, null, 4))
         }
     }
     /**
      * Delete Task related data and project itself
      * @param uuid Task UUID
      */
-    async CascadeDeleteJob(uuid:string):Promise<void>{
+    async CascadeDeleteJob(uuid:string, task_change:boolean = true):Promise<void>{
         await this.loader.job.delete(uuid)
+        if(!task_change) return
         const ps2 = this.memory.tasks.filter(x => x.jobs_uuid.includes(uuid)).map(x => x.uuid)
         for(let u of ps2){
             const index = this.memory.tasks.findIndex(x => x.uuid == u)
-            if(index != -1) this.memory.tasks.splice(index, 1)
+            if(index == -1)  continue
+            const buffer = this.memory.tasks[index]
+            const job_index = buffer.jobs_uuid.findIndex(x => x == uuid)
+            buffer.jobs_uuid.splice(job_index, 1)
+            this.loader.task.save(u, JSON.stringify(buffer, null, 4))
         }
     }
     /**

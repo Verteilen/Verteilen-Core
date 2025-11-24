@@ -290,6 +290,8 @@ const _CreateRecordMemoryLoader = (loader:MemoryData, type:RecordType):RecordIOL
                 }
 
                 if(exist == undefined){
+                    console.error(`Delete failed: ${type} ${uuid} Cannot found in memory`)
+                    console.error(`Memory state: ${arr.map(x => x.uuid)}`)
                     resolve(false)
                     return
                 }
@@ -396,7 +398,10 @@ const _CreateRecordIOLoader = (loader:RecordIOBase, memory:MemoryData, type:Reco
             if(!loader.exists(root)) await loader.mkdir(root)
 
             const r = await mem.delete(uuid, token)
-            if(!r) return false
+            if(!r) {
+                console.error(`Delete memory failed: ${type} ${uuid}`)
+                return false
+            }
 
             const file = loader.join(root, uuid + ext)
             if(loader.exists(file)){

@@ -278,6 +278,8 @@ const _CreateRecordMemoryLoader = (loader, type) => {
                     resolve(true);
                 };
                 if (exist == undefined) {
+                    console.error(`Delete failed: ${type} ${uuid} Cannot found in memory`);
+                    console.error(`Memory state: ${arr.map(x => x.uuid)}`);
                     resolve(false);
                     return;
                 }
@@ -372,8 +374,10 @@ const _CreateRecordIOLoader = (loader, memory, type, folder, ext = ".json") => {
             if (!loader.exists(root))
                 yield loader.mkdir(root);
             const r = yield mem.delete(uuid, token);
-            if (!r)
+            if (!r) {
+                console.error(`Delete memory failed: ${type} ${uuid}`);
                 return false;
+            }
             const file = loader.join(root, uuid + ext);
             if (loader.exists(file)) {
                 yield loader.rm(file);

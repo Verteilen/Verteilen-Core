@@ -16,7 +16,7 @@ export declare class Project_Module {
     CloneTasks(uuids: Array<string>): Promise<Array<string>>;
     CloneJobs(uuids: Array<string>): Promise<Array<string>>;
     CascadeDeleteProject(uuid: string, bind: boolean): Promise<void>;
-    CascadeDeleteTask(uuid: string): Promise<void>;
-    CascadeDeleteJob(uuid: string): Promise<void>;
+    CascadeDeleteTask(uuid: string, project_change?: boolean): Promise<void>;
+    CascadeDeleteJob(uuid: string, task_change?: boolean): Promise<void>;
     Delete_Database_Idle(uuid: string): Promise<void>;
 }

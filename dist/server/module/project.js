@@ -142,39 +142,52 @@ class Project_Module {
             const p = this.memory.projects.find(p => p.uuid == uuid);
             if (!p)
                 return;
-            const ps = p.tasks_uuid.map(t_uuid => this.CascadeDeleteTask(t_uuid));
+            const ps = p.tasks_uuid.map(t_uuid => this.CascadeDeleteTask(t_uuid, false));
             yield Promise.all(ps);
-            yield this.loader.project.delete(uuid);
+            const del = yield this.loader.project.delete(uuid);
+            console.log("Delete project: ", del);
             const db = p.database_uuid;
             if (bind)
                 yield this.Delete_Database_Idle(db);
         });
     }
-    CascadeDeleteTask(uuid) {
-        return __awaiter(this, void 0, void 0, function* () {
+    CascadeDeleteTask(uuid_2) {
+        return __awaiter(this, arguments, void 0, function* (uuid, project_change = true) {
             yield this.loader.task.load(uuid);
             const p = this.memory.tasks.find(p => p.uuid == uuid);
             if (!p)
                 return;
-            const ps = p.jobs_uuid.map(j_uuid => this.loader.job.delete(j_uuid));
+            const ps = p.jobs_uuid.map(j_uuid => this.CascadeDeleteJob(j_uuid, project_change));
             yield Promise.all(ps);
             yield this.loader.task.delete(uuid);
+            if (!project_change)
+                return;
             const ps2 = this.memory.projects.filter(x => x.tasks_uuid.includes(uuid)).map(x => x.uuid);
             for (let u of ps2) {
                 const index = this.memory.projects.findIndex(x => x.uuid == u);
-                if (index != -1)
-                    this.memory.projects.splice(index, 1);
+                if (index == -1)
+                    continue;
+                const buffer = this.memory.projects[index];
+                const task_index = buffer.tasks_uuid.findIndex(x => x == uuid);
+                buffer.tasks_uuid.splice(task_index, 1);
+                this.loader.project.save(u, JSON.stringify(buffer, null, 4));
             }
         });
     }
-    CascadeDeleteJob(uuid) {
-        return __awaiter(this, void 0, void 0, function* () {
+    CascadeDeleteJob(uuid_2) {
+        return __awaiter(this, arguments, void 0, function* (uuid, task_change = true) {
             yield this.loader.job.delete(uuid);
+            if (!task_change)
+                return;
             const ps2 = this.memory.tasks.filter(x => x.jobs_uuid.includes(uuid)).map(x => x.uuid);
             for (let u of ps2) {
                 const index = this.memory.tasks.findIndex(x => x.uuid == u);
-                if (index != -1)
-                    this.memory.tasks.splice(index, 1);
+                if (index == -1)
+                    continue;
+                const buffer = this.memory.tasks[index];
+                const job_index = buffer.jobs_uuid.findIndex(x => x == uuid);
+                buffer.jobs_uuid.splice(job_index, 1);
+                this.loader.task.save(u, JSON.stringify(buffer, null, 4));
             }
         });
     }
