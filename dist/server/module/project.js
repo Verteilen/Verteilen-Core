@@ -144,8 +144,8 @@ class Project_Module {
                 return;
             const ps = p.tasks_uuid.map(t_uuid => this.CascadeDeleteTask(t_uuid));
             yield Promise.all(ps);
-            const db = p.database_uuid;
             yield this.loader.project.delete(uuid);
+            const db = p.database_uuid;
             if (bind)
                 yield this.Delete_Database_Idle(db);
         });

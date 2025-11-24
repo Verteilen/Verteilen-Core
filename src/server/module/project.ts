@@ -157,8 +157,8 @@ export class Project_Module {
         if(!p) return
         const ps = p.tasks_uuid.map(t_uuid => this.CascadeDeleteTask(t_uuid))
         await Promise.all(ps)
-        const db = p.database_uuid
         await this.loader.project.delete(uuid)
+        const db = p.database_uuid
         if(bind) await this.Delete_Database_Idle(db)
     }
     /**
