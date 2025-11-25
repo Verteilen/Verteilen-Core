@@ -3,6 +3,12 @@
 //      Share Codebase     
 //                           
 // ========================
+//
+//  ? This script handle the project port of the server module
+//  ? Such as:
+//    * delete project trigger cascade chain reaction
+//    * Populate the project to a single JSON object
+//
 import { Job, Project, Task } from "../../interface"
 import { MemoryData, RecordLoader } from "../io"
 import { ServerBase } from "../server"

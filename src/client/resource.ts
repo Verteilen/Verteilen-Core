@@ -3,6 +3,10 @@
 //      Share Codebase     
 //                           
 // ========================
+//
+//  ? Resource module
+//  ? Get computed node current OS state from this worker
+//
 import si from "systeminformation"
 import { ResourceType } from "../interface"
 import { SystemLoad } from "../interface/struct"

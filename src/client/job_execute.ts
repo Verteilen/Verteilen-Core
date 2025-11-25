@@ -3,6 +3,9 @@
 //      Share Codebase     
 //                           
 // ========================
+//
+//  ? Job thread module for handle execution detail
+//
 import WebSocket from "ws";
 import { Job, JobCategory, JobType, JobType2, JobType2Text, JobTypeText, Libraries, Messager, Messager_log, OnePath, Database, PluginNode, TwoPath } from "../interface";
 import { i18n } from "../plugins/i18n";
@@ -23,11 +26,15 @@ export class ClientJobExecute {
      * User library for scripts
      */
     libraries:Libraries | undefined
+    plugin:PluginNode | undefined
     /**
      * The job uuid\
      * This will put in the prefix of message
      */
     tag: string
+    /**
+     * Runtime UUID
+     */
     runtime:string
 
     private messager:Messager
@@ -36,18 +43,17 @@ export class ClientJobExecute {
     private os:ClientOS
     private para:ClientJobDatabase
     private job:Job
-    private plugin:PluginNode
 
-    constructor(_messager:Messager, _messager_log:Messager_log, _job:Job, _source:WebSocket | undefined, _plugin:PluginNode){
+    constructor(_messager:Messager, _messager_log:Messager_log, _job:Job, _source:WebSocket | undefined){
         this.messager = _messager
         this.messager_log = _messager_log
         this.tag = _job.uuid
         this.runtime = _job.runtime_uuid || ''
         this.job = _job
-        this.plugin = _plugin
         this.para = new ClientJobDatabase()
         this.os = new ClientOS(() => this.tag, () => this.job.runtime_uuid || '', _messager, _messager_log)
         this.javascript = new ClientJavascript(_messager, _messager_log, () => this.job)
+        this.plugin = process.env.plugin != undefined ? JSON.parse(process.env.plugin) : undefined
         this.database = process.env.database != undefined ? JSON.parse(process.env.database) : undefined
         this.libraries = process.env.libraries != undefined ? JSON.parse(process.env.libraries) : undefined
 
@@ -150,7 +156,7 @@ export class ClientJobExecute {
                     }
                 case JobType.LIB_COMMAND:
                     {
-                        const target = this.plugin.plugins.find(x => x.name == this.job.string_args[0])
+                        const target = this.plugin?.plugins.find(x => x.name == this.job.string_args[0])
                         if(target == undefined){
                             reject("Cannot find plugin " + this.job.string_args[0])
                             return

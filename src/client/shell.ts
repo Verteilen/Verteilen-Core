@@ -3,6 +3,11 @@
 //      Share Codebase     
 //                           
 // ========================
+//
+//  ? Shell module
+//  ? Run raw command directly to computed node
+//  ! It's unrelated to the job execution
+//
 import { ChildProcess, spawn } from "child_process";
 import WebSocket from 'ws';
 import { Header, Messager, ShellFolder, Single } from "../interface";

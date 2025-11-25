@@ -3,6 +3,10 @@
 //      Share Codebase     
 //                           
 // ========================
+//
+//  ? The http module, For client execution worker to send http request
+//  ? In should also support in javascript engine as well
+//
 import { Header } from "../interface"
 
 export class ClientHTTP {

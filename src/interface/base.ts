@@ -3,9 +3,9 @@
 //      Share Codebase     
 //                           
 // ========================
-/**
- * Defined the basic compute use data structure
- */
+//
+//  ? Defined the basic compute use data structure
+//
 import { DataType, DataTypeBase, JobCategory, JobType, JobType2, ServiceMode } from "./enum"
 import { ACLType, LocalPermission as LocalPermission } from "./server"
 import { TaskLogic } from "./struct"

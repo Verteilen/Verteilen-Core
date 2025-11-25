@@ -3,6 +3,10 @@
 //      Share Codebase     
 //                           
 // ========================
+//
+//  ? Computed client object base
+//  ? Or you could just use it anyway, Everything is here
+//
 import * as path from 'path';
 import { check } from 'tcp-port-used';
 import { WebSocket } from 'ws';
@@ -19,6 +23,10 @@ import * as https from 'https'
  * The calculation node worker
  */
 export class Client {
+    /**
+     * **Plugin Record**\
+     * Use {@link loadPlugins} to load the plugin from disk
+     */
     plugins: PluginNode = { plugins: [] }
     
     private httpss:https.Server<any> | undefined = undefined
@@ -142,6 +150,9 @@ export class Client {
         this.analysis.forEach(x => x.update(this))
     }
 
+    /**
+     * Load plugin info from disk
+     */
     private loadPlugins = () => {
         const f = path.join(os.homedir(), DATA_FOLDER, "node_plugin")
         const pluginPath = path.join(f, 'plugin.json')
@@ -153,12 +164,16 @@ export class Client {
         }
     }
 
+    /**
+     * Get https key and cert from disk
+     * @returns [Key, Cert]
+     */
     private get_pem = ():Promise<[string, string]> => {
         return new Promise<[string, string]>((resolve) => {
             const pemFolder = path.join(os.homedir(), DATA_FOLDER, 'pem')
             if(!existsSync(pemFolder)) mkdirSync(pemFolder)
-            const clientKey = path.join(pemFolder, "client_clientkey.pem")
-            const certificate = path.join(pemFolder, "client_certificate.pem")
+            const clientKey = path.join(pemFolder, "client_clientkey.pem") // Key location
+            const certificate = path.join(pemFolder, "client_certificate.pem") // Cert location
             if(!existsSync(clientKey) || !existsSync(certificate)){
                 pem.createCertificate({selfSigned: true}, (err, keys) => {
                     writeFileSync(clientKey, keys.clientKey, { encoding: 'utf8' })
@@ -171,6 +186,12 @@ export class Client {
         })
     }
     
+    /**
+     * Get worker exe file path, but it could use in different file as well
+     * @param filename Worker file without extension
+     * @param extension file extension
+     * @returns The target file path
+     */
     public static workerPath = (filename:string = "worker", extension:string = ".exe") => {
         // @ts-ignore
         const isExe = process.pkg?.entrypoint != undefined
@@ -199,6 +220,9 @@ export class Client {
         return workerExe
     }    
 
+    /**
+     * Check If we're currently in the typescript environment
+     */
     static isTypescript = ():boolean => {
         // if this file is typescript, we are running typescript :D
         // this is the best check, but fails when actionhero is compiled to js though...

@@ -3,6 +3,10 @@
 //      Share Codebase     
 //                           
 // ========================
+//
+//  ? This script handle the account port of the server module
+//  ? Such as login process
+//
 import jwt from 'jsonwebtoken'
 import { MemoryData, RecordLoader } from '../io'
 import { JWT, SERECT, UserProfile } from '../../interface'

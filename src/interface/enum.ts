@@ -3,10 +3,9 @@
 //      Share Codebase     
 //                           
 // ========================
-/**
- * Enum library, including translation which will be use in Vue
- */
-
+//
+//  ? Enum library, including translation which will be use in Vue
+//
 /**
  * **SubTask Logic Type**\
  * Define the container logic type\

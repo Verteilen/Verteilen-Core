@@ -3,6 +3,11 @@
 //      Share Codebase     
 //                           
 // ========================
+//
+//  ? The language which application for server use
+//  ? You can check the files in:
+//  ! ../lan/*.json
+//
 import { createI18n } from 'vue-i18n'
 import { I18n } from "i18n-js"
 import en from './../lan/en.json'

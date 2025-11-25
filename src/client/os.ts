@@ -3,6 +3,10 @@
 //      Share Codebase     
 //                           
 // ========================
+//
+//  ? OS module
+//  ? Run command or Run plugin command and file check stuff
+//
 import { ChildProcess, exec, spawn } from 'child_process';
 import tkill from 'tree-kill'
 import * as fs from "fs";

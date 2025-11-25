@@ -3,6 +3,10 @@
 //      Share Codebase     
 //                           
 // ========================
+//
+//  ? Execute Job, or task sender
+//  ? Send job to a different thread by using worker executable file
+//
 import { ChildProcess, spawn } from 'child_process';
 import { WebSocket } from 'ws';
 import { DataType, FeedBack, Header, Job, JobCategory, JobType2Text, JobTypeText, Libraries, Messager, Messager_log, Database, Setter } from "../interface";
@@ -14,6 +18,9 @@ import { ClientDatabase } from './database';
  * Execute worker, Execute the job container
  */
 export class ClientExecute {
+    /**
+     * Execution UUID, Will affect the feedback log output
+     */
     uuid:string
     private database:Database | undefined = undefined
     private libraries:Libraries | undefined = undefined
@@ -53,11 +60,18 @@ export class ClientExecute {
      * @param job Target job
      */
     execute_job = (job:Job, source:WebSocket) => {
-        this.messager_log(`[Execute] ${job.uuid}  ${job.category == JobCategory.Execution ? i18n.global.t(JobTypeText[job.type]) : i18n.global.t(JobType2Text[job.type])}`, job.uuid, job.runtime_uuid)
+        this.messager_log(`[Execute] ${job.uuid}  ${job.category == JobCategory.Execution ? 
+            i18n.global.t(JobTypeText[job.type]) : 
+            i18n.global.t(JobType2Text[job.type])}`, job.uuid, job.runtime_uuid)
         this.tag = job.uuid
         this.execute_job_worker(job, source)
     }
 
+    /**
+     * Execute job, send it to different thread
+     * @param job Job instance
+     * @param source Command sender
+     */
     private execute_job_worker(job:Job, source:WebSocket){
         const child = spawn(Client.workerPath(), [], 
             { 
@@ -146,6 +160,13 @@ export class ClientExecute {
         })
     }
 
+    /**
+     * Job finish feedback from other thread
+     * @param code Thread code feedback
+     * @param signal Signal string
+     * @param job Target job instance
+     * @param source Command sender
+     */
     private job_finish(code:number, signal:string, job:Job, source:WebSocket){
         this.messager_log( code == 0 ?
             `[Execute] Successfully: ${code} ${signal}` : 

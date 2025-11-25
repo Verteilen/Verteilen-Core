@@ -3,6 +3,10 @@
 //      Share Codebase     
 //                           
 // ========================
+//
+//  ? Job thread module for handle database event
+//  ? For feedback the variable change
+//
 import { Header, Setter } from "../interface"
 
 export class ClientJobDatabase {

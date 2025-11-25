@@ -3,6 +3,9 @@
 //      Share Codebase     
 //                           
 // ========================
+//
+//  ? Analysis the packets send from the computed server
+//
 import { ChildProcess, exec, spawn } from 'child_process';
 import { WebSocket } from 'ws';
 import { DATA_FOLDER, Header, Job, Libraries, Messager, Messager_log, Database, Plugin, PluginWithToken, PluginNode } from "../interface";
@@ -27,6 +30,12 @@ export class ClientAnalysis {
 
     private resource_cache:Header | undefined = undefined
 
+    /**
+     * Create the worker
+     * @param _messager The log function at the lower level, Which does not send back to server
+     * @param _messager_log The log function at the higher level, Which does send back to server
+     * @param _client Client instance
+     */
     constructor(_messager:Messager, _messager_log:Messager_log, _client:Client){
         this.client = _client
         this.messager = _messager
@@ -84,12 +93,24 @@ export class ClientAnalysis {
         }
     }
 
+    /**
+     * Job execution, Pipe down to execution worker to execute the input job object
+     * @param job Job Object
+     * @param source Command source
+     * @param channel Job thread UUID channel
+     */
     private execute_job = (job: Job, source: WebSocket, channel:string | undefined) => {
         if(channel == undefined) return
         const target = this.exec_checker(channel)
         target.execute_job(job, source)
     }
 
+    /**
+     * Release the job execution thread
+     * @param dummy Not important
+     * @param source Command source
+     * @param channel Job thread UUID channel
+     */
     private release = (dummy:number, source: WebSocket, channel:string | undefined) => {
         if(channel == undefined) return
         const index = this.exec.findIndex(x => x.uuid == channel)
@@ -97,18 +118,35 @@ export class ClientAnalysis {
         this.exec.splice(index, 1)
     }
 
+    /**
+     * Set buffer database
+     * @param data Database Object
+     * @param source Command source
+     * @param channel Job thread UUID channel
+     */
     private set_database = (data:Database, source: WebSocket, channel:string | undefined) => {
         if(channel == undefined) return
         const target = this.exec_checker(channel)
         target.set_database(data)
     }
 
+    /**
+     * Set buffer libraries
+     * @param data Libraries Object
+     * @param source Command source
+     * @param channel Job thread UUID channel
+     */
     private set_libs = (data:Libraries, source: WebSocket, channel:string | undefined) => {
         if(channel == undefined) return
         const target = this.exec_checker(channel)
         target.set_libs(data)
     }
 
+    /**
+     * Get the execution channel by UUID
+     * @param uuid UUID
+     * @returns Execution worker instance
+     */
     private exec_checker = (uuid:string): ClientExecute => {
         let r:ClientExecute | undefined = undefined
         const index = this.exec.findIndex(x => x.uuid == uuid)
@@ -131,7 +169,12 @@ export class ClientAnalysis {
         source.send(JSON.stringify(h))
     }
 
-    private plugin_info = (data:number, source: WebSocket) => {
+    /**
+     * Feedback current plugin state to computed server
+     * @param dummy Not important 
+     * @param source The cluster server websocket instance
+     */
+    private plugin_info = (dummy:number, source: WebSocket) => {
         const pat = path.join(os.homedir(), DATA_FOLDER, "node_plugin", "plugin.json")
         if(existsSync(pat)){
             const p:PluginNode = JSON.parse(readFileSync(pat).toString())
@@ -145,7 +188,14 @@ export class ClientAnalysis {
         }
     }
 
-    private get_releases = async (repo:string, token:string | undefined) => {
+    /**
+     * ? utility for plugin download\
+     * Get release info
+     * @param repo Repository name
+     * @param token If it's for private repo, You will need token here
+     * @returns The Json string info
+     */
+    private get_releases = async (repo:string, token:string | undefined): Promise<string> => {
         const qu = await fetch(`https://api.github.com/repos/${repo}/releases`, {
             headers: {
                 Authorization: token ? `token ${token}`: '',
@@ -155,7 +205,17 @@ export class ClientAnalysis {
         return qu.text()
     }
 
-    private filterout = async (repo:string, token:string | undefined, version:string, filename:string) => {
+    /**
+     * ? utility for plugin download\
+     * Get the asset id from repo release info and filename, version\
+     * It's useful for getting a download link
+     * @param repo Repository
+     * @param token If it's for private repo, You will need token here
+     * @param version Target version
+     * @param filename Target filename
+     * @returns 
+     */
+    private filterout = async (repo:string, token:string | undefined, version:string, filename:string):Promise<string | undefined> => {
         const text = await this.get_releases(repo, token)
         const json:Array<any> = JSON.parse(text)
         const v = json.find(x => x.tag_name == version)
@@ -192,6 +252,12 @@ export class ClientAnalysis {
         this.plugin_info(0, source)
     }
 
+    /**
+     * Download the exe file from target plugin\
+     * And overwrite the plugin record
+     * @param plugin Target plugin
+     * @param source Command source
+     */
     private plugin_download = async (plugin:PluginWithToken, source: WebSocket) => {
         const target = plugin.contents.find(x => x.arch == process.arch && x.platform == process.platform)
         if(target == undefined){

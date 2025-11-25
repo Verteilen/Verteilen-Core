@@ -3,9 +3,9 @@
 //      Share Codebase     
 //                           
 // ========================
-/**
- * Event bus related type and interface
- */
+//
+// ? Event bus related type and interface
+//
 import { Job, Database, Project, Task } from "./base"
 import { ExecuteState } from "./enum"
 import { ExecutionLog, Log } from "./log"

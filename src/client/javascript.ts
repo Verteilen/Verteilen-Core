@@ -3,6 +3,10 @@
 //      Share Codebase     
 //                           
 // ========================
+//
+//  ? javascript engine
+//  ? A script worker run the script which store in the job structure instance
+//
 import * as vm from 'vm';
 import { DATA_FOLDER, DataType, JavascriptLib, Job, Libraries, Messager, Messager_log, Database, DatabaseContainer } from '../interface';
 import { ClientJobDatabase } from './job_database';
