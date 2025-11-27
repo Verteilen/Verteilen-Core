@@ -95,6 +95,9 @@ export interface PluginNode {
  * To save time for next query
  */
 export interface PluginWithToken extends Plugin {
+    /**
+     * **Available token list**
+     */
     token: Array<string>
 }
 

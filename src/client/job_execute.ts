@@ -51,7 +51,7 @@ export class ClientJobExecute {
         this.runtime = _job.runtime_uuid || ''
         this.job = _job
         this.para = new ClientJobDatabase()
-        this.os = new ClientOS(() => this.tag, () => this.job.runtime_uuid || '', _messager, _messager_log)
+        this.os = new ClientOS(() => this.tag, () => this.job.runtime_uuid || '', () => this.plugin, _messager, _messager_log)
         this.javascript = new ClientJavascript(_messager, _messager_log, () => this.job)
         this.plugin = process.env.plugin != undefined ? JSON.parse(process.env.plugin) : undefined
         this.database = process.env.database != undefined ? JSON.parse(process.env.database) : undefined

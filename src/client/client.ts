@@ -13,7 +13,7 @@ import { WebSocket } from 'ws';
 import * as ws from 'ws';
 import { CLIENT_UPDATETICK, DATA_FOLDER, Header, Messager, Messager_log, PluginNode, PORT } from '../interface';
 import { ClientAnalysis } from './analysis';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'fs';
 import * as os from 'os'
 import * as pem from 'pem'
 import * as https from 'https'
@@ -163,6 +163,15 @@ export class Client {
         }else{
             this.plugins = JSON.parse(readFileSync(pluginPath).toString())
         }
+
+        if(!init) return
+        const downloading = this.plugins.plugins.filter(x => x.progress == 0)
+        for(let x of downloading){
+            const p = path.join(DATA_FOLDER, 'node_plugin', x.name)
+            rmSync(p, {recursive: true})
+        }
+        this.plugins.plugins = this.plugins.plugins.filter(x => x.progress != 0)
+        this.savePlugin()
     }
 
     /**

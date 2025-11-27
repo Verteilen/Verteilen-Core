@@ -12,9 +12,10 @@ import tkill from 'tree-kill'
 import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
-import { DATA_FOLDER, Messager, Messager_log, OnePath, TwoPath } from "../interface";
+import { DATA_FOLDER, Messager, Messager_log, OnePath, PluginNode, TwoPath } from "../interface";
 
-type getstring = ()=>string
+type getstring = () => string
+type getplugin = () => PluginNode | undefined
 
 /**
  * The operation system related actions utility\
@@ -32,6 +33,7 @@ export class ClientOS {
     private tag:getstring
     private runtime:getstring
     private children:Array<ChildProcess> = []
+    private plugins:getplugin
 
     /**
      * 
@@ -39,9 +41,10 @@ export class ClientOS {
      * @param _messager Message method
      * @param _messager_log Message method with output on the screen feature
      */
-    constructor(_tag:getstring, _runtime:getstring, _messager:Messager, _messager_log:Messager_log){
+    constructor(_tag:getstring, _runtime:getstring, plugins:getplugin, _messager:Messager, _messager_log:Messager_log){
         this.tag = _tag
         this.runtime = _runtime
+        this.plugins = plugins
         this.messager = _messager
         this.messager_log = _messager_log
     }
@@ -147,6 +150,7 @@ export class ClientOS {
             const child = spawn(command,  args.split(' '), 
             { 
                 cwd: cwd, 
+                env: this.get_env(),
                 shell: true, 
                 stdio: ['pipe', 'pipe', 'pipe']
             })
@@ -192,7 +196,8 @@ export class ClientOS {
         this.messager_log(`[OS Action] Command command: ${command}`, this.tag())
         this.messager_log(`[OS Action] Command args: ${args}`, this.tag())
         const child = exec(`${command} ${args}`, { 
-                cwd: cwd
+            cwd: cwd,
+            env: this.get_env(),
         })
 
         child.on('spawn', () => {
@@ -210,5 +215,30 @@ export class ClientOS {
         child.on('close', (code, signal) => {
             this.messager_log(`[Command] Process Close: ${code}`, this.tag())
         })
+    }
+
+    /**
+     * Append the plugin folder into
+     * @returns 
+     */
+    get_env = ():NodeJS.ProcessEnv => {
+        let epath = process.env.path!
+        let syn = ' '
+        if (os.platform() == 'win32'){
+            syn = ';'
+        }
+        const paths = epath.split(syn)
+        const plugin = this.plugins()
+        if(plugin != undefined){
+            for(let x of plugin.plugins){
+                const dir = path.join(os.homedir(), DATA_FOLDER, 'node_plugin', x.name)
+                paths.push(dir)
+            }
+        }
+        epath = paths.join(syn)
+        return {
+            ...process.env,
+            path: epath
+        }
     }
 }
