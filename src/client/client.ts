@@ -55,7 +55,7 @@ export class Client {
         this.messager_log = _messager_log
         this.analysis = []
         this.updatehandle = setInterval(this.update, CLIENT_UPDATETICK);
-        this.loadPlugins()
+        this.loadPlugins(true)
     }
 
     Dispose (){
@@ -152,8 +152,9 @@ export class Client {
 
     /**
      * Load plugin info from disk
+     * @param init Whether or not delete the downloading one
      */
-    private loadPlugins = () => {
+    private loadPlugins = (init:boolean = false) => {
         const f = path.join(os.homedir(), DATA_FOLDER, "node_plugin")
         const pluginPath = path.join(f, 'plugin.json')
         if(!existsSync(f)) mkdirSync(f, { recursive: true })
