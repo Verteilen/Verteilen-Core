@@ -60,7 +60,7 @@ export interface PluginLoader {
      * Delete plugin by name
      * @param name Plugin name
      */
-    delete_plugin: (name:string) => Promise<void>
+    delete_plugin: (name:string) => Promise<PluginPageData>
     /**
      * Telling node Download plugin
      * @param uuid Node ID
@@ -240,12 +240,13 @@ export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, s
             memory.plugins = cp.plugins
             return cp
         },
-        delete_plugin: async (name:string):Promise<void> => {
+        delete_plugin: async (name:string):Promise<PluginPageData> => {
             const index = memory.plugins.findIndex(x => x.title == name)
             if(index != -1) memory.plugins.splice(index, 1)
             const root = loader.join(loader.root, 'plugin', name)
             if(loader.exists(root)) 
                 await loader.rm(root);
+            return memory
         },
         plugin_download: async (uuid:string, plugin:string, tokens:string):Promise<void> => {
             const p:Plugin = JSON.parse(plugin)

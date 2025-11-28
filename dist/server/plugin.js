@@ -188,6 +188,7 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
             const root = loader.join(loader.root, 'plugin', name);
             if (loader.exists(root))
                 yield loader.rm(root);
+            return memory;
         }),
         plugin_download: (uuid, plugin, tokens) => __awaiter(void 0, void 0, void 0, function* () {
             const p = JSON.parse(plugin);

@@ -43,7 +43,7 @@ export interface PluginLoader {
      * Delete plugin by name
      * @param name Plugin name
      */
-    delete_plugin: (name: string) => Promise<void>;
+    delete_plugin: (name: string) => Promise<PluginPageData>;
     /**
      * Telling node Download plugin
      * @param uuid Node ID
