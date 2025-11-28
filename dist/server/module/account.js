@@ -13,10 +13,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Account_Module = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
+//
+//  ? This script handle the account port of the server module
+//  ? Such as login process
+//
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const interface_1 = require("../../interface");
 class Account_Module {
     constructor(loader, memory) {
+        /**
+         * If login failed, it will throw error
+         * @param username Login Username Field
+         * @param password Login Password Field
+         * @returns Token string
+         */
         this.login = (username, password) => __awaiter(this, void 0, void 0, function* () {
             const data = yield this.loader.user.load_all();
             const users = data.map(x => JSON.parse(x));

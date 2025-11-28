@@ -10,6 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreatePluginLoader = exports.GetCurrentPlugin = void 0;
+/**
+ * **Get Current Plugin List**
+ * @param loader The file io loader
+ * @returns Current list in disk storage
+ */
 const GetCurrentPlugin = (loader) => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve) => __awaiter(void 0, void 0, void 0, function* () {
         const b = {
@@ -86,10 +91,14 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
                 yield loader.mkdir(project_folder);
             if (!loader.exists(database_folder))
                 yield loader.mkdir(database_folder);
+            // Trying no token first
             const tokens = [undefined, ...token.split(' ')];
             let req = {};
             let ob = undefined;
             for (let t of tokens) {
+                // Do not store cache
+                // Even tho, some website have it's own CDN policy, You might still get old data
+                // But most of them only sustained couple minutes
                 req = t == undefined ? { method: 'GET', cache: "no-store" } : {
                     method: 'GET',
                     cache: "no-store",
@@ -97,6 +106,7 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
                         "Authorization": t ? `Bearer ${t}` : ''
                     }
                 };
+                // Get data
                 let tex = "";
                 try {
                     const res = yield fetch(url, req);
@@ -110,6 +120,7 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
                 }
             }
             if (ob == undefined) {
+                // Query data failed
                 const p = { title: "Import Failed", type: "error", message: `Cannot find the json from url ${url}, or maybe just the wrong token` };
                 const h = { name: "makeToast", data: JSON.stringify(p) };
                 if (feedback.electron) {
@@ -125,6 +136,7 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
             const folder = url.substring(0, url.lastIndexOf('/'));
             const project_calls = ob.projects.map(p => fetch(folder + "/project/" + p.filename + '.json', req));
             const database_calls = ob.databases.map(p => fetch(folder + "/database/" + p.filename + '.json', req));
+            // * Project template query
             const pss = yield Promise.all(project_calls);
             const project_calls2 = pss.map(x => x.text());
             const pss_result = yield Promise.all(project_calls2);
@@ -139,6 +151,7 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
                     error_children.push([`Import Project ${n} Error`, error.message]);
                 }
             });
+            // * Database template query
             const pss2 = yield Promise.all(database_calls);
             const database_calls2 = pss2.map(x => x.text());
             const pss_result2 = yield Promise.all(database_calls2);

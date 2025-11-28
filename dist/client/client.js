@@ -43,6 +43,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Client = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
+//
+//  ? Computed client object base
+//  ? Or you could just use it anyway, Everything is here
+//
 const path = __importStar(require("path"));
 const tcp_port_used_1 = require("tcp-port-used");
 const ws = __importStar(require("ws"));
@@ -52,18 +61,35 @@ const fs_1 = require("fs");
 const os = __importStar(require("os"));
 const pem = __importStar(require("pem"));
 const https = __importStar(require("https"));
+/**
+ * **Compute Client**\
+ * The calculation node worker
+ */
 class Client {
+    /**
+     * Get connected client count
+     */
     get count() {
         return this.sources.length;
     }
+    /**
+     * Get connected client list instance
+     */
     get clients() {
         return this.sources;
     }
     constructor(_messager, _messager_log) {
+        /**
+         * **Plugin Record**\
+         * Use {@link loadPlugins} to load the plugin from disk
+         */
         this.plugins = { plugins: [] };
         this.httpss = undefined;
         this.client = undefined;
         this.sources = [];
+        /**
+         * Start a websocket server, and waiting for cluster server to connect
+         */
         this.Init = () => __awaiter(this, void 0, void 0, function* () {
             let port_result = interface_1.PORT;
             let canbeuse = false;
@@ -140,9 +166,17 @@ class Client {
                 (0, fs_1.mkdirSync)(f, { recursive: true });
             (0, fs_1.writeFileSync)(pluginPath, JSON.stringify(this.plugins, null, 4));
         };
+        /**
+         * The node update function, It will do things below
+         * * Send system info to cluster server
+         */
         this.update = () => {
             this.analysis.forEach(x => x.update(this));
         };
+        /**
+         * Load plugin info from disk
+         * @param init Whether or not delete the downloading one
+         */
         this.loadPlugins = (init = false) => {
             const f = path.join(os.homedir(), interface_1.DATA_FOLDER, "node_plugin");
             const pluginPath = path.join(f, 'plugin.json');
@@ -164,13 +198,17 @@ class Client {
             this.plugins.plugins = this.plugins.plugins.filter(x => x.progress != 0);
             this.savePlugin();
         };
+        /**
+         * Get https key and cert from disk
+         * @returns [Key, Cert]
+         */
         this.get_pem = () => {
             return new Promise((resolve) => {
                 const pemFolder = path.join(os.homedir(), interface_1.DATA_FOLDER, 'pem');
                 if (!(0, fs_1.existsSync)(pemFolder))
                     (0, fs_1.mkdirSync)(pemFolder);
-                const clientKey = path.join(pemFolder, "client_clientkey.pem");
-                const certificate = path.join(pemFolder, "client_certificate.pem");
+                const clientKey = path.join(pemFolder, "client_clientkey.pem"); // Key location
+                const certificate = path.join(pemFolder, "client_certificate.pem"); // Cert location
                 if (!(0, fs_1.existsSync)(clientKey) || !(0, fs_1.existsSync)(certificate)) {
                     pem.createCertificate({ selfSigned: true }, (err, keys) => {
                         (0, fs_1.writeFileSync)(clientKey, keys.clientKey, { encoding: 'utf8' });
@@ -194,18 +232,25 @@ class Client {
     }
 }
 exports.Client = Client;
+/**
+ * Get worker exe file path, but it could use in different file as well
+ * @param filename Worker file without extension
+ * @param extension file extension
+ * @returns The target file path
+ */
 Client.workerPath = (filename = "worker", extension = ".exe") => {
     var _a;
+    // @ts-ignore
     const isExe = ((_a = process.pkg) === null || _a === void 0 ? void 0 : _a.entrypoint) != undefined;
     const exe = process.platform == 'win32' ? filename + extension : filename;
     let workerExe = "";
     let p = 0;
-    if (isExe && path.basename(process.execPath) == (process.platform ? "app.exe" : 'app')) {
+    if (isExe && path.basename(process.execPath) == (process.platform ? "app.exe" : 'app')) { // Node build
         workerExe = path.join(process.execPath, "..", "bin", exe);
         p = 1;
     }
     else if ((process.mainModule && process.mainModule.filename.indexOf('app.asar') !== -1) ||
-        process.argv.filter(a => a.indexOf('app.asar') !== -1).length > 0) {
+        process.argv.filter(a => a.indexOf('app.asar') !== -1).length > 0) { // Electron package
         workerExe = path.join("bin", exe);
         p = 2;
     }
@@ -213,22 +258,32 @@ Client.workerPath = (filename = "worker", extension = ".exe") => {
         workerExe = path.join(process.cwd(), "bin", exe);
         p = 3;
     }
-    else {
+    else { // Node un-build
         workerExe = Client.isTypescript() ? path.join(__dirname, "bin", exe) : path.join(__dirname, "..", "bin", exe);
         p = 4;
     }
     return workerExe;
 };
+/**
+ * Check If we're currently in the typescript environment
+ */
 Client.isTypescript = () => {
+    // if this file is typescript, we are running typescript :D
+    // this is the best check, but fails when actionhero is compiled to js though...
     const extension = path.extname(__filename);
     if (extension === ".ts") {
         return true;
     }
+    // are we running via a ts-node/ts-node-dev shim?
     const lastArg = process.execArgv[process.execArgv.length - 1];
     if (lastArg && path.parse(lastArg).name.indexOf("ts-node") > 0) {
         return true;
     }
     try {
+        /**
+         * Are we running in typescript at the moment?
+         * see https://github.com/TypeStrong/ts-node/pull/858 for more details
+         */
         return process[Symbol.for("ts-node.register.instance")] ||
             (process.env.NODE_ENV === "test" &&
                 process.env.ACTIONHERO_TEST_FILE_EXTENSION !== "js")

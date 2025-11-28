@@ -1,15 +1,32 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExecuteManager = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
+//
+//  ? Task scheduler worker
+//  ? Most important part of the game
+//
 const interface_1 = require("../interface");
 const region_project_1 = require("./execute/region_project");
 const region_task_1 = require("./execute/region_task");
 const runner_1 = require("./execute/runner");
+/**
+ * Cluster server calculation worker\
+ * The most important worker in the entire application
+ */
 class ExecuteManager extends runner_1.ExecuteManager_Runner {
     constructor() {
         super(...arguments);
+        /**
+         * The update function for let this worker start each iteration
+         */
         this.Update = () => {
             var _a;
+            // Only works when state is set to running
             if (this.state != interface_1.ExecuteState.RUNNING)
                 return;
             else if (this.runner == undefined && this.current_projects.length > 0) {
@@ -24,6 +41,9 @@ class ExecuteManager extends runner_1.ExecuteManager_Runner {
                 this.runner.RUN();
             }
         };
+        /**
+         * Pause has been called
+         */
         this.Stop = () => {
             this.current_nodes.forEach(x => {
                 const h = {
@@ -36,6 +56,12 @@ class ExecuteManager extends runner_1.ExecuteManager_Runner {
             this.jobstack = 0;
             this.current_nodes.forEach(x => x.current_job = []);
         };
+        /**
+         * Register projects to worker\
+         * If failed register, the buffer will remind empty
+         * @param projects Target
+         * @returns -1: register failed, 0: successfully
+         */
         this.Register = (lib) => {
             this.current_projects = this.record.projects;
             this.current_nodes = [];
@@ -78,15 +104,25 @@ class ExecuteManager extends runner_1.ExecuteManager_Runner {
             }
             return i;
         };
+        /**
+         * This will reset the state, and emppty all the buffer
+         */
         this.Clean = () => {
             this.current_projects = [];
             this.runner = undefined;
             this.current_nodes = [];
             this.state = interface_1.ExecuteState.NONE;
         };
+        /**
+         * Tell clients release lib and database data
+         */
         this.Release = () => {
             this.current_nodes.forEach(x => this.release(x));
         };
+        /**
+         * When new connection (Node) has benn connected
+         * @param source Target
+         */
         this.NewConnection = (source) => {
             if (this.state == interface_1.ExecuteState.RUNNING && this.localPara != undefined) {
                 this.sync_para(this.localPara, source);
@@ -139,12 +175,24 @@ class ExecuteManager extends runner_1.ExecuteManager_Runner {
                 (_c = this.proxy) === null || _c === void 0 ? void 0 : _c.executeSubtaskUpdate([this.current_t, target.id - 1, '', interface_1.ExecuteState.NONE]);
             }
         };
+        /**
+         * When user trying to skip project
+         * @returns The index of the project
+         * -1: Skip to finish
+         * -2: Skip failed
+         */
         this.SkipProject = () => {
             return this.jumpProject(true);
         };
         this.PreviousProject = () => {
             return this.jumpProject(false);
         };
+        /**
+         * When user trying to skip task
+         * @returns The index of the task
+         * -1: Skip to finish
+         * -2: Skip failed
+         */
         this.SkipTask = () => {
             return this.jumpTask(true);
         };
@@ -178,19 +226,26 @@ class ExecuteManager extends runner_1.ExecuteManager_Runner {
                 return -2;
             }
             if (this.current_p == undefined) {
+                // Not yet start
                 return forward ? this.skipProjectFirst() : -2;
             }
             else {
+                // When it's in the processing stage
+                // Let's find the current processing project, and increments it's index for it
                 return this._jumpProject(forward);
             }
         };
         this.jumpTask = (forward) => {
+            // There is no project exists
             if (this.current_p == undefined)
                 return -2;
             if (this.current_t == undefined) {
+                // If we are in the start
                 return forward ? this.skipTaskFirst() : this.previousTaskFirst();
             }
             else {
+                // When it's in the processing stage
+                // Let's find the current processing task, and increments it's index for it
                 return forward ? this.skipTask() : this.previousTask();
             }
         };
@@ -209,6 +264,7 @@ class ExecuteManager extends runner_1.ExecuteManager_Runner {
                 (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.executeProjectFinish([this.current_p, index]);
             const atend = forward ? index == this.current_projects.length - 1 : index == 0;
             if (atend) {
+                // If it's last project
                 if (forward) {
                     this.runner = undefined;
                     this.state = interface_1.ExecuteState.FINISH;
@@ -257,6 +313,7 @@ class ExecuteManager extends runner_1.ExecuteManager_Runner {
             var _a, _b;
             const index = this.current_projects.findIndex(x => x.uuid == this.current_p.uuid);
             if (index == 0 && this.runner != undefined) {
+                // If it's first task and first project
                 this.runner.runner = undefined;
             }
             else {
@@ -273,6 +330,7 @@ class ExecuteManager extends runner_1.ExecuteManager_Runner {
             const index = this.current_p.tasks.findIndex(x => x.uuid == this.current_t.uuid);
             if (this.runner) {
                 if (index == this.current_p.tasks.length - 1) {
+                    // If it's last task
                     (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.executeTaskFinish(this.current_t);
                     this.runner.runner = undefined;
                     this.messager_log(`[Execute] Skip task to Finish !`);

@@ -1,11 +1,24 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExecuteManager_Feedback = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
 const interface_1 = require("../../interface");
 const base_1 = require("./base");
+/**
+ * Recevied the information from the nodes\
+ * This include job feedback and error feedback and pong and other stuff
+ */
 class ExecuteManager_Feedback extends base_1.ExecuteManager_Base {
     constructor() {
         super(...arguments);
+        /**
+         * The analysis method for decoding the information where the nodes is sending
+         * @param d Package info
+         */
         this.Analysis = (d) => {
             const targetn = this.current_nodes.find(x => { var _a; return x.uuid == ((_a = d.c) === null || _a === void 0 ? void 0 : _a.uuid); });
             if (targetn == undefined) {
@@ -28,6 +41,11 @@ class ExecuteManager_Feedback extends base_1.ExecuteManager_Base {
                 this.messager_log(`[Source Data Analysis] Decode failed, Unknowed header, name: ${d.name}, meta: ${d.h.meta}`);
             }
         };
+        /**
+         * Print information, sended by the node worker
+         * @param data feedback data, any type
+         * @param source The node target
+         */
         this.feedback_message = (data, source, meta) => {
             var _a;
             if (source == undefined) {
@@ -58,6 +76,11 @@ class ExecuteManager_Feedback extends base_1.ExecuteManager_Base {
             };
             (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.feedbackMessage(d);
         };
+        /**
+         * The job has been finish executing, sended by the node worker
+         * @param data feedback data
+         * @param source The node target
+         */
         this.feedback_job = (data, source) => {
             var _a, _b, _c, _d, _e;
             if (source == undefined)
@@ -70,6 +93,7 @@ class ExecuteManager_Feedback extends base_1.ExecuteManager_Base {
                 return;
             }
             this.messager_log(`[Execute] Job Feedback: ${data.job_uuid} ${data.runtime_uuid} ${data.message} ${data.meta}`);
+            // If it's a single type work
             if (this.current_job.length > 0) {
                 const work = this.current_job.find(x => x.uuid == source.uuid && x.state == interface_1.ExecuteState.RUNNING);
                 if (work == undefined) {
@@ -84,6 +108,7 @@ class ExecuteManager_Feedback extends base_1.ExecuteManager_Base {
                     this.messager_log(`[Execute] Subtask finish: ${this.current_t.uuid}`);
                 }
             }
+            // If it's a cronjob type work
             else if (this.current_cron.length > 0) {
                 const r = this.GetCronAndWork(data.runtime_uuid, source);
                 const cron = r[0];
@@ -102,6 +127,7 @@ class ExecuteManager_Feedback extends base_1.ExecuteManager_Base {
                     cron.uuid = '';
                 }
             }
+            // Reset the state of the node
             const index = source.current_job.findIndex(x => x == data.runtime_uuid);
             if (index == -1) {
                 this.messager_log(`[Execute] Cannot find runtime uuid: ${data.runtime_uuid} in websocket pack source: ${source.uuid}`);
@@ -112,6 +138,10 @@ class ExecuteManager_Feedback extends base_1.ExecuteManager_Base {
             data.node_uuid = source.uuid;
             (_e = this.proxy) === null || _e === void 0 ? void 0 : _e.feedbackMessage(data);
         };
+        /**
+         * When one of the node decide to change the database of string value
+         * @param data The assigner
+         */
         this.feedback_string = (data) => {
             var _a;
             if (this.current_p == undefined)
@@ -122,10 +152,15 @@ class ExecuteManager_Feedback extends base_1.ExecuteManager_Base {
             else
                 this.localPara.containers.push({ name: data.key, value: data.value, type: interface_1.DataType.String, hidden: true, runtimeOnly: true });
             this.messager_log(`[String Feedback] ${data.key} = ${data.value}`);
+            // Sync to other
             const d = { name: 'set_database', data: this.localPara };
             this.current_nodes.forEach(x => x.websocket.send(JSON.stringify(d)));
             (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.updateDatabase(this.localPara);
         };
+        /**
+         * When one of the node decide to change the database of number value
+         * @param data The assigner
+         */
         this.feedback_number = (data) => {
             var _a;
             if (this.current_p == undefined)
@@ -136,10 +171,15 @@ class ExecuteManager_Feedback extends base_1.ExecuteManager_Base {
             else
                 this.localPara.containers.push({ name: data.key, value: data.value, type: interface_1.DataType.Number, hidden: true, runtimeOnly: true });
             this.messager_log(`[Number Feedback] ${data.key} = ${data.value}`);
+            // Sync to other
             const d = { name: 'set_database', data: this.localPara };
             this.current_nodes.forEach(x => x.websocket.send(JSON.stringify(d)));
             (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.updateDatabase(this.localPara);
         };
+        /**
+         * When one of the node decide to change the database of object value
+         * @param data The assigner
+         */
         this.feedback_object = (data) => {
             var _a;
             if (this.current_p == undefined)
@@ -150,10 +190,15 @@ class ExecuteManager_Feedback extends base_1.ExecuteManager_Base {
             else
                 this.localPara.containers.push({ name: data.key, value: data.value, type: interface_1.DataType.Object, hidden: true, runtimeOnly: true });
             this.messager_log(`[Object Feedback] ${data.key}`);
+            // Sync to other
             const d = { name: 'set_database', data: this.localPara };
             this.current_nodes.forEach(x => x.websocket.send(JSON.stringify(d)));
             (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.updateDatabase(this.localPara);
         };
+        /**
+         * When one of the node decide to change the database of boolean value
+         * @param data The assigner
+         */
         this.feedback_boolean = (data) => {
             var _a;
             if (this.current_p == undefined)
@@ -164,6 +209,7 @@ class ExecuteManager_Feedback extends base_1.ExecuteManager_Base {
             else
                 this.localPara.containers.push({ name: data.key, value: data.value, type: interface_1.DataType.Boolean, hidden: true, runtimeOnly: true });
             this.messager_log(`[Boolean Feedback] ${data.key} = ${data.value}`);
+            // Sync to other
             const d = { name: 'set_database', data: this.localPara };
             this.current_nodes.forEach(x => x.websocket.send(JSON.stringify(d)));
             (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.updateDatabase(this.localPara);

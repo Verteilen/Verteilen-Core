@@ -1,12 +1,24 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ClientExecute = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
+//
+//  ? Execute Job, or task sender
+//  ? Send job to a different thread by using worker executable file
+//
 const child_process_1 = require("child_process");
 const ws_1 = require("ws");
 const interface_1 = require("../interface");
 const i18n_1 = require("../plugins/i18n");
 const client_1 = require("./client");
 const database_1 = require("./database");
+/**
+ * Execute worker, Execute the job container
+ */
 class ClientExecute {
     get count() {
         return this.workers.length;
@@ -16,6 +28,9 @@ class ClientExecute {
         this.libraries = undefined;
         this.tag = '';
         this.workers = [];
+        /**
+         * The stop signal, It will trying to kill the process if currently running
+         */
         this.stop_job = () => {
             this.messager_log(`[Execute] Stop All: ${this.workers.length}`);
             this.workers.forEach(x => {
@@ -25,6 +40,10 @@ class ClientExecute {
                 x.stdin.end();
             });
         };
+        /**
+         * The entry function to execute the job container
+         * @param job Target job
+         */
         this.execute_job = (job, source) => {
             this.messager_log(`[Execute] ${job.uuid}  ${job.category == interface_1.JobCategory.Execution ?
                 i18n_1.i18n.global.t(interface_1.JobTypeText[job.type]) :
@@ -32,12 +51,25 @@ class ClientExecute {
             this.tag = job.uuid;
             this.execute_job_worker(job, source);
         };
+        /**
+         * Update database, Called by cluster server
+         * @param data Target container
+         */
         this.set_database = (data) => {
             this.database = data;
         };
+        /**
+         * Update libraries, Called by cluster server
+         * @param data Target container
+         */
         this.set_libs = (data) => {
             this.libraries = data;
         };
+        /**
+         * Update database string, Called by cluster server
+         * @deprecated The method should not be used
+         * @param data Target keyvalue
+         */
         this.set_string = (data) => {
             if (this.database == undefined)
                 return;
@@ -46,6 +78,11 @@ class ClientExecute {
                 this.database.containers[index].value = data.value;
             this.messager_log(`[Database string sync] ${data.key} = ${data.value}`);
         };
+        /**
+         * Update database number, Called by cluster server
+         * @deprecated The method should not be used
+         * @param data Target keyvalue
+         */
         this.set_number = (data) => {
             if (this.database == undefined)
                 return;
@@ -54,6 +91,11 @@ class ClientExecute {
                 this.database.containers[index].value = data.value;
             this.messager_log(`[Database number sync] ${data.key} = ${data.value}`);
         };
+        /**
+         * Update database boolean, Called by cluster server
+         * @deprecated The method should not be used
+         * @param data Target keyvalue
+         */
         this.set_boolean = (data) => {
             if (this.database == undefined)
                 return;
@@ -67,6 +109,11 @@ class ClientExecute {
         this.messager = _messager;
         this.messager_log = _messager_log;
     }
+    /**
+     * Execute job, send it to different thread
+     * @param job Job instance
+     * @param source Command sender
+     */
     execute_job_worker(job, source) {
         const child = (0, child_process_1.spawn)(client_1.Client.workerPath(), [], {
             stdio: ['pipe', 'pipe', 'pipe'],
@@ -149,6 +196,13 @@ class ClientExecute {
             workerFeedback(chunk.toString());
         });
     }
+    /**
+     * Job finish feedback from other thread
+     * @param code Thread code feedback
+     * @param signal Signal string
+     * @param job Target job instance
+     * @param source Command sender
+     */
     job_finish(code, signal, job, source) {
         this.messager_log(code == 0 ?
             `[Execute] Successfully: ${code} ${signal}` :

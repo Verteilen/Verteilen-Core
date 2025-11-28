@@ -1,25 +1,56 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExecuteManager_Base = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
 const uuid_1 = require("uuid");
 const interface_1 = require("../../interface");
 const util_parser_1 = require("./util_parser");
+/**
+ * The base class of task scheduler, contain some basic funcationality
+ */
 class ExecuteManager_Base {
     constructor(_name, _websocket_manager, _messager_log, _record) {
+        /**
+         * The list of projects you want to process\
+         * Each project UUID should be unique by now\
+         * Prevent findIndex error, When there is repeat project source
+         */
         this.current_projects = [];
+        /**
+         * The connection nodes list
+         */
         this.current_nodes = [];
+        /**
+         * * NONE: Not yet start
+         * * RUNNING: In the processing stage
+         * * FINISH: Everything is finish processing
+         */
         this.state = interface_1.ExecuteState.NONE;
+        /**
+         * * NONE: Not yet start
+         * * RUNNING: In the processing stage
+         * * FINISH: Everything is finish processing
+         */
         this.t_state = interface_1.ExecuteState.NONE;
         this.jobstack = 0;
         this.first = false;
         this.libs = undefined;
         this.proxy = undefined;
         this.localPara = undefined;
+        /**
+         * This will let nodes update the database and lib
+         * @param target
+         */
         this.sync_local_para = (target) => {
             var _a;
             this.current_nodes.forEach(x => this.sync_para(target, x));
             (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.updateDatabase(target);
         };
+        //#region Helper
         this.sync_para = (target, source) => {
             const h = {
                 name: 'set_database',
@@ -42,18 +73,35 @@ class ExecuteManager_Base {
             };
             source.websocket.send(JSON.stringify(h));
         };
+        /**
+         * Check all the cronjob is finish or not
+         */
         this.check_all_cron_end = () => {
             return this.current_cron.filter(x => !this.check_cron_end(x)).length == 0;
         };
+        /**
+         * Check input cronjob is finish or not
+         * @param cron target cronjob instance
+         */
         this.check_cron_end = (cron) => {
             return cron.work.filter(x => x.state == interface_1.ExecuteState.RUNNING || x.state == interface_1.ExecuteState.NONE).length == 0;
         };
+        /**
+         * Check current single is finish or not
+         */
         this.check_single_end = () => {
             if (this.current_t == undefined)
                 return false;
             return this.current_job.length == this.current_t.jobs.length &&
                 this.current_job.filter(y => y.state == interface_1.ExecuteState.RUNNING || y.state == interface_1.ExecuteState.NONE).length == 0;
         };
+        //#endregion
+        //#region Utility
+        /**
+         * Project format checking
+         * @param projects
+         * @returns
+         */
         this.validation = (projects) => {
             if (this.websocket_manager.targets.length == 0) {
                 this.messager_log(`[Execute State] The execute node does not exists`);
@@ -112,16 +160,35 @@ class ExecuteManager_Base {
             });
             return JSON.parse(JSON.stringify(r));
         };
+        /**
+         * Get the multi-core setting\
+         * Find in the database setting
+         * @param key The multi-core-key
+         * @returns
+         */
         this.get_task_multi_count = (t) => {
             const r = this.get_number(t.multiKey);
             return r == -1 ? 1 : r;
         };
+        /**
+         * Remove dups item in the list
+         * @param arr
+         * @returns
+         */
         this.removeDups = (arr) => {
             return [...new Set(arr)];
         };
+        /**
+         * Filter out the idle and connection open nodes
+         * @returns All idle and open connection nodes
+         */
         this.get_idle = () => {
             return this.current_nodes.filter(x => this.check_socket_state(x) != interface_1.ExecuteState.RUNNING && x.websocket.readyState == 1);
         };
+        /**
+         * Filter out the connection open nodes
+         * @returns All open connection nodes
+         */
         this.get_idle_open = () => {
             return this.current_nodes.filter(x => x.websocket.readyState == 1);
         };
@@ -134,14 +201,29 @@ class ExecuteManager_Base {
         this.websocket_manager = _websocket_manager;
         this.messager_log = _messager_log;
     }
+    /**
+     * Current select project\
+     * If it's undefined, it means:
+     * * It's finish the current project
+     * * It has not start processing yet
+     */
     get current_p() {
         var _a;
         return (_a = this.runner) === null || _a === void 0 ? void 0 : _a.project;
     }
+    /**
+     * Current select task\
+     * If it's undefined, it means:
+     * * It's finish the current task
+     * * It has not start processing yet
+     */
     get current_t() {
         var _a, _b;
         return (_b = (_a = this.runner) === null || _a === void 0 ? void 0 : _a.runner) === null || _b === void 0 ? void 0 : _b.task;
     }
+    /**
+     * Current execute task use multithread setting
+     */
     get current_multithread() {
         var _a, _b, _c;
         return (_c = (_b = (_a = this.runner) === null || _a === void 0 ? void 0 : _a.runner) === null || _b === void 0 ? void 0 : _b.multithread) !== null && _c !== void 0 ? _c : 1;
@@ -150,14 +232,23 @@ class ExecuteManager_Base {
         var _a, _b, _c;
         return (_c = (_b = (_a = this.runner) === null || _a === void 0 ? void 0 : _a.runner) === null || _b === void 0 ? void 0 : _b.task_count) !== null && _c !== void 0 ? _c : 0;
     }
+    /**
+     * Cron job type execute record
+     */
     get current_cron() {
         var _a, _b, _c;
         return (_c = (_b = (_a = this.runner) === null || _a === void 0 ? void 0 : _a.runner) === null || _b === void 0 ? void 0 : _b.cron) !== null && _c !== void 0 ? _c : [];
     }
+    /**
+     * Single job type execute record
+     */
     get current_job() {
         var _a, _b, _c;
         return (_c = (_b = (_a = this.runner) === null || _a === void 0 ? void 0 : _a.runner) === null || _b === void 0 ? void 0 : _b.job) !== null && _c !== void 0 ? _c : [];
     }
+    /**
+     * Get the task's cronjob count
+     */
     get_task_state_count(t) {
         if (t.setupjob)
             return this.current_nodes.length;
@@ -166,6 +257,12 @@ class ExecuteManager_Base {
         else
             return 1;
     }
+    /**
+     * Find the number in the database, this include the expression phrasing
+     * @param key The name key
+     * @param p Project instance
+     * @returns The value, if key cannot be found, it will return -1
+     */
     get_number(key) {
         return ExecuteManager_Base.get_number_global(key, this.localPara);
     }
@@ -186,6 +283,7 @@ ExecuteManager_Base.string_args_transform = (task, job, messager_log, localPara,
         if (job.category == interface_1.JobCategory.Execution && job.type == interface_1.JobType.CREATE_FILE && i == 1)
             continue;
         job.string_args[i] = e.replacePara(job.string_args[i]);
+        //messager_log(`String replace: "${b}" -> "${job.string_args[i]}"`)
     }
 };
 ExecuteManager_Base.property_update = (task, e) => {

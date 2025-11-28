@@ -34,16 +34,39 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WebsocketManager = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
 const uuid_1 = require("uuid");
 const interface_1 = require("../interface");
 const jsEnv = __importStar(require("browser-or-node"));
 const ws = __importStar(require("ws"));
 const https = __importStar(require("https"));
+/**
+ * The node connection instance manager, Use by the cluster server
+ */
 class WebsocketManager {
     constructor(_newConnect, _disconnect, _onAnalysis, _messager_log, _proxy) {
         this.targets = [];
+        /**
+         * Trying to connect a node by target URL
+         * @param url target url
+         * @returns The connection package
+         */
         this.server_start = (url, id) => this.serverconnect(url, id);
+        /**
+         * Remove the package by UUID
+         * @param uuid Key
+         * @param reason Reason for disconnect
+         */
         this.server_stop = (uuid, reason) => this.removeByUUID(uuid, reason);
+        /**
+         * Manager update, it will does things below
+         * * Retry connection
+         * @returns Node table for display
+         */
         this.server_update = () => this.sendUpdate();
         this.server_record = (ns) => {
             ns.forEach(x => {
@@ -62,6 +85,11 @@ class WebsocketManager {
             };
             p.websocket.send(JSON.stringify(d));
         };
+        /**
+         * Open shell connection with target node
+         * @param uuid node UUID
+         * @param text input data
+         */
         this.shell_enter = (uuid, text) => {
             const p = this.targets.find(x => x.uuid == uuid && x.websocket.readyState == interface_1.SocketState.OPEN);
             if (p == undefined) {
@@ -74,6 +102,11 @@ class WebsocketManager {
             };
             p.websocket.send(JSON.stringify(d));
         };
+        /**
+         * Close shell connection with target node
+         * @param uuid Node UUID
+         * @returns
+         */
         this.shell_close = (uuid) => {
             const p = this.targets.find(x => x.uuid == uuid && x.websocket.readyState == interface_1.SocketState.OPEN);
             if (p == undefined) {
@@ -86,6 +119,11 @@ class WebsocketManager {
             };
             p.websocket.send(JSON.stringify(d));
         };
+        /**
+         * Check folder structure with target node
+         * @param uuid Node UUID
+         * @param path the folder path to check
+         */
         this.shell_folder = (uuid, path) => {
             const p = this.targets.find(x => x.uuid == uuid && x.websocket.readyState == interface_1.SocketState.OPEN);
             if (p == undefined) {
@@ -98,6 +136,12 @@ class WebsocketManager {
             };
             p.websocket.send(JSON.stringify(d));
         };
+        /**
+         * Trying to connect a node by target URL
+         * @param Node target url
+         * @param uuid generate UUID, New or retry connect base on value is defined or not
+         * @returns The connection package
+         */
         this.serverconnect = (url, uuid) => {
             if (this.targets.findIndex(x => x.websocket.url.slice(0, -1) == url) != -1)
                 return;
@@ -136,6 +180,11 @@ class WebsocketManager {
             };
             return client;
         };
+        /**
+         * The analysis method for the node connection instance
+         * @param h Package
+         * @param c Connection instance
+         */
         this.analysis = (h, c) => {
             if (h == undefined) {
                 this.messager_log('[Source Analysis] Decode failed, Get value undefined');
@@ -169,6 +218,11 @@ class WebsocketManager {
                 return false;
             }
         };
+        /**
+         * Manager update, it will does things below
+         * * Retry connection
+         * @returns Node table for display
+         */
         this.sendUpdate = () => {
             let result = [];
             const data = [];
@@ -195,6 +249,11 @@ class WebsocketManager {
             });
             return result;
         };
+        /**
+         * Remove the package by UUID
+         * @param uuid Key
+         * @param reason Reason for disconnect
+         */
         this.removeByUUID = (uuid, reason) => {
             let index = this.targets.findIndex(x => x.uuid == uuid);
             if (index != -1) {
@@ -203,6 +262,9 @@ class WebsocketManager {
                 this.targets.splice(index, 1);
             }
         };
+        /**
+         * Internal update, for checking the ping of every nodes
+         */
         this.update = () => {
             const h = { name: 'ping', data: 0 };
             this.targets.forEach(x => {
@@ -212,24 +274,46 @@ class WebsocketManager {
                 x.websocket.send(JSON.stringify(h));
             });
         };
+        /**
+         * Recevied the shell text from client node
+         */
         this.shell_reply = (data, w) => {
             var _a;
             (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.shellReply(data, w);
         };
+        /**
+         * Recevied the folders from client node
+         */
         this.shell_folder_reply = (data, w) => {
             var _a;
             (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.folderReply(data, w);
         };
+        /**
+         * Get the system information and assign to the node object
+         * @param info Data
+         * @param source The node target
+         */
         this.system_info = (info, source) => {
             if (source == undefined)
                 return;
             source.information = info;
         };
+        /**
+         * Get the node information and assign to the node object
+         * @param info Data
+         * @param source The node target
+         */
         this.node_info = (info, source) => {
             if (source == undefined)
                 return;
             source.load = info;
         };
+        /**
+         * Get the bouncing back function call\
+         * THis method will calculate the time different and assign the node object
+         * @param info Dummy number, nothing important, can be ignore
+         * @param source The node target
+         */
         this.pong = (info, source) => {
             if (source == undefined || source.last == undefined)
                 return;

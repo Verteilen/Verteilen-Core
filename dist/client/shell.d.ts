@@ -7,9 +7,25 @@ export declare class ClientShell {
     private os;
     private shell_workers;
     constructor(_messager: Messager, _messager_log: Messager, _client: Client);
+    /**
+     * Open shell console
+     * @param input
+     */
     open_shell: (data: number, source: WebSocket) => void;
+    /**
+     * Open shell console
+     * @param input
+     */
     enter_shell: (input: string, source: WebSocket) => void;
+    /**
+     * Open shell console
+     * @param input
+     */
     close_shell: (data: number, source: WebSocket) => void;
+    /**
+     * Open shell console
+     * @param input
+     */
     close_shell_all: (data: number) => void;
     shell_folder: (data: string, source: WebSocket) => void;
     disconnect: (source: WebSocket) => void;

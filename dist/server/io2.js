@@ -13,6 +13,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateRecordMongoLoader = exports.CreateRecordIOLoader = exports.CreateRecordMemoryLoader = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
 const mongodb_1 = require("mongodb");
 const interface_1 = require("../interface");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -92,6 +97,13 @@ const obsoleteSupport = (loader, type, folder) => __awaiter(void 0, void 0, void
         loader.rm(path);
     }
 });
+/**
+ * **Create the interface for record memory storage**\
+ * Generate a loader interface for register to server event
+ * @param loader Memory loader interface
+ * @param type Type of storage
+ * @returns Interface for calling
+ */
 const _CreateRecordMemoryLoader = (loader, type) => {
     const get_array = (type) => {
         switch (type) {
@@ -313,6 +325,16 @@ const _CreateRecordMemoryLoader = (loader, type) => {
         })
     };
 };
+/**
+ * **Create the interface for record files storage**\
+ * Generate a loader interface for register to server event
+ * @param loader File loader interface
+ * @param memory Memory loader interface
+ * @param type Type of storage
+ * @param folder Folder name
+ * @param ext Store file extension
+ * @returns Interface for calling
+ */
 const _CreateRecordIOLoader = (loader, memory, type, folder, ext = ".json") => {
     const mem = _CreateRecordMemoryLoader(memory, type);
     return {
@@ -339,7 +361,9 @@ const _CreateRecordIOLoader = (loader, memory, type, folder, ext = ".json") => {
         }),
         delete_all: (token) => __awaiter(void 0, void 0, void 0, function* () {
             const root = loader.join(loader.root, folder);
+            // Memory action
             const c = yield mem.delete_all(token);
+            // Get the removed uuids and delete from disk
             const kill_all = c.map(x => {
                 return loader.rm(loader.join(root, x + ext));
             });
@@ -386,6 +410,15 @@ const _CreateRecordIOLoader = (loader, memory, type, folder, ext = ".json") => {
         })
     };
 };
+/**
+ * **Create the interface for record mongoDB storage**\
+ * @param loader MongoDB loader client
+ * @param memory Memory loader interface
+ * @param type Type of storage
+ * @param db Database name
+ * @param collection Collection from database
+ * @returns Interface for calling
+ */
 const _CreateRecordMongoLoader = (loader, memory, type, db, collection) => {
     const mem = _CreateRecordMemoryLoader(memory, type);
     return {
@@ -403,9 +436,11 @@ const _CreateRecordMongoLoader = (loader, memory, type, db, collection) => {
             return mem.load_all(token);
         }),
         delete_all: (token) => __awaiter(void 0, void 0, void 0, function* () {
+            // Memory action
             const c = yield mem.delete_all(token);
             const database = loader.db(db);
             const col = database.collection(collection);
+            // Get the removed uuids and delete from disk
             const exec = c.map(x => {
                 return col.deleteOne({ uuid: x });
             });
@@ -438,6 +473,12 @@ const _CreateRecordMongoLoader = (loader, memory, type, db, collection) => {
         })
     };
 };
+/**
+ * **Create the interface for record memory storage**\
+ * Generate a loader interface for register to server event
+ * @param loader loader memory loader interface
+ * @returns Interface for server calling
+ */
 const CreateRecordMemoryLoader = (loader) => {
     return {
         project: _CreateRecordMemoryLoader(loader, interface_1.RecordType.PROJECT),
@@ -451,6 +492,13 @@ const CreateRecordMemoryLoader = (loader) => {
     };
 };
 exports.CreateRecordMemoryLoader = CreateRecordMemoryLoader;
+/**
+ * **Create the interface for record files storage**\
+ * Generate a loader interface for register to server event
+ * @param loader loader IO loader interface
+ * @param user should include user
+ * @returns Interface for server calling
+ */
 const CreateRecordIOLoader = (loader, memory) => {
     return {
         project: _CreateRecordIOLoader(loader, memory, interface_1.RecordType.PROJECT, "project"),
@@ -464,6 +512,12 @@ const CreateRecordIOLoader = (loader, memory) => {
     };
 };
 exports.CreateRecordIOLoader = CreateRecordIOLoader;
+/**
+ * **Create the interface for record mongoDB storage**\
+ * @param url MongoDB URL
+ * @param memory loader memory loader interface
+ * @returns
+ */
 const CreateRecordMongoLoader = (url, memory) => {
     const loader = new mongodb_1.MongoClient(url);
     return {

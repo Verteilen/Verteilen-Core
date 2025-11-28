@@ -46,6 +46,11 @@ exports.Log_Proxy = void 0;
 const uuid_1 = require("uuid");
 const interface_1 = require("../../interface");
 const fs = __importStar(require("fs"));
+/**
+ * **Log Proxy Worker**\
+ * Process thread call proxy and throght {@link Log_Proxy.execute_proxy}\
+ * To communicate with outside record data
+ */
 class Log_Proxy {
     get target_log() {
         return this.logs.logs.find(x => x.uuid == this.uuid);

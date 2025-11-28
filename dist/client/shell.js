@@ -1,11 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ClientShell = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
+//
+//  ? Shell module
+//  ? Run raw command directly to computed node
+//  ! It's unrelated to the job execution
+//
 const child_process_1 = require("child_process");
 const os_1 = require("./os");
 class ClientShell {
     constructor(_messager, _messager_log, _client) {
         this.shell_workers = [];
+        /**
+         * Open shell console
+         * @param input
+         */
         this.open_shell = (data, source) => {
             if (this.shell_workers.find(x => x[0] == source)) {
                 this.messager_log(`[Shell] Error the source already open the shell`);
@@ -55,6 +69,10 @@ class ClientShell {
                 workerFeedback(chunk.toString());
             });
         };
+        /**
+         * Open shell console
+         * @param input
+         */
         this.enter_shell = (input, source) => {
             var _a, _b, _c;
             const p = this.shell_workers.find(x => x[0] == source);
@@ -68,6 +86,10 @@ class ClientShell {
             else
                 (_c = p[1].stdin) === null || _c === void 0 ? void 0 : _c.write("pwd" + '\n');
         };
+        /**
+         * Open shell console
+         * @param input
+         */
         this.close_shell = (data, source) => {
             const p = this.shell_workers.find(x => x[0] == source);
             if (p == undefined) {
@@ -76,6 +98,10 @@ class ClientShell {
             }
             p[1].kill();
         };
+        /**
+         * Open shell console
+         * @param input
+         */
         this.close_shell_all = (data) => {
             this.shell_workers.forEach(p => {
                 if (p == undefined) {

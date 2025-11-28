@@ -1,17 +1,34 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ServerDetail = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
+//
+//  ? Detail server implementation
+//
 const uuid_1 = require("uuid");
 const interface_1 = require("../interface");
 const console_handle_1 = require("./detail/console_handle");
 const log_handle_1 = require("./detail/log_handle");
 const execute_manager_1 = require("../script/execute_manager");
 const socket_manager_1 = require("../script/socket_manager");
+/**
+ * **Server Inner-Work Handler**\
+ * Include the core cluster logic here
+ */
 class ServerDetail {
     constructor(loader, backend, feedback, message, messager_log) {
         this.execute_manager = [];
         this.shellBind = new Map();
+        /**
+         * **A simple message queue**\
+         * message, trace message, error message return data, for update
+         */
         this.re = [];
+        //#region Socket Events
         this.NewConnection = (x) => {
             var _a;
             const p = {
@@ -49,6 +66,14 @@ class ServerDetail {
         this.Analysis = (d) => {
             this.execute_manager.forEach(x => x.manager.Analysis(JSON.parse(JSON.stringify(d))));
         };
+        //#endregion
+        //#region Node Reply
+        /**
+         * **Shell Reply Message Event**\
+         * Called by the client node
+         * @param data Content
+         * @param p Client node source
+         */
         this.shellReply = (data, p) => {
             var _a;
             if (this.feedback.electron) {
@@ -66,6 +91,12 @@ class ServerDetail {
                 }
             }
         };
+        /**
+         * **Shell Folder Location Event**\
+         * Called by the client node
+         * @param data Content
+         * @param p Client node source
+         */
         this.folderReply = (data, p) => {
             var _a;
             if (this.feedback.electron) {
@@ -85,6 +116,8 @@ class ServerDetail {
                 }
             }
         };
+        //#endregion
+        //#region For Backend
         this.resource_start = (socket, uuid) => {
             const p = this.websocket_manager.targets.find(x => x.uuid == uuid);
             const d = { name: 'resource_start', data: 0 };
@@ -100,6 +133,7 @@ class ServerDetail {
             const d = { name: 'plugin_info', data: 0 };
             p === null || p === void 0 ? void 0 : p.websocket.send(JSON.stringify(d));
         };
+        //#region Shell
         this.shell_enter = (socket, uuid, value) => {
             this.websocket_manager.shell_enter(uuid, value);
         };
@@ -129,6 +163,8 @@ class ServerDetail {
         this.shell_folder = (socket, uuid, path) => {
             this.websocket_manager.shell_folder(uuid, path);
         };
+        //#endregion
+        //#region Node
         this.node_list = (socket) => {
             var _a, _b;
             const p = (_a = this.websocket_manager) === null || _a === void 0 ? void 0 : _a.targets;
@@ -166,6 +202,8 @@ class ServerDetail {
         this.node_delete = (socket, uuid, reason) => {
             this.websocket_manager.server_stop(uuid, reason);
         };
+        //#endregion
+        //#region Console
         this.console_list = (socket) => {
             if (this.feedback.electron) {
                 return this.execute_manager.map(x => x.record).filter(x => x != undefined);
@@ -261,6 +299,7 @@ class ServerDetail {
             if (target == undefined)
                 return;
             if (type == 0) {
+                // Project
                 target.record.project_state[target.record.project_index].state = forward ? (state != undefined ? state : interface_1.ExecuteState.FINISH) : interface_1.ExecuteState.NONE;
                 target.record.project_index += forward ? 1 : -1;
                 if (target.record.project_index == target.record.projects.length) {
@@ -295,6 +334,7 @@ class ServerDetail {
             }
             else if (type == 1) {
                 const begining = target.record.task_state[0].state == interface_1.ExecuteState.NONE;
+                // Task
                 if (!begining && forward)
                     target.record.task_state[target.record.task_index].state = state != undefined ? state : interface_1.ExecuteState.FINISH;
                 if (!forward)
@@ -384,6 +424,8 @@ class ServerDetail {
             }
             return re;
         };
+        //#endregion
+        //#endregion
         this.CombineProxy = (eps) => {
             const p = {
                 executeProjectStart: (data) => { eps.forEach(x => x.executeProjectStart(JSON.parse(JSON.stringify(data)))); },
@@ -406,11 +448,18 @@ class ServerDetail {
         this.message = message;
         this.messager_log = messager_log;
         this.websocket_manager = new socket_manager_1.WebsocketManager(this.NewConnection, this.DisConnection, this.Analysis, messager_log, this.nodeEvents);
+        // Internal update clock
         this.updatehandle = setInterval(() => {
             this.re.push(...this.console_update());
         }, interface_1.RENDER_UPDATETICK);
     }
+    /**
+     * **Caller Reference**
+     */
     get events() { return this; }
+    /**
+     * **Caller Reference**
+     */
     get nodeEvents() { return this; }
 }
 exports.ServerDetail = ServerDetail;

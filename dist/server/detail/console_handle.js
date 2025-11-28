@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Console_Proxy = exports.receivedPack = void 0;
 const interface_1 = require("../../interface");
+/**
+ * The method to handle the init package {@link ExecutePair} process
+ */
 const receivedPack = (model, record) => {
     var _a, _b;
     const pass = model.manager.Register();
@@ -43,6 +46,11 @@ const receivedPack = (model, record) => {
     return true;
 };
 exports.receivedPack = receivedPack;
+/**
+ * **Console Proxy Worker**\
+ * Process thread call proxy and throght {@link Console_Proxy.execute_proxy}\
+ * To communicate with outside record data
+ */
 class Console_Proxy {
     constructor(_model) {
         this.execute_project_start = (d) => {
@@ -207,6 +215,7 @@ class Console_Proxy {
                     }, 1000);
                 }
             }
+            //model.value![1].task_detail[index].node = ""
         };
         this.feedback_message = (d) => {
             if (d.index == undefined || d.index == -1)
@@ -219,6 +228,11 @@ class Console_Proxy {
                 }
             }
         };
+        /**
+         * When database getting change by the process steps\
+         * This get called
+         * @param d The whole container for the databases
+         */
         this.update_runtime_database = (d) => {
             this.model.record.para = d;
         };

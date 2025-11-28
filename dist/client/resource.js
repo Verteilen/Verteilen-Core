@@ -13,8 +13,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ClientResource = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
+//
+//  ? Resource module
+//  ? Get computed node current OS state from this worker
+//
 const systeminformation_1 = __importDefault(require("systeminformation"));
 const interface_1 = require("../interface");
+/**
+ * The resource query helper
+ */
 class ClientResource {
     constructor() {
         this.is_query = false;

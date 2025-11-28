@@ -37,16 +37,42 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.I18N = exports.MONGODB_NAME = exports.DATA_FOLDER = exports.IGNORE_CHARACTER = exports.ENV_CHARACTER = exports.SCROLL_LIMIT = exports.RENDER_FILE_UPDATETICK = exports.RENDER_UPDATETICK = exports.CLIENT_UPDATETICK = exports.MESSAGE_LIMIT = exports.WebHookPORT = exports.WebPORT = exports.PORT = exports.SERECT = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
 const DefaultSerect = "aVdWN1gWTTUsAQ06aZHyyLMXo0kEJYhU";
 exports.SERECT = typeof process !== 'undefined' ? (process.env.SERECT || DefaultSerect) : DefaultSerect;
+/**
+ * Default client node port
+ */
 exports.PORT = 12080;
+/**
+ * Default website port
+ */
 exports.WebPORT = 11080;
+/**
+ * Default webhook port
+ */
 exports.WebHookPORT = 15080;
+/**
+ * The upper limit for each message box can hold
+ */
 exports.MESSAGE_LIMIT = 500;
+/**
+ * The client node update tick, this will have effect on resource query.
+ */
 exports.CLIENT_UPDATETICK = 3000;
+/**
+ * The server side update tick, this will have effect on the time gap between task sending
+ */
 exports.RENDER_UPDATETICK = 30;
 exports.RENDER_FILE_UPDATETICK = 5000;
 exports.SCROLL_LIMIT = 100;
+/**
+ * The environment character for replacing text
+ */
 exports.ENV_CHARACTER = '%';
 exports.IGNORE_CHARACTER = '^';
 exports.DATA_FOLDER = '.verteilen';
@@ -62,13 +88,22 @@ __exportStar(require("./interface/table"), exports);
 __exportStar(require("./interface/ui"), exports);
 __exportStar(require("./interface/plugin"), exports);
 __exportStar(require("./interface/log"), exports);
+/**
+ * Plugin
+ */
 exports.I18N = __importStar(require("./plugins/i18n"));
+/**
+ * Scripts
+ */
 __exportStar(require("./script/execute"), exports);
 __exportStar(require("./script/console_manager"), exports);
 __exportStar(require("./script/console_server_manager"), exports);
 __exportStar(require("./script/execute_manager"), exports);
 __exportStar(require("./script/socket_manager"), exports);
 __exportStar(require("./script/webhook_manager"), exports);
+/**
+ * Util
+ */
 __exportStar(require("./server/detail/console_handle"), exports);
 __exportStar(require("./server/detail/log_handle"), exports);
 //# sourceMappingURL=interface.js.map

@@ -22,6 +22,10 @@ class ServerBase {
         this.io = undefined;
         this.loader = undefined;
         this.plugin_loader = undefined;
+        /**
+         * **Data: Memory**\
+         * Load every type of data from disk, store them into memory
+         */
         this.LoadFromDisk = () => {
             const ts = [
                 this.current_loader.project.fetch_all(),
@@ -35,6 +39,12 @@ class ServerBase {
             ];
             return Promise.all(ts);
         };
+        /**
+         * **Broadcast To Console**\
+         * Send messages to all console server
+         * @param name channel
+         * @param data raw data
+         */
         this.Boradcasting = (name, data) => {
             const d = {
                 name: name,

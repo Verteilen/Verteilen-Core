@@ -10,7 +10,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateRecordMemoryLoader_Browser = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
 const interface_1 = require("../interface");
+/**
+ * **Create the interface for record memory storage**\
+ * Generate a loader interface for register to server event
+ * @param loader Memory loader interface
+ * @param type Type of storage
+ * @returns Interface for calling
+ */
 const _CreateRecordMemoryLoader = (loader, type) => {
     const get_array = (type) => {
         switch (type) {
@@ -68,6 +80,12 @@ const _CreateRecordMemoryLoader = (loader, type) => {
         })
     };
 };
+/**
+ * **Create the interface for record memory storage**\
+ * Generate a loader interface for register to server event
+ * @param loader loader memory loader interface
+ * @returns Interface for server calling
+ */
 const CreateRecordMemoryLoader_Browser = (loader) => {
     return {
         project: _CreateRecordMemoryLoader(loader, interface_1.RecordType.PROJECT),

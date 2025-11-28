@@ -1,5 +1,13 @@
 import { ExecutePair, ExecuteProxy, ExecuteState, FeedBack, Job, Database, Project, Record, Task } from "../../interface";
+/**
+ * The method to handle the init package {@link ExecutePair} process
+ */
 export declare const receivedPack: (model: ExecutePair, record: Record) => boolean;
+/**
+ * **Console Proxy Worker**\
+ * Process thread call proxy and throght {@link Console_Proxy.execute_proxy}\
+ * To communicate with outside record data
+ */
 export declare class Console_Proxy {
     model: ExecutePair;
     constructor(_model: ExecutePair);
@@ -14,5 +22,10 @@ export declare class Console_Proxy {
     execute_job_start: (d: [Job, number, string]) => void;
     execute_job_finish: (d: [Job, number, string, number]) => void;
     feedback_message: (d: FeedBack) => void;
+    /**
+     * When database getting change by the process steps\
+     * This get called
+     * @param d The whole container for the databases
+     */
     update_runtime_database: (d: Database) => void;
 }

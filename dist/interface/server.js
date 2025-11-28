@@ -2,12 +2,20 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateRootUser = exports.CreateRootPermission = exports.CreateRootLocalPermission = exports.PermissionType = exports.UserType = exports.ACLType = void 0;
 const uuid_1 = require("uuid");
+/**
+ * **Access Control Type**\
+ * Ot will have effect on permission value
+ */
 var ACLType;
 (function (ACLType) {
     ACLType[ACLType["PUBLIC"] = 0] = "PUBLIC";
     ACLType[ACLType["PROTECTED"] = 1] = "PROTECTED";
     ACLType[ACLType["PRIVATE"] = 2] = "PRIVATE";
 })(ACLType || (exports.ACLType = ACLType = {}));
+/**
+ * **User Type**\
+ * It will have effect on permission value
+ */
 var UserType;
 (function (UserType) {
     UserType[UserType["ROOT"] = 0] = "ROOT";

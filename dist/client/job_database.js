@@ -3,6 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ClientJobDatabase = void 0;
 class ClientJobDatabase {
     constructor() {
+        /**
+         * Update database number on the cluster server
+         * @param data Target KeyValue
+         */
         this.feedbacknumber = (data) => {
             this.feedback("feedbacknumber", data);
         };

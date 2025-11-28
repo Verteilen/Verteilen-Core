@@ -1,6 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RUN = RUN;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
+//
+//  ? For worker to run
+//
 const interface_1 = require("../interface");
 const http_1 = require("./http");
 const job_execute_1 = require("./job_execute");
@@ -16,6 +24,11 @@ process.stdin.on('data', (chunk) => {
         setTimeout(process.exit(1), 1000);
     }
 });
+/**
+ * The message handle for reply
+ * @param msg Message
+ * @param tag Message prefix
+ */
 const messager = (msg, tag) => {
     const d = {
         name: 'messager',
@@ -24,6 +37,11 @@ const messager = (msg, tag) => {
     };
     console.log(JSON.stringify(d));
 };
+/**
+ * The message handle for reply with print on screen ffeature
+ * @param msg Message
+ * @param tag Message prefix
+ */
 const messager_log = (msg, tag, meta) => {
     const d = {
         name: 'messager_log',
@@ -32,6 +50,10 @@ const messager_log = (msg, tag, meta) => {
     };
     console.log(JSON.stringify(d));
 };
+/**
+ * Return the error message to main thread
+ * @param err Error instance
+ */
 const ERROR = (err) => {
     var _a;
     const d = {
@@ -42,6 +64,9 @@ const ERROR = (err) => {
     console.log(JSON.stringify(d));
     process.exit(1);
 };
+/**
+ * Job execute task
+ */
 const execute_job = () => {
     if (process.env.job == undefined || process.env.plugin == undefined) {
         process.exit(1);
@@ -54,6 +79,9 @@ const execute_job = () => {
     })
         .catch(err => ERROR(err));
 };
+/**
+ * Query resource task
+ */
 const execute_resource = () => {
     const r = new resource_1.ClientResource();
     messager("Resource query");
@@ -67,6 +95,9 @@ const execute_resource = () => {
         console.log(JSON.stringify(h));
     }).catch(err => ERROR(err));
 };
+/**
+ * Query http task
+ */
 const execute_http = () => {
     const m = process.env.method || 'GET';
     const u = process.env.url || '';
@@ -74,7 +105,11 @@ const execute_http = () => {
     const r = new http_1.ClientHTTP(u, m, p);
     r.RUN();
 };
+/**
+ * The entry point for the cluster thread.
+ */
 function RUN() {
+    // The cluster currently spawn should execute a job
     switch (process.env.type) {
         case 'JOB':
             execute_job();

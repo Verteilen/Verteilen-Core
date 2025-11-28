@@ -1,6 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Region_Job = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
 const interface_1 = require("../../interface");
 const util_parser_1 = require("./util_parser");
 class Region_Job {
@@ -31,6 +36,7 @@ class Region_Job {
                 if (job.category == interface_1.JobCategory.Execution && job.type == interface_1.JobType.CREATE_FILE && i == 1)
                     continue;
                 job.string_args[i] = e.replacePara(job.string_args[i]);
+                //messager_log(`String replace: "${b}" -> "${job.string_args[i]}"`)
             }
         };
         this.property_update = (task, e) => {

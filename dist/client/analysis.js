@@ -43,6 +43,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ClientAnalysis = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
+//
+//  ? Analysis the packets send from the computed server
+//
 const child_process_1 = require("child_process");
 const interface_1 = require("../interface");
 const client_1 = require("./client");
@@ -51,11 +59,29 @@ const shell_1 = require("./shell");
 const fs_1 = require("fs");
 const path = __importStar(require("path"));
 const os = __importStar(require("os"));
+/**
+ * The analysis worker. decode the message received from cluster server
+ */
 class ClientAnalysis {
+    /**
+     * Create the worker
+     * @param _messager The log function at the lower level, Which does not send back to server
+     * @param _messager_log The log function at the higher level, Which does send back to server
+     * @param _client Client instance
+     */
     constructor(_messager, _messager_log, _client) {
         this.resource_wanter = [];
         this.resource_thread = undefined;
         this.resource_cache = undefined;
+        /**
+         * Analysis the package
+         * @param h Package
+         * @param source Websocket instance
+         * @return
+         * * 0: Successfully execute command
+         * * 1: The header is undefined, cannot process
+         * * 2: Cannot find the header name match with function typeMap
+         */
         this.analysis = (h, source) => {
             const typeMap = {
                 'execute_job': this.execute_job,
@@ -95,12 +121,24 @@ class ClientAnalysis {
                 return 2;
             }
         };
+        /**
+         * Job execution, Pipe down to execution worker to execute the input job object
+         * @param job Job Object
+         * @param source Command source
+         * @param channel Job thread UUID channel
+         */
         this.execute_job = (job, source, channel) => {
             if (channel == undefined)
                 return;
             const target = this.exec_checker(channel);
             target.execute_job(job, source);
         };
+        /**
+         * Release the job execution thread
+         * @param dummy Not important
+         * @param source Command source
+         * @param channel Job thread UUID channel
+         */
         this.release = (dummy, source, channel) => {
             if (channel == undefined)
                 return;
@@ -109,18 +147,35 @@ class ClientAnalysis {
                 return;
             this.exec.splice(index, 1);
         };
+        /**
+         * Set buffer database
+         * @param data Database Object
+         * @param source Command source
+         * @param channel Job thread UUID channel
+         */
         this.set_database = (data, source, channel) => {
             if (channel == undefined)
                 return;
             const target = this.exec_checker(channel);
             target.set_database(data);
         };
+        /**
+         * Set buffer libraries
+         * @param data Libraries Object
+         * @param source Command source
+         * @param channel Job thread UUID channel
+         */
         this.set_libs = (data, source, channel) => {
             if (channel == undefined)
                 return;
             const target = this.exec_checker(channel);
             target.set_libs(data);
         };
+        /**
+         * Get the execution channel by UUID
+         * @param uuid UUID
+         * @returns Execution worker instance
+         */
         this.exec_checker = (uuid) => {
             let r = undefined;
             const index = this.exec.findIndex(x => x.uuid == uuid);
@@ -133,10 +188,20 @@ class ClientAnalysis {
             }
             return r;
         };
+        /**
+         * Network delay request
+         * @param data Dummy value, should always be 0
+         * @param source The cluster server websocket instance
+         */
         this.pong = (data, source) => {
             const h = { name: 'pong', data: data };
             source.send(JSON.stringify(h));
         };
+        /**
+         * Feedback current plugin state to computed server
+         * @param dummy Not important
+         * @param source The cluster server websocket instance
+         */
         this.plugin_info = (dummy, source) => {
             const pat = path.join(os.homedir(), interface_1.DATA_FOLDER, "node_plugin", "plugin.json");
             if ((0, fs_1.existsSync)(pat)) {
@@ -151,6 +216,13 @@ class ClientAnalysis {
                 source.send(JSON.stringify(h));
             }
         };
+        /**
+         * ? utility for plugin download\
+         * Get release info
+         * @param repo Repository name
+         * @param token If it's for private repo, You will need token here
+         * @returns The Json string info
+         */
         this.get_releases = (repo, token) => __awaiter(this, void 0, void 0, function* () {
             const qu = yield fetch(`https://api.github.com/repos/${repo}/releases`, {
                 headers: {
@@ -160,6 +232,16 @@ class ClientAnalysis {
             });
             return qu.text();
         });
+        /**
+         * ? utility for plugin download\
+         * Get the asset id from repo release info and filename, version\
+         * It's useful for getting a download link
+         * @param repo Repository
+         * @param token If it's for private repo, You will need token here
+         * @param version Target version
+         * @param filename Target filename
+         * @returns
+         */
         this.filterout = (repo, token, version, filename) => __awaiter(this, void 0, void 0, function* () {
             const text = yield this.get_releases(repo, token);
             const json = JSON.parse(text);
@@ -198,6 +280,12 @@ class ClientAnalysis {
             this.client.savePlugin();
             this.plugin_info(0, source);
         };
+        /**
+         * Download the exe file from target plugin\
+         * And overwrite the plugin record
+         * @param plugin Target plugin
+         * @param source Command source
+         */
         this.plugin_download = (plugin, source) => __awaiter(this, void 0, void 0, function* () {
             const target = plugin.contents.find(x => x.arch == process.arch && x.platform == process.platform);
             if (target == undefined) {

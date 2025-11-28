@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ConsoleServerManager = void 0;
+/**
+ * Console server helper, cluster server side handle web client connection instances
+ */
 class ConsoleServerManager {
     constructor(_ws, _messager_log, _typeMap) {
         this.Analysis = (h) => {

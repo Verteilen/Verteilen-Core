@@ -38,6 +38,10 @@ class Project_Module {
             this.loader.project.save(uuid, JSON.stringify(p, null, 4));
         });
     }
+    /**
+     * Assign real data to instance
+     * @param uuid Project UUID
+     */
     PopulateProject(uuid) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.loader.project.load(uuid);
@@ -50,6 +54,10 @@ class Project_Module {
             return buffer;
         });
     }
+    /**
+     * Assign real data to instance
+     * @param uuid Task UUID
+     */
     PopulateTask(uuid) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.loader.task.load(uuid);
@@ -65,6 +73,11 @@ class Project_Module {
             return buffer;
         });
     }
+    /**
+     * Get tasks from project related
+     * @param uuid Project UUID
+     * @returns Related Tasks
+     */
     GetProjectRelatedTask(uuid) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.loader.project.load(uuid);
@@ -79,6 +92,11 @@ class Project_Module {
             return tasks;
         });
     }
+    /**
+     * Get jobs from task related
+     * @param uuid Task UUID
+     * @returns Related Jobs
+     */
     GetTaskRelatedJob(uuid) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.loader.task.load(uuid);
@@ -93,6 +111,11 @@ class Project_Module {
             return jobs;
         });
     }
+    /**
+     * Clone Project Container
+     * @param uuids project uuids
+     * @returns The new uuids list
+     */
     CloneProjects(uuids) {
         return __awaiter(this, void 0, void 0, function* () {
             const p = uuids.map(x => this.loader.project.load(x));
@@ -109,6 +132,11 @@ class Project_Module {
             return projects.map(x => x.uuid);
         });
     }
+    /**
+     * Clone Task Container
+     * @param uuids task uuids
+     * @returns The new uuids list
+     */
     CloneTasks(uuids) {
         return __awaiter(this, void 0, void 0, function* () {
             const p = uuids.map(x => this.loader.task.load(x));
@@ -125,6 +153,11 @@ class Project_Module {
             return tasks.map(x => x.uuid);
         });
     }
+    /**
+     * Clone Job Container
+     * @param uuids job uuids
+     * @returns The new uuids list
+     */
     CloneJobs(uuids) {
         return __awaiter(this, void 0, void 0, function* () {
             const p = uuids.map(x => this.loader.job.load(x));
@@ -136,6 +169,10 @@ class Project_Module {
             return jobs.map(x => x.uuid);
         });
     }
+    /**
+     * Delete project related data and project itself
+     * @param uuid Project UUID
+     */
     CascadeDeleteProject(uuid, bind) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.loader.project.load(uuid);
@@ -151,6 +188,10 @@ class Project_Module {
                 yield this.Delete_Database_Idle(db);
         });
     }
+    /**
+     * Delete Task related data and project itself
+     * @param uuid Task UUID
+     */
     CascadeDeleteTask(uuid_2) {
         return __awaiter(this, arguments, void 0, function* (uuid, project_change = true) {
             yield this.loader.task.load(uuid);
@@ -160,6 +201,7 @@ class Project_Module {
             const ps = p.jobs_uuid.map(j_uuid => this.CascadeDeleteJob(j_uuid, project_change));
             yield Promise.all(ps);
             yield this.loader.task.delete(uuid);
+            // The project with task uuid includes
             if (!project_change)
                 return;
             const ps2 = this.memory.projects.filter(x => x.tasks_uuid.includes(uuid)).map(x => x.uuid);
@@ -174,6 +216,10 @@ class Project_Module {
             }
         });
     }
+    /**
+     * Delete Task related data and project itself
+     * @param uuid Task UUID
+     */
     CascadeDeleteJob(uuid_2) {
         return __awaiter(this, arguments, void 0, function* (uuid, task_change = true) {
             yield this.loader.job.delete(uuid);
@@ -191,6 +237,10 @@ class Project_Module {
             }
         });
     }
+    /**
+     * Delete idle database
+     * @param uuid Database UUID
+     */
     Delete_Database_Idle(uuid) {
         return __awaiter(this, void 0, void 0, function* () {
             return this.loader.project.load_all().then(() => {

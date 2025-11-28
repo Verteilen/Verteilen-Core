@@ -34,9 +34,21 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PluginBuild = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const interface_1 = require("../interface");
+/**
+ * Build plugin base on current project structure
+ * @param root Output folder
+ * @param plugins Plugin structure
+ * @param templates Template structure
+ * @param data Plugin header
+ */
 const PluginBuild = (root, plugins, templates, data) => {
     console.log("Activate Plugin Build Process...");
     const root_p = path.join(root, 'project');

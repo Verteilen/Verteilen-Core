@@ -43,6 +43,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ClientJavascript = exports.safeEval = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
+//
+//  ? javascript engine
+//  ? A script worker run the script which store in the job structure instance
+//
 const vm = __importStar(require("vm"));
 const interface_1 = require("../interface");
 const path = __importStar(require("path"));
@@ -82,6 +91,7 @@ let para = undefined;
 let waiting = 0;
 const tag = () => { var _a, _b; return (_b = (_a = getjob === null || getjob === void 0 ? void 0 : getjob()) === null || _a === void 0 ? void 0 : _a.uuid) !== null && _b !== void 0 ? _b : 'unknown'; };
 const runtime = () => { var _a, _b; return (_b = (_a = getjob === null || getjob === void 0 ? void 0 : getjob()) === null || _a === void 0 ? void 0 : _a.runtime_uuid) !== null && _b !== void 0 ? _b : 'unknown'; };
+//#region Global
 function has(key, checker) {
     var _a;
     const p = (_a = getpara === null || getpara === void 0 ? void 0 : getpara()) !== null && _a !== void 0 ? _a : undefined;
@@ -244,8 +254,16 @@ function setselect(key, value) {
     target.value = value;
     para === null || para === void 0 ? void 0 : para.feedbackobject({ key: key, value: value });
 }
+//#endregion
 class ClientJavascript {
     constructor(_messager, _messager_log, _getjob) {
+        /**
+         * Running js\
+         * With reference libraries\
+         * @param js js script text
+         * @param libs Libraries header names
+         * @returns Calcuate result
+         */
         this.JavascriptExecuteWithLib = (javascript, libs, log) => {
             var _a;
             waiting = 0;
@@ -275,6 +293,11 @@ class ClientJavascript {
                 }, 100);
             });
         };
+        /**
+         * Running js
+         * @param js js script text
+         * @returns Calcuate result
+         */
         this.JavascriptExecute = (javascript, log) => {
             waiting = 0;
             let context = this.getJavascriptEnv(interface_1.JavascriptLib.OS | interface_1.JavascriptLib.MESSAGE | interface_1.JavascriptLib.HTTP | interface_1.JavascriptLib.PATH, log);
@@ -498,6 +521,7 @@ class ClientJavascript {
     readfile(path) {
         return clientos === null || clientos === void 0 ? void 0 : clientos.file_read({ path: path });
     }
+    //#region Databases
     wait(time) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve) => setTimeout(resolve, time * 1000));
@@ -508,6 +532,9 @@ class ClientJavascript {
             Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, n * 1000);
         });
     }
+    //#endregion
+    //#endregion
+    //#region Http
     httpGet(url, p) {
         return __awaiter(this, void 0, void 0, function* () {
             return this.httpGo('GET', url, p.toObject());
@@ -543,6 +570,17 @@ class ClientJavascript {
     }
 }
 exports.ClientJavascript = ClientJavascript;
+/**
+ * Before running the js scripts, We must init first.\
+ * ! Otherwise it won't work or throw error
+ * @param _messager Message habndle
+ * @param _messager_log Message habndle with print on screen feature
+ * @param _clientos OS worker
+ * @param _para Database worker
+ * @param _getlib library getter method
+ * @param _getpara Database getter method
+ * @param _getjob Job getter method
+ */
 ClientJavascript.Init = (_messager, _messager_log, _clientos, _para, _getlib, _getpara, _getjob) => {
     messager = _messager;
     messager_log = _messager_log;

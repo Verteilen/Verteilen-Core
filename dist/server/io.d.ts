@@ -1,4 +1,7 @@
 import { Project, Database, UserProfile, Library, ExecutionLog, Node, Task, Job } from "../interface";
+/**
+ * **Record Data**
+ */
 export interface MemoryData {
     projects: Array<Project>;
     tasks: Array<Task>;
@@ -9,6 +12,10 @@ export interface MemoryData {
     libs: Array<Library>;
     user: Array<UserProfile>;
 }
+/**
+ * **Server Use Interface**\
+ * FOr backend server action
+ */
 export interface RecordIOLoader {
     fetch_all: () => Promise<Array<string>>;
     load_all: (token?: string) => Promise<Array<string>>;
@@ -18,6 +25,10 @@ export interface RecordIOLoader {
     load: (uuid: string, token?: string) => Promise<string>;
     delete: (uuid: string, token?: string) => Promise<boolean>;
 }
+/**
+ * **IO Function Interface**\
+ * Use for access the file store function
+ */
 export interface RecordIOBase {
     root: string;
     join: (...paths: Array<string>) => string;
@@ -31,6 +42,10 @@ export interface RecordIOBase {
     rm: (path: string) => Promise<void>;
     cp: (path: string, newpath: string) => Promise<void>;
 }
+/**
+ * **IO Loader Worker**\
+ * Fetch data from storage space, could be disk or mongoDB
+ */
 export interface RecordLoader {
     project: RecordIOLoader;
     task: RecordIOLoader;
@@ -41,4 +56,10 @@ export interface RecordLoader {
     lib: RecordIOLoader;
     user: RecordIOLoader;
 }
+/**
+ * **Create the interface for record memory storage**\
+ * Generate a loader interface for register to server event
+ * @param loader loader memory loader interface
+ * @returns Interface for server calling
+ */
 export declare const CreateRecordMemoryLoader_Browser: (loader: MemoryData) => RecordLoader;

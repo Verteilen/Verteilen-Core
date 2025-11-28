@@ -1,4 +1,9 @@
 import { ExecutePair, ExecuteProxy, ExecuteState, FeedBack, Job, Log, Database, Preference, Project, Task } from "../../interface";
+/**
+ * **Log Proxy Worker**\
+ * Process thread call proxy and throght {@link Log_Proxy.execute_proxy}\
+ * To communicate with outside record data
+ */
 export declare class Log_Proxy {
     model: ExecutePair;
     logs: Log;

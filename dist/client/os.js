@@ -46,13 +46,38 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ClientOS = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
+//
+//  ? OS module
+//  ? Run command or Run plugin command and file check stuff
+//
 const child_process_1 = require("child_process");
 const tree_kill_1 = __importDefault(require("tree-kill"));
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const os = __importStar(require("os"));
 const interface_1 = require("../interface");
+/**
+ * The operation system related actions utility\
+ * If you want to do something related to things below
+ * * File operation
+ * * Folder checker
+ * * Writing a file
+ * * Call a exe file
+ *
+ * Please get a instance of this, and call the methods instead using fs youself
+ */
 class ClientOS {
+    /**
+     *
+     * @param _tag The tag getter that put in the prefix of the message
+     * @param _messager Message method
+     * @param _messager_log Message method with output on the screen feature
+     */
     constructor(_tag, _runtime, plugins, _messager, _messager_log) {
         this.children = [];
         this.file_copy = (data) => {
@@ -113,6 +138,9 @@ class ClientOS {
         this.file_read = (data) => {
             return fs.readFileSync(data.path).toString();
         };
+        /**
+         * Kill all current running processes
+         */
         this.stopall = () => {
             this.children.forEach(x => {
                 x.stdin.write('q');
@@ -125,6 +153,13 @@ class ClientOS {
             const cc = process.platform == "win32" ? command : "./" + command;
             return this.command(cc, args, path.join(os.homedir(), interface_1.DATA_FOLDER, "exe"));
         });
+        /**
+         * Call command on terminal
+         * @param cwd The system location
+         * @param command Command name, Or you can put filename here
+         * @param args Arguments, It will split by space afterward
+         * @returns
+         */
         this.command = (command, args, cwd) => __awaiter(this, void 0, void 0, function* () {
             this.messager_log(`[OS Action] Command cwd: ${cwd}`, this.tag());
             this.messager_log(`[OS Action] Command command: ${command}`, this.tag());
@@ -137,6 +172,7 @@ class ClientOS {
                     stdio: ['pipe', 'pipe', 'pipe']
                 });
                 child.stdin.setDefaultEncoding('utf8');
+                // The kill process detecter
                 child.on('spawn', () => {
                     this.children.push(child);
                     this.messager_log(`[Command] Spawn process`, this.tag());
@@ -195,6 +231,10 @@ class ClientOS {
                 this.messager_log(`[Command] Process Close: ${code}`, this.tag());
             });
         };
+        /**
+         * Append the plugin folder into
+         * @returns
+         */
         this.get_env = () => {
             let epath = process.env.path;
             let syn = ' ';

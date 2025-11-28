@@ -2,6 +2,10 @@ import { BusAnalysis, ExecutePair, ExecuteProxy, ExecuteRecord, ExecuteState, Me
 import { PluginFeedback } from "./server";
 import { RecordIOBase } from './io';
 import { WebsocketManager } from '../script/socket_manager';
+/**
+ * **Server Inner-Work Handler**\
+ * Include the core cluster logic here
+ */
 export declare class ServerDetail implements NodeProxy, ServerDetailEvent {
     execute_manager: Array<ExecutePair>;
     websocket_manager: WebsocketManager | undefined;
@@ -12,14 +16,36 @@ export declare class ServerDetail implements NodeProxy, ServerDetailEvent {
     message: Messager;
     messager_log: Function;
     updatehandle: any;
+    /**
+     * **A simple message queue**\
+     * message, trace message, error message return data, for update
+     */
     re: Array<any>;
     constructor(loader: RecordIOBase | undefined, backend: BackendAction, feedback: PluginFeedback, message: Messager, messager_log: Function);
+    /**
+     * **Caller Reference**
+     */
     get events(): ServerDetailEvent;
+    /**
+     * **Caller Reference**
+     */
     get nodeEvents(): NodeProxy;
     NewConnection: (x: WebsocketPack) => void;
     DisConnection: (x: WebsocketPack) => void;
     Analysis: (d: BusAnalysis) => void;
+    /**
+     * **Shell Reply Message Event**\
+     * Called by the client node
+     * @param data Content
+     * @param p Client node source
+     */
     shellReply: (data: Single, p?: WebsocketPack) => void;
+    /**
+     * **Shell Folder Location Event**\
+     * Called by the client node
+     * @param data Content
+     * @param p Client node source
+     */
     folderReply: (data: ShellFolder, p?: WebsocketPack) => void;
     resource_start: (socket: any, uuid: string) => void;
     resource_end: (socket: any, uuid: string) => void;

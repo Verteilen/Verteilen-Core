@@ -2,8 +2,17 @@
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Util_Parser = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
 const expressionparser_1 = require("expressionparser");
 const interface_1 = require("../../interface");
+/**
+ * The worker which helps parsing database variables into argument\
+ * Including expression executing
+ */
 class Util_Parser {
     get count() {
         return this.paras.length;
@@ -14,6 +23,14 @@ class Util_Parser {
             const b = JSON.parse(JSON.stringify(this.paras));
             return new _a(b);
         };
+        /**
+         * Replace a string to environment string\
+         * * Include Expression calculation
+         * * Include Env string, boolean, number replacing
+         * @param text Input text
+         * @param paras The keyvalue list
+         * @returns The result string
+         */
         this.replacePara = (text) => {
             let buffer = '';
             let store = '';
@@ -31,7 +48,7 @@ class Util_Parser {
                     ignore = -1;
                 if (v == interface_1.ENV_CHARACTER && ignore == -1) {
                     state = !state;
-                    if (!state) {
+                    if (!state) { // End
                         if (useExp) {
                             buffer += this.parse(store);
                         }
@@ -51,6 +68,12 @@ class Util_Parser {
             }
             return buffer;
         };
+        /**
+         * Expression magic
+         * @param str Input string, the expression part of string only, not the entire sentence
+         * @param paras Keyvalue list
+         * @returns Result calculation
+         */
         this.parse = (str) => {
             str = str.substring(1, str.length - 1);
             const parser = (0, expressionparser_1.init)(expressionparser_1.formula, (term) => {
@@ -83,11 +106,23 @@ class Util_Parser {
 }
 exports.Util_Parser = Util_Parser;
 _a = Util_Parser;
+/**
+ * Turn database into a list of keyvalue structure\
+ * Exclude the expression datatype
+ * @param p Target database instance
+ * @returns The list of keyvalue
+ */
 Util_Parser.to_keyvalue = (p) => {
     return [
         ..._a._to_keyvalue(p.containers)
     ];
 };
+/**
+ * Input a object data, and deep search all of subobject\
+ * Phrasing it into keyvalue data
+ * @param obj Object
+ * @returns Array of keyvalue data
+ */
 Util_Parser.getDeepKeys = (obj, name) => {
     let keys = [];
     for (var key in obj) {
@@ -106,6 +141,9 @@ Util_Parser.getDeepKeys = (obj, name) => {
     }
     return keys;
 };
+/**
+ * Database containers into keyvalue list
+ */
 Util_Parser._to_keyvalue = (p) => {
     const r = [];
     r.push(...p.filter(x => x.type == interface_1.DataType.Boolean || x.type == interface_1.DataType.String || x.type == interface_1.DataType.Textarea || x.type == interface_1.DataType.Number || x.type == interface_1.DataType.Expression).map(x => { return { key: x.name, value: x.value.toString() }; }));
@@ -129,6 +167,14 @@ Util_Parser._to_keyvalue = (p) => {
     }
     return r;
 };
+/**
+ * Search all the string result and replace to target string\
+ * @example
+ * replaceAll("ABCBCAB", "AB", "KK") // Result: KKCBCKK
+ * @param str string data
+ * @param fi feature
+ * @param tar replace target
+ */
 Util_Parser.replaceAll = (str, fi, tar) => {
     let p = str;
     while (p.includes(fi))

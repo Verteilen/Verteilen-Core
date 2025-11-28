@@ -1,6 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Region_Task = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
 const interface_1 = require("../../interface");
 const region_job_1 = require("./region_job");
 const region_subtask_1 = require("./region_subtask");
@@ -16,6 +21,9 @@ class Region_Task {
         this.jrunners = [];
         this.RUN = () => {
             var _a, _b;
+            /**
+             * When it's the first iteration for this task
+             */
             if (this.target.t_state == interface_1.ExecuteState.NONE) {
                 this.target.t_state = interface_1.ExecuteState.RUNNING;
                 this.multithread = this.task.multi ? this.get_task_multi_count(this.task) : 1;
@@ -23,7 +31,11 @@ class Region_Task {
             }
             let allJobFinish = false;
             const hasJob = this.task.jobs.length > 0;
+            /**
+             * If a task has no job... we have to skip it...
+             */
             if (!hasJob) {
+                // We end it gracefully.
                 (_a = this.target.proxy) === null || _a === void 0 ? void 0 : _a.executeTaskStart([this.task, this.task_count]);
                 (_b = this.target.proxy) === null || _b === void 0 ? void 0 : _b.executeTaskFinish(this.task);
                 this.target.messager_log(`[Execute] Skip ! No job exists ${this.task.uuid}`);
@@ -47,6 +59,7 @@ class Region_Task {
             var _a;
             this.sync_local_para(this.target.localPara);
             this.cron = [];
+            // Create the cronjob instance here
             for (let i = 0; i < taskCount; i++) {
                 const d = {
                     id: i,
@@ -64,12 +77,21 @@ class Region_Task {
             }
             (_a = this.target.proxy) === null || _a === void 0 ? void 0 : _a.executeTaskStart([this.task, taskCount]);
         };
+        //#region Uility
+        /**
+         * Filter out the idle and connection open nodes
+         * @returns All idle and open connection nodes
+         */
         this.get_idle = () => {
             return this.target.current_nodes.filter(x => this.check_socket_state(x) != interface_1.ExecuteState.RUNNING && x.websocket.readyState == 1);
         };
         this.check_socket_state = (target) => {
             return target.current_job.length == 0 ? interface_1.ExecuteState.NONE : interface_1.ExecuteState.RUNNING;
         };
+        /**
+         * This will let nodes update the database and lib
+         * @param target
+         */
         this.sync_local_para = (target) => {
             var _a;
             this.target.current_nodes.forEach(x => this.sync_para(target, x));
@@ -92,18 +114,34 @@ class Region_Task {
         this.get_idle_open = () => {
             return this.target.current_nodes.filter(x => x.websocket.readyState == 1);
         };
+        /**
+         * Check all the cronjob is finish or not
+         */
         this.check_all_cron_end = () => {
             return this.cron.filter(x => !this.check_cron_end(x)).length == 0;
         };
+        /**
+         * Check input cronjob is finish or not
+         * @param cron target cronjob instance
+         */
         this.check_cron_end = (cron) => {
             return cron.work.filter(x => x.state == interface_1.ExecuteState.RUNNING || x.state == interface_1.ExecuteState.NONE).length == 0;
         };
+        /**
+         * Check current single is finish or not
+         */
         this.check_single_end = () => {
             if (this.task == undefined)
                 return false;
             return this.job.length == this.task.jobs.length &&
                 this.job.filter(y => y.state == interface_1.ExecuteState.RUNNING || y.state == interface_1.ExecuteState.NONE).length == 0;
         };
+        /**
+         * Get the multi-core setting\
+         * Find in the database setting
+         * @param key The multi-core-key
+         * @returns
+         */
         this.get_task_multi_count = (t) => {
             const r = this.get_number(t.multiKey);
             return r == -1 ? 1 : r;
@@ -130,15 +168,31 @@ class Region_Task {
     get parent() {
         return this.target.runner;
     }
+    /**
+     * It will spawn amounts of cronjob and send the tasks for assigned node to execute them one by one
+     * @param taskCount Should be equal to cronjob result
+     * @returns Is finish executing
+     */
     ExecuteTask_Cronjob(project, task, taskCount) {
         var _a;
         let ns = this.get_idle_open();
         let allJobFinish = false;
+        /**
+         * if current_cron length is zero\
+         * this means the init process has not been run yet
+         */
         if (this.cron.length == 0) {
+            // First time
             this.Init_CronContainer(taskCount);
             this.target.messager_log(`[Execute] TaskCount: ${taskCount}`);
         }
         else {
+            // If disconnect or deleted...
+            /**
+             * We query all the cron state and get all the processing first and count it\
+             * All we want is to filter out the node which is fully load\
+             * So we can follow the multithread limit to send the mission
+             */
             const worker = this.cron.filter(x => x.uuid != '').map(x => x.uuid);
             const counter = [];
             worker.forEach(uuid => {
@@ -155,12 +209,15 @@ class Region_Task {
             allJobFinish = true;
         }
         else {
+            // Assign worker
+            // Find the cron which is need to be execute by a node
             const needs = this.cron.filter(x => x.uuid == '' && x.work.filter(y => y.state != interface_1.ExecuteState.FINISH && y.state != interface_1.ExecuteState.ERROR).length > 0);
             const min = Math.min(needs.length, ns.length);
             for (let i = 0; i < min; i++) {
                 needs[i].uuid = ns[i].uuid;
             }
             const single = this.cron.filter(x => x.uuid != '');
+            // Execute
             for (var cronwork of single) {
                 const index = this.target.current_nodes.findIndex(x => x.uuid == cronwork.uuid);
                 if (index != -1) {
@@ -173,11 +230,17 @@ class Region_Task {
         }
         return allJobFinish;
     }
+    /**
+     * There will be no CronTask be called, it will go straight to the Execute job section
+     * @param taskCount Must be 1
+     * @returns Is finish executing
+     */
     ExecuteTask_Single(project, task, taskCount) {
         var _a, _b;
         let allJobFinish = false;
         let ns = [];
         if (this.target.current_job.length > 0) {
+            // If disconnect or deleted...
             const last = this.target.current_nodes.find(x => x.uuid == this.job[0].uuid);
             if (last == undefined) {
                 ns = this.get_idle();
@@ -192,6 +255,7 @@ class Region_Task {
             }
         }
         else {
+            // First time
             this.sync_local_para(this.target.localPara);
             ns = this.get_idle();
             if (ns.length > 0) {
@@ -227,7 +291,12 @@ class Region_Task {
         var _a;
         let ns = this.get_idle_open();
         let allJobFinish = false;
+        /**
+         * if current_cron length is zero\
+         * this means the init process has not been run yet
+         */
         if (this.cron.length == 0) {
+            // First time
             this.Init_CronContainer(taskCount);
             this.target.messager_log(`[Execute] TaskCount: ${taskCount}`);
             for (let i = 0; i < this.cron.length; i++) {
@@ -239,6 +308,7 @@ class Region_Task {
         }
         else {
             const single = this.cron.filter(x => x.uuid != '');
+            // Execute
             for (var cronwork of single) {
                 const index = this.target.current_nodes.findIndex(x => x.uuid == cronwork.uuid);
                 if (index != -1) {
@@ -257,16 +327,21 @@ class Region_Task {
         this.target.messager_log(`[Execute] Task Finish ${task.uuid}`);
         const index = project.tasks.findIndex(x => x.uuid == task.uuid);
         if (index == project.tasks.length - 1) {
+            // Finish
             this.parent.runner = undefined;
             this.target.t_state = interface_1.ExecuteState.FINISH;
         }
         else {
+            // Next
             this.parent.runner = new Region_Task(this.target, project.tasks[index + 1]);
             this.target.t_state = interface_1.ExecuteState.NONE;
         }
         this.job = [];
         this.cron = [];
     }
+    /**
+     * Get the task's cronjob count
+     */
     get_task_state_count(t) {
         if (t.setupjob)
             return this.target.current_nodes.length;

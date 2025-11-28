@@ -16,11 +16,24 @@ export interface Preference_Recover {
     projects: Array<[string | null, string | null]>;
     nodes: Array<string | null>;
 }
+/**
+ * **User Preference**\
+ * Store the user preference setting\
+ * This could store for any kinds of backend
+ */
 export interface Preference {
+    /**
+     * Language setting
+     */
     lan: string;
     notification: boolean;
     theme: string;
     font: number;
+    /**
+     * You can turn off the logging\
+     * To prevent IO works to slowdown your works\
+     * ![NOTICE] there will be no log to recover your works
+     */
     log: boolean;
     plugin_token: Array<PluginToken>;
     animation: boolean;
