@@ -160,8 +160,8 @@ class Client {
             this.analysis = [];
         };
         this.savePlugin = () => {
-            const f = path.join(os.homedir(), interface_1.DATA_FOLDER);
-            const pluginPath = path.join(f, 'plugin.json', 'node_plugin');
+            const f = path.join(os.homedir(), interface_1.DATA_FOLDER, 'node_plugin');
+            const pluginPath = path.join(f, 'plugin.json');
             if (!(0, fs_1.existsSync)(f))
                 (0, fs_1.mkdirSync)(f, { recursive: true });
             (0, fs_1.writeFileSync)(pluginPath, JSON.stringify(this.plugins, null, 4));
