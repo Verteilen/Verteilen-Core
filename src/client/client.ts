@@ -136,8 +136,8 @@ export class Client {
     }
 
     savePlugin = () => {
-        const f = path.join(os.homedir(), DATA_FOLDER)
-        const pluginPath = path.join(f, 'plugin.json', 'node_plugin')
+        const f = path.join(os.homedir(), DATA_FOLDER, 'node_plugin')
+        const pluginPath = path.join(f, 'plugin.json')
         if(!existsSync(f)) mkdirSync(f, { recursive: true })
         writeFileSync(pluginPath, JSON.stringify(this.plugins, null, 4))
     }
