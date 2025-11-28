@@ -169,6 +169,13 @@ export declare const i18nDefaultData: {
                 "delete-service-confirm": string;
                 "new-condition": string;
                 "generate-database": string;
+                owner: string;
+                version: string;
+                description: string;
+                "project-template": string;
+                "database-template": string;
+                script: string;
+                plugin: string;
             };
             toolbar: {
                 server: string;
@@ -620,6 +627,13 @@ export declare const i18nDefaultData: {
                 "delete-service-confirm": string;
                 "new-condition": string;
                 "generate-database": string;
+                owner: string;
+                version: string;
+                description: string;
+                "project-template": string;
+                "database-template": string;
+                script: string;
+                plugin: string;
             };
             toolbar: {
                 server: string;
@@ -1078,6 +1092,13 @@ export declare const i18n: import("vue-i18n").I18n<{
             "delete-service-confirm": string;
             "new-condition": string;
             "generate-database": string;
+            owner: string;
+            version: string;
+            description: string;
+            "project-template": string;
+            "database-template": string;
+            script: string;
+            plugin: string;
         };
         toolbar: {
             server: string;
@@ -1529,6 +1550,13 @@ export declare const i18n: import("vue-i18n").I18n<{
             "delete-service-confirm": string;
             "new-condition": string;
             "generate-database": string;
+            owner: string;
+            version: string;
+            description: string;
+            "project-template": string;
+            "database-template": string;
+            script: string;
+            plugin: string;
         };
         toolbar: {
             server: string;

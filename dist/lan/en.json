@@ -149,7 +149,14 @@
         "delete-service": "Delete Service",
         "delete-service-confirm": "Are you sure you want to delete these services?",
         "new-condition": "Create Condition",
-        "generate-database": "Generate Database"
+        "generate-database": "Generate Database",
+        "owner": "Owner",
+        "version": "Version",
+        "description": "Description",
+        "project-template": "Project",
+        "database-template": "Database",
+        "script": "Script",
+        "plugin": "File"
     },
     "toolbar": {
         "server": "Server",

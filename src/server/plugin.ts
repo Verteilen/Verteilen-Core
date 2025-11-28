@@ -241,6 +241,8 @@ export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, s
             return cp
         },
         delete_plugin: async (name:string):Promise<void> => {
+            const index = memory.plugins.findIndex(x => x.title == name)
+            if(index != -1) memory.plugins.splice(index, 1)
             const root = loader.join(loader.root, 'plugin', name)
             if(loader.exists(root)) 
                 await loader.rm(root);

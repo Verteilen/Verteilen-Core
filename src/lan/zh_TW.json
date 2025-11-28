@@ -149,7 +149,15 @@
         "delete-service": "刪除服務",
         "delete-service-confirm": "確定刪除選取的服務嗎?",
         "new-condition": "建立條件",
-        "generate-database": "生成資料庫"
+        "generate-database": "生成資料庫",
+
+        "owner": "擁有者",
+        "version": "版本",
+        "description": "敘述",
+        "project-template": "專案",
+        "database-template": "資料庫",
+        "script": "腳本",
+        "plugin": "檔案"
     },
     "toolbar": {
         "server": "伺服器",

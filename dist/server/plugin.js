@@ -182,6 +182,9 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
             return cp;
         }),
         delete_plugin: (name) => __awaiter(void 0, void 0, void 0, function* () {
+            const index = memory.plugins.findIndex(x => x.title == name);
+            if (index != -1)
+                memory.plugins.splice(index, 1);
             const root = loader.join(loader.root, 'plugin', name);
             if (loader.exists(root))
                 yield loader.rm(root);
