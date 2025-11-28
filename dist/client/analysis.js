@@ -335,7 +335,10 @@ class ClientAnalysis {
                         fileStream.end();
                         if (process.platform == 'linux') {
                             (0, child_process_1.exec)(`chmod +x ${path.join(dir, target.filename)}`, (err) => {
-                                this.messager_log(`[Plugin] Permission failed ${err === null || err === void 0 ? void 0 : err.message}`);
+                                if (err)
+                                    this.messager_log(`[Plugin] Permission failed ${err === null || err === void 0 ? void 0 : err.message}`);
+                                else
+                                    this.messager_log(`[Plugin] Apply Execute Permission Successfully`);
                             });
                         }
                         this.finish_plugin(plugin, source);

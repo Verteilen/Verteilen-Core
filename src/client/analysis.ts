@@ -6,7 +6,7 @@
 //
 //  ? Analysis the packets send from the computed server
 //
-import { ChildProcess, exec, spawn } from 'child_process';
+import { ChildProcess, exec, ExecException, spawn } from 'child_process';
 import { WebSocket } from 'ws';
 import { DATA_FOLDER, Header, Job, Libraries, Messager, Messager_log, Database, Plugin, PluginWithToken, PluginNode } from "../interface";
 import { Client } from './client';
@@ -304,8 +304,9 @@ export class ClientAnalysis {
                     this.messager_log(`[Plugin] Downloaded ${plugin.name} successfully`)
                     fileStream.end();
                     if(process.platform == 'linux'){
-                        exec(`chmod +x ${path.join(dir, target.filename)}`, (err) => {
-                            this.messager_log(`[Plugin] Permission failed ${err?.message}`)
+                        exec(`chmod +x ${path.join(dir, target.filename)}`, (err:ExecException | null) => {
+                            if(err) this.messager_log(`[Plugin] Permission failed ${err?.message}`)
+                            else this.messager_log(`[Plugin] Apply Execute Permission Successfully`)
                         })
                     }
                     this.finish_plugin(plugin, source)

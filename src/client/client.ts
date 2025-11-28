@@ -137,7 +137,7 @@ export class Client {
 
     savePlugin = () => {
         const f = path.join(os.homedir(), DATA_FOLDER)
-        const pluginPath = path.join(f, 'plugin.json')
+        const pluginPath = path.join(f, 'plugin.json', 'node_plugin')
         if(!existsSync(f)) mkdirSync(f, { recursive: true })
         writeFileSync(pluginPath, JSON.stringify(this.plugins, null, 4))
     }
@@ -155,7 +155,7 @@ export class Client {
      * @param init Whether or not delete the downloading one
      */
     private loadPlugins = (init:boolean = false) => {
-        const f = path.join(os.homedir(), DATA_FOLDER, "node_plugin")
+        const f = path.join(os.homedir(), DATA_FOLDER, 'node_plugin')
         const pluginPath = path.join(f, 'plugin.json')
         if(!existsSync(f)) mkdirSync(f, { recursive: true })
         if(!existsSync(pluginPath)){
