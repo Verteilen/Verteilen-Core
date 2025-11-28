@@ -246,7 +246,9 @@ export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, s
             const root = loader.join(loader.root, 'plugin', name)
             if(loader.exists(root)) 
                 await loader.rm(root);
-            return memory
+            const cp = await GetCurrentPlugin(loader)
+            memory.plugins = cp.plugins
+            return cp
         },
         plugin_download: async (uuid:string, plugin:string, tokens:string):Promise<void> => {
             const p:Plugin = JSON.parse(plugin)
