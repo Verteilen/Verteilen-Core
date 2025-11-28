@@ -22,8 +22,8 @@ class ServerDetail {
             if (this.feedback.electron) {
                 (_a = this.feedback.electron()) === null || _a === void 0 ? void 0 : _a.send('makeToast', p);
             }
-            if (this.feedback.socket && this.backend.Boradcasting) {
-                this.backend.Boradcasting('makeToast', p);
+            if (this.feedback.socket && this.backend.Broadcasting) {
+                this.backend.Broadcasting('makeToast', p);
             }
             this.execute_manager.forEach(y => {
                 y.manager.NewConnection(x);
@@ -39,8 +39,8 @@ class ServerDetail {
             if (this.feedback.electron) {
                 (_a = this.feedback.electron()) === null || _a === void 0 ? void 0 : _a.send('makeToast', p);
             }
-            if (this.feedback.socket && this.backend.Boradcasting) {
-                this.backend.Boradcasting('makeToast', p);
+            if (this.feedback.socket && this.backend.Broadcasting) {
+                this.backend.Broadcasting('makeToast', p);
             }
             this.execute_manager.forEach(y => {
                 y.manager.Disconnect(x);
@@ -405,39 +405,13 @@ class ServerDetail {
         this.feedback = feedback;
         this.message = message;
         this.messager_log = messager_log;
-        const n = {
-            shellReply: this.shellReply,
-            folderReply: this.folderReply
-        };
-        this.websocket_manager = new socket_manager_1.WebsocketManager(this.NewConnection, this.DisConnection, this.Analysis, messager_log, n);
+        this.websocket_manager = new socket_manager_1.WebsocketManager(this.NewConnection, this.DisConnection, this.Analysis, messager_log, this.nodeEvents);
         this.updatehandle = setInterval(() => {
             this.re.push(...this.console_update());
         }, interface_1.RENDER_UPDATETICK);
     }
-    get events() {
-        return {
-            resource_start: this.resource_start,
-            resource_end: this.resource_end,
-            plugin_info: this.plugin_info,
-            shell_enter: this.shell_enter,
-            shell_open: this.shell_open,
-            shell_close: this.shell_close,
-            shell_folder: this.shell_folder,
-            node_list: this.node_list,
-            node_add: this.node_add,
-            node_update: this.node_update,
-            node_delete: this.node_delete,
-            console_list: this.console_list,
-            console_record: this.console_record,
-            console_execute: this.console_execute,
-            console_stop: this.console_stop,
-            console_clean: this.console_clean,
-            console_skip: this.console_skip,
-            console_skip2: this.console_skip2,
-            console_add: this.console_add,
-            console_update: this.console_update,
-        };
-    }
+    get events() { return this; }
+    get nodeEvents() { return this; }
 }
 exports.ServerDetail = ServerDetail;
 //# sourceMappingURL=detail.js.map

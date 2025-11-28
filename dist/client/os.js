@@ -53,7 +53,7 @@ const path = __importStar(require("path"));
 const os = __importStar(require("os"));
 const interface_1 = require("../interface");
 class ClientOS {
-    constructor(_tag, _runtime, _messager, _messager_log) {
+    constructor(_tag, _runtime, plugins, _messager, _messager_log) {
         this.children = [];
         this.file_copy = (data) => {
             this.messager(`[OS Action] File copy, ${data.from} => ${data.to}`, this.tag());
@@ -132,6 +132,7 @@ class ClientOS {
             return new Promise((resolve, reject) => {
                 const child = (0, child_process_1.spawn)(command, args.split(' '), {
                     cwd: cwd,
+                    env: this.get_env(),
                     shell: true,
                     stdio: ['pipe', 'pipe', 'pipe']
                 });
@@ -175,7 +176,8 @@ class ClientOS {
             this.messager_log(`[OS Action] Command command: ${command}`, this.tag());
             this.messager_log(`[OS Action] Command args: ${args}`, this.tag());
             const child = (0, child_process_1.exec)(`${command} ${args}`, {
-                cwd: cwd
+                cwd: cwd,
+                env: this.get_env(),
             });
             child.on('spawn', () => {
                 this.messager_log(`[Command] Spawn process`, this.tag());
@@ -193,8 +195,26 @@ class ClientOS {
                 this.messager_log(`[Command] Process Close: ${code}`, this.tag());
             });
         };
+        this.get_env = () => {
+            let epath = process.env.path;
+            let syn = ' ';
+            if (os.platform() == 'win32') {
+                syn = ';';
+            }
+            const paths = epath.split(syn);
+            const plugin = this.plugins();
+            if (plugin != undefined) {
+                for (let x of plugin.plugins) {
+                    const dir = path.join(os.homedir(), interface_1.DATA_FOLDER, 'node_plugin', x.name);
+                    paths.push(dir);
+                }
+            }
+            epath = paths.join(syn);
+            return Object.assign(Object.assign({}, process.env), { path: epath });
+        };
         this.tag = _tag;
         this.runtime = _runtime;
+        this.plugins = plugins;
         this.messager = _messager;
         this.messager_log = _messager_log;
     }

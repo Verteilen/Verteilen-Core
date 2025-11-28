@@ -3,6 +3,9 @@
 //      Share Codebase     
 //                           
 // ========================
+//
+//  ? Detail server implementation
+//
 import { v6 as uuidv6 } from 'uuid'
 import { 
     BusAnalysis,
@@ -16,61 +19,28 @@ import {
     Messager, 
     NodeProxy, 
     Database, 
-    Preference, 
     Project, 
     Record, 
     RENDER_UPDATETICK, 
     ShellFolder, 
     Single, 
     Task, 
-    WebsocketPack
+    WebsocketPack,
+    ServerDetailEvent,
+    BackendAction,
 } from "../interface"
 import { PluginFeedback } from "./server"
-import { MemoryData, RecordIOBase } from './io'
+import { RecordIOBase } from './io'
 import { receivedPack, Console_Proxy } from './detail/console_handle'
 import { Log_Proxy } from './detail/log_handle'
 import { ExecuteManager } from '../script/execute_manager'
 import { WebsocketManager } from '../script/socket_manager'
 
 /**
- * **Backend Interface**\
- * The backend object must contain some utility functions\
- * In order to make detail worker works
- */
-export interface BackendAction {
-    memory: MemoryData
-    GetPreference: (uuid?:string) => Preference
-    Boradcasting?: (name:string, data:any) => void
-}
-
-export interface ServerDetailEvent {
-    resource_start: (socket:any, uuid:string) => void
-    resource_end: (socket:any, uuid:string) => void
-    plugin_info: (socket:any, uuid:string) => void
-    shell_enter: (socket:any, uuid:string, value:string) => void
-    shell_open: (socket:any, uuid:string) => void
-    shell_close: (socket:any, uuid:string) => void
-    shell_folder: (socket:any, uuid:string, path:string) => void
-    node_list: (socket:any, ) => void
-    node_add: (socket:any, url:string, uuid:string) => void
-    node_update: (socket:any, ) => void
-    node_delete: (socket:any, uuid:string, reason?:string) => void
-    console_list: (socket:any, ) => Array<ExecuteRecord> | undefined
-    console_record: (socket:any, uuid:string) => void
-    console_execute: (socket:any, uuid:string, type:number) => void
-    console_stop: (socket:any, uuid:string) => void
-    console_clean: (socket:any, uuid:string) => void
-    console_skip: (socket:any, uuid:string, forward:boolean, type:number, state:ExecuteState) => void
-    console_skip2: (socket:any, uuid:string, v:number) => void
-    console_add: (socket:any, name:string, record:Record, uuid:string | undefined) => void
-    console_update: (socket:any, ) => void
-}
-
-/**
  * **Server Inner-Work Handler**\
  * Include the core cluster logic here
  */
-export class ServerDetail {
+export class ServerDetail implements NodeProxy, ServerDetailEvent {
     execute_manager: Array<ExecutePair> = []
     websocket_manager: WebsocketManager | undefined
 
@@ -99,11 +69,7 @@ export class ServerDetail {
         this.feedback = feedback
         this.message = message
         this.messager_log = messager_log
-        const n:NodeProxy = {
-            shellReply: this.shellReply,
-            folderReply: this.folderReply
-        }
-        this.websocket_manager = new WebsocketManager(this.NewConnection, this.DisConnection, this.Analysis, messager_log, n)
+        this.websocket_manager = new WebsocketManager(this.NewConnection, this.DisConnection, this.Analysis, messager_log, this.nodeEvents)
         // Internal update clock
         this.updatehandle = setInterval(() => {
             this.re.push(...this.console_update())
@@ -111,32 +77,13 @@ export class ServerDetail {
     }
 
     /**
-     * ** Caller Reference**
+     * **Caller Reference**
      */
-    public get events() : ServerDetailEvent {
-        return {
-            resource_start: this.resource_start,
-            resource_end: this.resource_end,
-            plugin_info: this.plugin_info,
-            shell_enter: this.shell_enter,
-            shell_open: this.shell_open,
-            shell_close: this.shell_close,
-            shell_folder: this.shell_folder,
-            node_list: this.node_list,
-            node_add: this.node_add,
-            node_update: this.node_update,
-            node_delete: this.node_delete,
-            console_list: this.console_list,
-            console_record: this.console_record,
-            console_execute: this.console_execute,
-            console_stop: this.console_stop,
-            console_clean: this.console_clean,
-            console_skip: this.console_skip,
-            console_skip2: this.console_skip2,
-            console_add: this.console_add,
-            console_update: this.console_update,
-        }
-    }
+    public get events() : ServerDetailEvent { return this }
+    /**
+     * **Caller Reference**
+     */
+    public get nodeEvents() : NodeProxy { return this }
     
     //#region Socket Events
     NewConnection = (x:WebsocketPack) => {
@@ -148,8 +95,8 @@ export class ServerDetail {
         if(this.feedback.electron){
             this.feedback.electron()?.send('makeToast', p)
         }
-        if(this.feedback.socket && this.backend.Boradcasting){
-            this.backend.Boradcasting('makeToast', p)
+        if(this.feedback.socket && this.backend.Broadcasting){
+            this.backend.Broadcasting('makeToast', p)
         }
         this.execute_manager.forEach(y => {
             y.manager!.NewConnection(x)
@@ -164,8 +111,8 @@ export class ServerDetail {
         if(this.feedback.electron){
             this.feedback.electron()?.send('makeToast', p)
         }
-        if(this.feedback.socket && this.backend.Boradcasting){
-            this.backend.Boradcasting('makeToast', p)
+        if(this.feedback.socket && this.backend.Broadcasting){
+            this.backend.Broadcasting('makeToast', p)
         }
         this.execute_manager.forEach(y => {
             y.manager!.Disconnect(x)

@@ -66,6 +66,9 @@ export enum DataTypeBase {
  * Use in when server query system information from node
  */
 export enum ResourceType {
+    /**
+     * Apply all the information query
+     */
     ALL = ~(~0 << 10),
     SYSTEM = 1 << 0,
     CPU = 1 << 1,

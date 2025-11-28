@@ -33,7 +33,10 @@ export interface Log {
 }
 
 /**
- * **Execute Record**
+ * **Execute Record**\
+ * Content all the information execution thread is needed
+ * * Projects - A list of project which need to execute by order
+ * * Nodes - The node which use for this thread
  */
 export interface Record {
     /**
@@ -48,6 +51,10 @@ export interface Record {
     nodes: Array<Node>
 }
 
+/**
+ * **Execute Thread State**\
+ * All the state is in here which will be use in execution processes
+ */
 export interface ExecuteRecord extends Record {
     /**
      * **Thread ID**
@@ -104,7 +111,16 @@ export interface ExecuteRecord extends Record {
      * **Current Task Index**
      */
     task_index: number
+    /**
+     * **Project State**
+     */
     project_state: Array<ExecuteData>
+    /**
+     * **Task State**
+     */
     task_state: Array<ExecuteData>
+    /**
+     * **Subtask Detail State**
+     */
     task_detail: Array<ExecuteRecordTask>
 }

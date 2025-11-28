@@ -137,7 +137,7 @@ class ClientAnalysis {
             const h = { name: 'pong', data: data };
             source.send(JSON.stringify(h));
         };
-        this.plugin_info = (data, source) => {
+        this.plugin_info = (dummy, source) => {
             const pat = path.join(os.homedir(), interface_1.DATA_FOLDER, "node_plugin", "plugin.json");
             if ((0, fs_1.existsSync)(pat)) {
                 const p = JSON.parse((0, fs_1.readFileSync)(pat).toString());

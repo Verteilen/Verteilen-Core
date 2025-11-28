@@ -1,12 +1,14 @@
-import { Messager, Messager_log, OnePath, TwoPath } from "../interface";
+import { Messager, Messager_log, OnePath, PluginNode, TwoPath } from "../interface";
 type getstring = () => string;
+type getplugin = () => PluginNode | undefined;
 export declare class ClientOS {
     private messager;
     private messager_log;
     private tag;
     private runtime;
     private children;
-    constructor(_tag: getstring, _runtime: getstring, _messager: Messager, _messager_log: Messager_log);
+    private plugins;
+    constructor(_tag: getstring, _runtime: getstring, plugins: getplugin, _messager: Messager, _messager_log: Messager_log);
     file_copy: (data: TwoPath) => void;
     dir_copy: (data: TwoPath) => void;
     file_delete: (data: OnePath) => void;
@@ -25,5 +27,6 @@ export declare class ClientOS {
     command: (command: string, args: string, cwd?: string) => Promise<string>;
     command_sync: (command: string, args: string, cwd?: string) => Promise<string>;
     command_exec: (command: string, args: string, cwd?: string) => void;
+    get_env: () => NodeJS.ProcessEnv;
 }
 export {};

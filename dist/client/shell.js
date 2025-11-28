@@ -110,7 +110,7 @@ class ClientShell {
                 return;
             p[1].kill();
         };
-        this.os = new os_1.ClientOS(() => "SHELL", () => "", _messager, _messager_log);
+        this.os = new os_1.ClientOS(() => "SHELL", () => "", () => undefined, _messager, _messager_log);
         this.messager = _messager;
         this.messager_log = _messager_log;
     }

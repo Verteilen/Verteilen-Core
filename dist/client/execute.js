@@ -26,7 +26,9 @@ class ClientExecute {
             });
         };
         this.execute_job = (job, source) => {
-            this.messager_log(`[Execute] ${job.uuid}  ${job.category == interface_1.JobCategory.Execution ? i18n_1.i18n.global.t(interface_1.JobTypeText[job.type]) : i18n_1.i18n.global.t(interface_1.JobType2Text[job.type])}`, job.uuid, job.runtime_uuid);
+            this.messager_log(`[Execute] ${job.uuid}  ${job.category == interface_1.JobCategory.Execution ?
+                i18n_1.i18n.global.t(interface_1.JobTypeText[job.type]) :
+                i18n_1.i18n.global.t(interface_1.JobType2Text[job.type])}`, job.uuid, job.runtime_uuid);
             this.tag = job.uuid;
             this.execute_job_worker(job, source);
         };

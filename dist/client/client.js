@@ -143,7 +143,7 @@ class Client {
         this.update = () => {
             this.analysis.forEach(x => x.update(this));
         };
-        this.loadPlugins = () => {
+        this.loadPlugins = (init = false) => {
             const f = path.join(os.homedir(), interface_1.DATA_FOLDER, "node_plugin");
             const pluginPath = path.join(f, 'plugin.json');
             if (!(0, fs_1.existsSync)(f))
@@ -154,6 +154,15 @@ class Client {
             else {
                 this.plugins = JSON.parse((0, fs_1.readFileSync)(pluginPath).toString());
             }
+            if (!init)
+                return;
+            const downloading = this.plugins.plugins.filter(x => x.progress == 0);
+            for (let x of downloading) {
+                const p = path.join(interface_1.DATA_FOLDER, 'node_plugin', x.name);
+                (0, fs_1.rmSync)(p, { recursive: true });
+            }
+            this.plugins.plugins = this.plugins.plugins.filter(x => x.progress != 0);
+            this.savePlugin();
         };
         this.get_pem = () => {
             return new Promise((resolve) => {
@@ -178,7 +187,7 @@ class Client {
         this.messager_log = _messager_log;
         this.analysis = [];
         this.updatehandle = setInterval(this.update, interface_1.CLIENT_UPDATETICK);
-        this.loadPlugins();
+        this.loadPlugins(true);
     }
     Dispose() {
         clearInterval(this.updatehandle);

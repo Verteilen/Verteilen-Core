@@ -47,8 +47,7 @@ const execute_job = () => {
         process.exit(1);
     }
     const d = JSON.parse(process.env.job);
-    const p = JSON.parse(process.env.plugin);
-    worker = new job_execute_1.ClientJobExecute(messager, messager_log, d, undefined, p);
+    worker = new job_execute_1.ClientJobExecute(messager, messager_log, d, undefined);
     worker.execute().then(x => {
         messager_log(x);
         process.exit(0);
