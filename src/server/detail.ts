@@ -231,8 +231,8 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
         }
         return p
     }
-    node_add = (socket:any, url:string, id:string) => {
-        const p = this.websocket_manager!.server_start(url, id)
+    node_add = (socket:any, url:string, uuid:string) => {
+        const p = this.websocket_manager!.server_start(url, uuid)
         if(this.feedback.socket != undefined){
             const h:Header = {
                 name: "node_add-feedback",

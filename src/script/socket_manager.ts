@@ -39,7 +39,7 @@ export class WebsocketManager {
      * @param url target url
      * @returns The connection package
      */
-    server_start = (url:string, id:string) => this.serverconnect(url, id)
+    server_start = (url:string, uuid:string) => this.serverconnect(url, uuid)
     /**
      * Remove the package by UUID
      * @param uuid Key
@@ -160,9 +160,14 @@ export class WebsocketManager {
             this.newConnect(t)
         }
         client.onmessage = (ev) => {
-            const h:Header | undefined = JSON.parse(ev.data.toString());
-            const c = this.targets.find(x => x.uuid == uuid)
-            this.analysis(h, c)
+            try{
+                JSON.parse(ev.data.toString())
+                const h:Header | undefined = JSON.parse(ev.data.toString());
+                const c = this.targets.find(x => x.uuid == uuid)
+                this.analysis(h, c)
+            }catch(err:any){
+                console.error("[Socket] Message error occurred: " + err.message)
+            }
         }
         return client
     }

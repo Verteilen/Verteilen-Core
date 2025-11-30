@@ -174,9 +174,15 @@ class WebsocketManager {
                 this.newConnect(t);
             };
             client.onmessage = (ev) => {
-                const h = JSON.parse(ev.data.toString());
-                const c = this.targets.find(x => x.uuid == uuid);
-                this.analysis(h, c);
+                try {
+                    JSON.parse(ev.data.toString());
+                    const h = JSON.parse(ev.data.toString());
+                    const c = this.targets.find(x => x.uuid == uuid);
+                    this.analysis(h, c);
+                }
+                catch (err) {
+                    console.error("[Socket] Message error occurred: " + err.message);
+                }
             };
             return client;
         };

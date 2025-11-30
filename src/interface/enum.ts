@@ -12,7 +12,7 @@
  * It effect the decoder behaviour
  */
 export enum TaskLogicType {
-    GROUP, CONDITION, EXECUTION, FAILED, SINGLE, ADD, OR, NOT
+    GROUP, CONDITION, EXECUTION, FAILED, SINGLE, AND, OR, NOT
 }
 
 /**

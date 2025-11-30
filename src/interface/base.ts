@@ -249,7 +249,9 @@ export interface TaskBase {
     jobs: Array<Job>
     /**
      * **Jobs ID**\
-     * Store in disk
+     * Store in disk\
+     * If logic is undefined, order is apply here\
+     * If logic is not undefined, use logic tree structure instead
      */
     jobs_uuid: Array<string>
 }
