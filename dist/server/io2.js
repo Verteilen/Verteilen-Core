@@ -391,7 +391,12 @@ const _CreateRecordIOLoader = (loader, memory, type, folder, ext = ".json") => {
             const root = loader.join(loader.root, folder);
             if (!loader.exists(root))
                 yield loader.mkdir(root);
-            return mem.load(uuid, token);
+            const file = loader.join(root, uuid + ext);
+            const str = yield loader.read_string(file, { encoding: 'utf8', flag: 'r' });
+            const r = mem.save(uuid, str);
+            if (!r)
+                throw new Error(`load memory failed: ${type} ${uuid}`);
+            return str;
         }),
         delete: (uuid, token) => __awaiter(void 0, void 0, void 0, function* () {
             const root = loader.join(loader.root, folder);

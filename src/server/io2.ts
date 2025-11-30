@@ -391,7 +391,12 @@ const _CreateRecordIOLoader = (loader:RecordIOBase, memory:MemoryData, type:Reco
         load: async (uuid:string, token?:string):Promise<string> => {
             const root = loader.join(loader.root, folder)
             if(!loader.exists(root)) await loader.mkdir(root)
-            return mem.load(uuid, token)
+            
+            const file = loader.join(root, uuid + ext)
+            const str = await loader.read_string(file, { encoding: 'utf8', flag: 'r' })
+            const r = mem.save(uuid, str)
+            if(!r) throw new Error(`load memory failed: ${type} ${uuid}`)
+            return str
         },
         delete: async (uuid:string, token?:string):Promise<boolean> => {
             const root = loader.join(loader.root, folder)

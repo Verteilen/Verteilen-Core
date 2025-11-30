@@ -215,7 +215,7 @@ export declare const i18nDefaultData: {
                 path: string;
                 content: string;
                 command: string;
-                databases: string;
+                variable: string;
             };
             enum: {
                 jobtype: {
@@ -673,7 +673,7 @@ export declare const i18nDefaultData: {
                 path: string;
                 content: string;
                 command: string;
-                databases: string;
+                variable: string;
             };
             enum: {
                 jobtype: {
@@ -1138,7 +1138,7 @@ export declare const i18n: import("vue-i18n").I18n<{
             path: string;
             content: string;
             command: string;
-            databases: string;
+            variable: string;
         };
         enum: {
             jobtype: {
@@ -1596,7 +1596,7 @@ export declare const i18n: import("vue-i18n").I18n<{
             path: string;
             content: string;
             command: string;
-            databases: string;
+            variable: string;
         };
         enum: {
             jobtype: {
