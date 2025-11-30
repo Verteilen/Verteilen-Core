@@ -216,7 +216,7 @@ const _CreateRecordMemoryLoader = (loader, type) => {
                 }
                 const ispublic = exist.owner == undefined || exist.acl == interface_1.ACLType.PUBLIC;
                 if (ispublic) {
-                    arr[index] = Object.assign(exist, JSON.parse(data));
+                    arr[index] = JSON.parse(data);
                     resolve(true);
                     return;
                 }
@@ -235,7 +235,7 @@ const _CreateRecordMemoryLoader = (loader, type) => {
                     }
                     const payload = JSON.parse(decode.payload);
                     if (permissionHelper(exist, payload.user)) {
-                        arr[index] = Object.assign(exist, JSON.parse(data));
+                        arr[index] = JSON.parse(data);
                     }
                     else {
                         reject("Permission Denied");
