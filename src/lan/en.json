@@ -202,7 +202,7 @@
         "path": "Path",
         "content": "Content",
         "command": "Command",
-        "databases": "Databases"
+        "variable": "Variable"
     },
     "enum":{
         "jobtype": {

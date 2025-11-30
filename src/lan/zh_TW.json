@@ -197,7 +197,7 @@
         "path": "路徑",
         "content": "內容",
         "command": "命令",
-        "databases": "資料庫值"
+        "variable": "參數"
     },
     "enum":{
         "jobtype": {
