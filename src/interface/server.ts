@@ -6,7 +6,7 @@
 /**
  * Express server related data structure
  */
-import { MemoryData } from "../server"
+import { MemoryData } from "../server/io"
 import { DataHeader, Shareable } from "./base"
 import { ExecuteState } from "./enum"
 import { ExecuteRecord, Record } from "./log"

@@ -18,8 +18,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./computed"), exports);
 // ? Can be import in browser
 __exportStar(require("./interface"), exports);
-// ? Cannot be import in browser
-__exportStar(require("./server"), exports);
 // ? Only for utility purpose, outside the application logic
 __exportStar(require("./utility"), exports);
 //# sourceMappingURL=index.js.map

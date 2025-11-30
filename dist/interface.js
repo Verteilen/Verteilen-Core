@@ -106,4 +106,12 @@ __exportStar(require("./script/webhook_manager"), exports);
  */
 __exportStar(require("./server/detail/console_handle"), exports);
 __exportStar(require("./server/detail/log_handle"), exports);
+/**
+ * Server Components
+ */
+__exportStar(require("./server/detail"), exports);
+__exportStar(require("./server/io"), exports);
+__exportStar(require("./server/plugin"), exports);
+__exportStar(require("./server/server"), exports);
+__exportStar(require("./server/module"), exports);
 //# sourceMappingURL=interface.js.map
