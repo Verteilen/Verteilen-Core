@@ -16,7 +16,7 @@ export declare class WebsocketManager {
      * @param url target url
      * @returns The connection package
      */
-    server_start: (url: string, id: string) => WebSocket | ws.WebSocket | undefined;
+    server_start: (url: string, uuid: string) => WebSocket | ws.WebSocket | undefined;
     /**
      * Remove the package by UUID
      * @param uuid Key

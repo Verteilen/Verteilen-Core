@@ -21,7 +21,7 @@ var TaskLogicType;
     TaskLogicType[TaskLogicType["EXECUTION"] = 2] = "EXECUTION";
     TaskLogicType[TaskLogicType["FAILED"] = 3] = "FAILED";
     TaskLogicType[TaskLogicType["SINGLE"] = 4] = "SINGLE";
-    TaskLogicType[TaskLogicType["ADD"] = 5] = "ADD";
+    TaskLogicType[TaskLogicType["AND"] = 5] = "AND";
     TaskLogicType[TaskLogicType["OR"] = 6] = "OR";
     TaskLogicType[TaskLogicType["NOT"] = 7] = "NOT";
 })(TaskLogicType || (exports.TaskLogicType = TaskLogicType = {}));

@@ -55,7 +55,7 @@ export declare class ServerDetail implements NodeProxy, ServerDetailEvent {
     shell_close: (socket: any, uuid: string) => void;
     shell_folder: (socket: any, uuid: string, path: string) => void;
     node_list: (socket: any) => WebsocketPack[] | undefined;
-    node_add: (socket: any, url: string, id: string) => void;
+    node_add: (socket: any, url: string, uuid: string) => void;
     node_update: (socket: any) => import("../interface").NodeTable[] | undefined;
     node_delete: (socket: any, uuid: string, reason?: string) => void;
     console_list: (socket: any) => ExecuteRecord[] | undefined;

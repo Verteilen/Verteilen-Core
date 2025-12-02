@@ -9,7 +9,7 @@ export declare enum TaskLogicType {
     EXECUTION = 2,
     FAILED = 3,
     SINGLE = 4,
-    ADD = 5,
+    AND = 5,
     OR = 6,
     NOT = 7
 }

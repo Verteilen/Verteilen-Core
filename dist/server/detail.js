@@ -177,8 +177,8 @@ class ServerDetail {
             }
             return p;
         };
-        this.node_add = (socket, url, id) => {
-            const p = this.websocket_manager.server_start(url, id);
+        this.node_add = (socket, url, uuid) => {
+            const p = this.websocket_manager.server_start(url, uuid);
             if (this.feedback.socket != undefined) {
                 const h = {
                     name: "node_add-feedback",
