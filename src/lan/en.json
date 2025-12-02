@@ -460,5 +460,6 @@
     "state": "State",
     "delay": "Delay",
     "zoom": "Zoom",
-    "unzoom": "UnZoom"
+    "unzoom": "UnZoom",
+    "summary": "Summary"
 }
