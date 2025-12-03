@@ -474,6 +474,7 @@ export declare const i18nDefaultData: {
             delay: string;
             zoom: string;
             unzoom: string;
+            summary: string;
         };
         zh_TW: {
             acl: {
@@ -932,6 +933,7 @@ export declare const i18nDefaultData: {
             delay: string;
             zoom: string;
             unzoom: string;
+            summary: string;
         };
     };
 };
@@ -1397,6 +1399,7 @@ export declare const i18n: import("vue-i18n").I18n<{
         delay: string;
         zoom: string;
         unzoom: string;
+        summary: string;
     };
     zh_TW: {
         acl: {
@@ -1855,6 +1858,7 @@ export declare const i18n: import("vue-i18n").I18n<{
         delay: string;
         zoom: string;
         unzoom: string;
+        summary: string;
     };
 }, {}, {}, string, true>;
 /**

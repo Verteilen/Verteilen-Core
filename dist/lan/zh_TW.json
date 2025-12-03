@@ -454,5 +454,6 @@
     "state": "狀態",
     "delay": "延遲",
     "zoom": "放大",
-    "unzoom": "縮小"
+    "unzoom": "縮小",
+    "summary": "總結"
 }

@@ -250,6 +250,13 @@ export interface ServiceConfig {
 }
 
 export interface TaskLogicUnit {
+    /**
+     * **Unique id for a container**
+     */
+    uuid: string
+    /**
+     * **Logic container type**
+     */
     type: TaskLogicType
     /**
      * **Attach Job ID**
