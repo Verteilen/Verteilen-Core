@@ -176,11 +176,12 @@ export class Project_Module {
         await this.loader.task.load(uuid, token)
         const p:Task = this.memory.tasks.find(p=> p.uuid == uuid)!
         if(!p) return
-        const ps = p.jobs_uuid.map(j_uuid => this.CascadeDeleteJob(j_uuid, project_change, token))
+        const ps = p.jobs_uuid.map(j_uuid => this.loader.job.delete(j_uuid, token))
         await Promise.all(ps)
         await this.loader.task.delete(uuid, token)
         // The project with task uuid includes
         if(!project_change) return
+        const caller:Array<Promise<boolean>> = []
         const ps2 = this.memory.projects.filter(x => x.tasks_uuid.includes(uuid)).map(x => x.uuid)
         for(let u of ps2){
             const index = this.memory.projects.findIndex(x => x.uuid == u)
@@ -188,15 +189,16 @@ export class Project_Module {
                 if(process.env.NODE_ENV == 'development') console.error(`[Project:Module] Cascade:Task command, get projects index failed: ${u}`)
                 continue
             }
-            const buffer = this.memory.projects[index]
+            const buffer:Project = JSON.parse(JSON.stringify(this.memory.projects[index]))
             const task_index = buffer.tasks_uuid.findIndex(x => x == uuid)
             if(task_index == -1){
                 if(process.env.NODE_ENV == 'development') console.error(`[Project:Module] Cascade:Task command, get projects task_index failed: ${u}`)
                 continue
             }
             buffer.tasks_uuid.splice(task_index, 1)
-            this.loader.project.save(u, JSON.stringify(buffer, null, 4))
+            caller.push(this.loader.project.save(u, JSON.stringify(buffer, null, 4)))
         }
+        await Promise.all(caller)
     }
     /**
      * Delete Task related data and project itself
@@ -205,22 +207,24 @@ export class Project_Module {
     async CascadeDeleteJob(uuid:string, task_change:boolean = true, token?: string | undefined):Promise<void>{
         await this.loader.job.delete(uuid, token)
         if(!task_change) return
+        const caller:Array<Promise<boolean>> = []
         const ps2 = this.memory.tasks.filter(x => x.jobs_uuid.includes(uuid)).map(x => x.uuid)
         for(let u of ps2){
-            const index = this.memory.tasks.findIndex(x => x.uuid == u)
+            const index:number = this.memory.tasks.findIndex(x => x.uuid == u)
             if(index == -1) {
                 if(process.env.NODE_ENV == 'development') console.error(`[Project:Module] Cascade:Job command, get tasks index failed: ${u}`)
                 continue
             }
-            const buffer = this.memory.tasks[index]
-            const job_index = buffer.jobs_uuid.findIndex(x => x == uuid)
+            const buffer:Task = JSON.parse(JSON.stringify(this.memory.tasks[index]))
+            const job_index:number = buffer.jobs_uuid.findIndex(x => x == uuid)
             if(job_index == -1) {
                 if(process.env.NODE_ENV == 'development') console.error(`[Project:Module] Cascade:Job command, get tasks job_index failed: ${u}`)
                 continue
             }
             buffer.jobs_uuid.splice(job_index, 1)
-            this.loader.task.save(u, JSON.stringify(buffer, null, 4))
+            caller.push(this.loader.task.save(u, JSON.stringify(buffer, null, 4)))
         }
+        await Promise.all(caller)
     }
     /**
      * Delete idle database

@@ -212,7 +212,7 @@ class Project_Module {
                         console.error(`[Project:Module] Cascade:Task command, get projects index failed: ${u}`);
                     continue;
                 }
-                const buffer = this.memory.projects[index];
+                const buffer = JSON.parse(JSON.stringify(this.memory.projects[index]));
                 const task_index = buffer.tasks_uuid.findIndex(x => x == uuid);
                 if (task_index == -1) {
                     if (process.env.NODE_ENV == 'development')
@@ -241,7 +241,7 @@ class Project_Module {
                         console.error(`[Project:Module] Cascade:Job command, get tasks index failed: ${u}`);
                     continue;
                 }
-                const buffer = this.memory.tasks[index];
+                const buffer = JSON.parse(JSON.stringify(this.memory.tasks[index]));
                 const job_index = buffer.jobs_uuid.findIndex(x => x == uuid);
                 if (job_index == -1) {
                     if (process.env.NODE_ENV == 'development')

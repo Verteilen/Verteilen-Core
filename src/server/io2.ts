@@ -207,16 +207,17 @@ const _CreateRecordMemoryLoader = (loader:MemoryData, type:RecordType):RecordIOL
         },
         save: async (uuid:string, data:string, token?:string):Promise<boolean> => {
             return new Promise<boolean>((resolve, reject) => {
+                const buffer:Shareable & DataHeader = JSON.parse(data)
                 const arr = get_array(type)
                 const index = arr.findIndex(x => x.uuid == uuid)
                 const exist = index == -1 ? undefined : arr[index]
                 const ispublic = exist?.owner == undefined || exist?.acl == ACLType.PUBLIC
                 if(ispublic){
                     if(!exist){
-                        arr.push(JSON.parse(data))
+                        arr.push(buffer)
                         if(process.env.NODE_ENV == 'development') console.log(`[IO2] Memory ${RecordTypePureText[type]} save command, push successfully: ${uuid}`)
                     }else{
-                        arr[index] = JSON.parse(data)
+                        arr[index] = buffer
                         if(process.env.NODE_ENV == 'development') console.log(`[IO2] Memory ${RecordTypePureText[type]} save command, replace successfully: ${uuid}`)
                     }
                     resolve(true)
@@ -243,10 +244,10 @@ const _CreateRecordMemoryLoader = (loader:MemoryData, type:RecordType):RecordIOL
                     const payload:JWT = JSON.parse(decode.payload as string)
                     if(permissionHelper(exist, payload.user)){
                         if(!exist){
-                            arr.push(JSON.parse(data))
+                            arr.push(buffer)
                             if(process.env.NODE_ENV == 'development') console.log(`[IO2] Memory ${RecordTypePureText[type]} save command, payload decode push successfully: ${uuid}`)
                         }else{
-                            arr[index] = JSON.parse(data)
+                            arr[index] = buffer
                             if(process.env.NODE_ENV == 'development') console.log(`[IO2] Memory ${RecordTypePureText[type]} save command, payload decode replace successfully: ${uuid}`)
                         }
                         resolve(true)
