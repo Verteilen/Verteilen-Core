@@ -12,6 +12,7 @@ import {
     SERECT,
     DataHeader,
     MONGODB_NAME,
+    RecordTypePureText,
 } from "../interface"
 import jwt from 'jsonwebtoken'
 import { MemoryData, RecordIOBase, RecordIOLoader, RecordLoader } from "./io"
@@ -122,16 +123,19 @@ const _CreateRecordMemoryLoader = (loader:MemoryData, type:RecordType):RecordIOL
                 const pub = permissionGetPublic(arr).map(x => JSON.stringify(x))
                 const default_behaviour = (v:Array<string>) => resolve(v)
                 if(token == undefined){
+                    if(process.env.NODE_ENV == 'development') console.log(`[IO2] Memory ${RecordTypePureText[type]} load_all command, successfully`)
                     default_behaviour(pub)
                     return
                 }
 
                 jwt.verify(token, SERECT, { complete: true }, (err, decode) => {
                     if(err){
+                        if(process.env.NODE_ENV == 'development') console.warn(`[IO2] Memory ${RecordTypePureText[type]} load_all command, token vaildation failed`)
                         reject(err.name)
                         return
                     }
                     if(decode == undefined){
+                        if(process.env.NODE_ENV == 'development') console.warn(`[IO2] Memory ${RecordTypePureText[type]} load_all command, token decode null failed`)
                         default_behaviour(pub)
                         return
                     }
@@ -206,36 +210,48 @@ const _CreateRecordMemoryLoader = (loader:MemoryData, type:RecordType):RecordIOL
                 const arr = get_array(type)
                 const index = arr.findIndex(x => x.uuid == uuid)
                 const exist = index == -1 ? undefined : arr[index]
-                if(!exist){
-                    arr.push(JSON.parse(data))
-                    resolve(true)
-                    return
-                }
-                const ispublic = exist.owner == undefined || exist.acl == ACLType.PUBLIC
+                const ispublic = exist?.owner == undefined || exist?.acl == ACLType.PUBLIC
                 if(ispublic){
-                    arr[index] = JSON.parse(data)
+                    if(!exist){
+                        arr.push(JSON.parse(data))
+                        if(process.env.NODE_ENV == 'development') console.log(`[IO2] Memory ${RecordTypePureText[type]} save command, push successfully: ${uuid}`)
+                    }else{
+                        arr[index] = JSON.parse(data)
+                        if(process.env.NODE_ENV == 'development') console.log(`[IO2] Memory ${RecordTypePureText[type]} save command, replace successfully: ${uuid}`)
+                    }
                     resolve(true)
                     return
                 }
 
                 if(token == undefined){
+                    if(process.env.NODE_ENV == 'development') console.warn(`[IO2] Memory ${RecordTypePureText[type]} save command, token vaildation failed: ${uuid}`)
                     reject("Require Token")
                     return
                 }
 
                 jwt.verify(token, SERECT, { complete: true }, (err, decode) => {
                     if(err){
+                        if(process.env.NODE_ENV == 'development') console.warn(`[IO2] Memory ${RecordTypePureText[type]} save command, token serect vaildation failed: ${uuid}`)
                         reject(err.name)
                         return
                     }
                     if(decode == undefined){
+                        if(process.env.NODE_ENV == 'development') console.warn(`[IO2] Memory ${RecordTypePureText[type]} save command, token decode null failed: ${uuid}`)
                         reject("Require Token")
                         return
                     }
                     const payload:JWT = JSON.parse(decode.payload as string)
                     if(permissionHelper(exist, payload.user)){
-                        arr[index] = JSON.parse(data)
+                        if(!exist){
+                            arr.push(JSON.parse(data))
+                            if(process.env.NODE_ENV == 'development') console.log(`[IO2] Memory ${RecordTypePureText[type]} save command, payload decode push successfully: ${uuid}`)
+                        }else{
+                            arr[index] = JSON.parse(data)
+                            if(process.env.NODE_ENV == 'development') console.log(`[IO2] Memory ${RecordTypePureText[type]} save command, payload decode replace successfully: ${uuid}`)
+                        }
+                        resolve(true)
                     }else{
+                        if(process.env.NODE_ENV == 'development') console.warn(`[IO2] Memory ${RecordTypePureText[type]} save command, user permission denied failed: ${uuid}`)
                         reject("Permission Denied")
                     }
                 })
@@ -290,19 +306,20 @@ const _CreateRecordMemoryLoader = (loader:MemoryData, type:RecordType):RecordIOL
                 }
 
                 if(exist == undefined){
-                    console.error(`Delete failed: ${type} ${uuid} Cannot found in memory`)
-                    console.error(`Memory state: ${arr.map(x => x.uuid)}`)
+                    if(process.env.NODE_ENV == 'development') console.trace(`[IO2] Memory ${RecordTypePureText[type]} delete command, not exists failed: ${uuid}`)
                     resolve(false)
                     return
                 }
 
                 const ispublic = exist.owner == undefined || exist.acl == ACLType.PUBLIC
                 if(ispublic){
+                    if(process.env.NODE_ENV == 'development') console.log(`[IO2] Memory ${RecordTypePureText[type]} delete command, delete successfully: ${uuid}`)
                     default_behaviour()
                     return
                 }
 
                 if(token == undefined){
+                    if(process.env.NODE_ENV == 'development') console.warn(`[IO2] Memory ${RecordTypePureText[type]} delete command, token vaildation failed: ${uuid}`)
                     reject("Require Token")
                     return
                 }

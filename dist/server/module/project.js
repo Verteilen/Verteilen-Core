@@ -207,10 +207,18 @@ class Project_Module {
             const ps2 = this.memory.projects.filter(x => x.tasks_uuid.includes(uuid)).map(x => x.uuid);
             for (let u of ps2) {
                 const index = this.memory.projects.findIndex(x => x.uuid == u);
-                if (index == -1)
+                if (index == -1) {
+                    if (process.env.NODE_ENV == 'development')
+                        console.error(`[Project:Module] Cascade:Task command, get projects index failed: ${u}`);
                     continue;
+                }
                 const buffer = this.memory.projects[index];
                 const task_index = buffer.tasks_uuid.findIndex(x => x == uuid);
+                if (task_index == -1) {
+                    if (process.env.NODE_ENV == 'development')
+                        console.error(`[Project:Module] Cascade:Task command, get projects task_index failed: ${u}`);
+                    continue;
+                }
                 buffer.tasks_uuid.splice(task_index, 1);
                 this.loader.project.save(u, JSON.stringify(buffer, null, 4));
             }
@@ -228,10 +236,18 @@ class Project_Module {
             const ps2 = this.memory.tasks.filter(x => x.jobs_uuid.includes(uuid)).map(x => x.uuid);
             for (let u of ps2) {
                 const index = this.memory.tasks.findIndex(x => x.uuid == u);
-                if (index == -1)
+                if (index == -1) {
+                    if (process.env.NODE_ENV == 'development')
+                        console.error(`[Project:Module] Cascade:Job command, get tasks index failed: ${u}`);
                     continue;
+                }
                 const buffer = this.memory.tasks[index];
                 const job_index = buffer.jobs_uuid.findIndex(x => x == uuid);
+                if (job_index == -1) {
+                    if (process.env.NODE_ENV == 'development')
+                        console.error(`[Project:Module] Cascade:Job command, get tasks job_index failed: ${u}`);
+                    continue;
+                }
                 buffer.jobs_uuid.splice(job_index, 1);
                 this.loader.task.save(u, JSON.stringify(buffer, null, 4));
             }

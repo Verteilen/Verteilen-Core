@@ -4,7 +4,7 @@
  */
 import * as ws from 'ws';
 import { Job } from "./base";
-import { ServiceMode, TaskLogicType } from "./enum";
+import { ExecuteState, ServiceMode, TaskLogicType } from "./enum";
 import { Plugin } from "./plugin";
 /**
  * The websocket instance with extra information
@@ -236,6 +236,10 @@ export interface TaskLogicUnit {
      * **Attach Job Container (Runtime)**
      */
     job?: Job;
+    /**
+     * Job state
+     */
+    state?: ExecuteState;
     /**
      * **Common Logic Group**
      */

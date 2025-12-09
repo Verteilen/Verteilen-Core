@@ -154,7 +154,14 @@ export enum ExecuteState {
  * **Database Table Type**
  */
 export enum RecordType {
-    PROJECT, TASK, JOB, DATABASE, NODE, LOG, LIB, USER,
+    PROJECT, 
+    TASK, 
+    JOB, 
+    DATABASE, 
+    NODE, 
+    LOG, 
+    LIB, 
+    USER,
 }
 /**
  * **Lib Import Type**\
@@ -188,6 +195,17 @@ export enum ServiceMode {
 }
 
 //#region Translation
+export const RecordTypePureText: { [key:number]:string } = {
+    0: 'PROJECT',
+    1: 'TASK',
+    2: 'JOB',
+    3: 'DATABASE',
+    4: 'NODE',
+    5: 'LOG',
+    6: 'LIB',
+    7: 'USER',
+}
+
 export const DataTypeText: { [key:number]:string } = {
     0: 'types.boolean',
     1: 'types.number',

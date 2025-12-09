@@ -192,6 +192,9 @@ export declare enum ServiceMode {
      */
     EVENT = 2
 }
+export declare const RecordTypePureText: {
+    [key: number]: string;
+};
 export declare const DataTypeText: {
     [key: number]: string;
 };

@@ -31,6 +31,8 @@ class ServerDetail {
         //#region Socket Events
         this.NewConnection = (x) => {
             var _a;
+            if (process.env.NODE_ENV == 'development')
+                console.warn(`[Detail] New connection detected: ${x.websocket.url} \n${x.uuid}`);
             const p = {
                 title: "New Connection Established",
                 type: 'success',
@@ -48,6 +50,8 @@ class ServerDetail {
         };
         this.DisConnection = (x) => {
             var _a;
+            if (process.env.NODE_ENV == 'development')
+                console.warn(`[Detail] Disconnect detected: ${x.websocket.url} \n${x.uuid}`);
             const p = {
                 title: "Network Disconnected",
                 type: 'error',

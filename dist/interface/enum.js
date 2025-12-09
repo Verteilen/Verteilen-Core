@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DatabaseTemplateText = exports.ProjectTemplateText = exports.JobType2Text = exports.JobTypeText = exports.JobResultText = exports.ConnectionText = exports.JobCategoryText = exports.ExecuteStateText = exports.DataTypeText = exports.ServiceMode = exports.JavascriptLib = exports.RecordType = exports.ExecuteState = exports.DatabaseTemplate = exports.ProjectTemplate = exports.JobType2 = exports.JobType = exports.ConditionResult = exports.JobCategory = exports.FrontendUpdate = exports.ResourceType = exports.DataTypeBase = exports.BackendType = exports.DataType = exports.SocketState = exports.TaskLogicType = void 0;
+exports.DatabaseTemplateText = exports.ProjectTemplateText = exports.JobType2Text = exports.JobTypeText = exports.JobResultText = exports.ConnectionText = exports.JobCategoryText = exports.ExecuteStateText = exports.DataTypeText = exports.RecordTypePureText = exports.ServiceMode = exports.JavascriptLib = exports.RecordType = exports.ExecuteState = exports.DatabaseTemplate = exports.ProjectTemplate = exports.JobType2 = exports.JobType = exports.ConditionResult = exports.JobCategory = exports.FrontendUpdate = exports.ResourceType = exports.DataTypeBase = exports.BackendType = exports.DataType = exports.SocketState = exports.TaskLogicType = void 0;
 // ========================
 //                           
 //      Share Codebase     
@@ -221,6 +221,16 @@ var ServiceMode;
     ServiceMode[ServiceMode["EVENT"] = 2] = "EVENT";
 })(ServiceMode || (exports.ServiceMode = ServiceMode = {}));
 //#region Translation
+exports.RecordTypePureText = {
+    0: 'PROJECT',
+    1: 'TASK',
+    2: 'JOB',
+    3: 'DATABASE',
+    4: 'NODE',
+    5: 'LOG',
+    6: 'LIB',
+    7: 'USER',
+};
 exports.DataTypeText = {
     0: 'types.boolean',
     1: 'types.number',

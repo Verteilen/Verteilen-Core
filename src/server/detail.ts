@@ -87,6 +87,7 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
     
     //#region Socket Events
     NewConnection = (x:WebsocketPack) => {
+        if(process.env.NODE_ENV == 'development') console.warn(`[Detail] New connection detected: ${x.websocket.url} \n${x.uuid}`)
         const p = {
             title: "New Connection Established",
             type: 'success',
@@ -103,6 +104,7 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
         })
     }
     DisConnection = (x:WebsocketPack) => {
+        if(process.env.NODE_ENV == 'development') console.warn(`[Detail] Disconnect detected: ${x.websocket.url} \n${x.uuid}`)
         const p = {
             title: "Network Disconnected",
             type: 'error',
