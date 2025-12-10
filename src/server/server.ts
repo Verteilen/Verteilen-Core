@@ -4,6 +4,7 @@
 //                           
 // ========================
 import { ConsoleServerManager, Header, PluginPageData } from "../interface";
+import { ServerAdmin } from "./admin";
 import { ServerDetail } from "./detail";
 import { CreateRecordMemoryLoader_Browser, MemoryData, RecordIOBase, RecordLoader } from "./io";
 import { Project_Module } from "./module/project";
@@ -33,7 +34,7 @@ export interface PluginFeedback {
 }
 
 export class ServerBase {
-    manager:Array<ConsoleServerManager> = []
+    manager:ConsoleServerManager | undefined = undefined
     memory: MemoryData = {
         projects: [],
         tasks: [],
@@ -52,6 +53,7 @@ export class ServerBase {
     memory_loader:RecordLoader
     plugin_loader: PluginLoader | undefined = undefined
     detail: ServerDetail | undefined
+    admin: ServerAdmin | undefined = undefined
     
     module_project: Project_Module
 
@@ -93,7 +95,7 @@ export class ServerBase {
             name: name,
             data: data
         }
-        this.manager.forEach(x => {
+        this.manager?.admins.forEach(x => {
             x.ws.send(JSON.stringify(d))
         })
     }

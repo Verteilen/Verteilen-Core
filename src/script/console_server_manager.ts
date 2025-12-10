@@ -9,8 +9,15 @@
 //
 import * as ws from 'ws';
 import { Header } from "../interface";
+import { v6 as uuidv6 } from 'uuid'
 
 type calltype = { [key:string]:Function }
+
+export interface ConsoleServerContainer {
+    uuid: string
+    ws:ws.WebSocket
+    typeMap: calltype
+}
 
 /**
  * Console server helper, cluster server side handle web client connection instances
@@ -19,17 +26,27 @@ export class ConsoleServerManager {
     /**
      * Websocket instance for admin
      */
-    ws:ws.WebSocket
-    typeMap: calltype
+    admins: Array<ConsoleServerContainer> = []
     messager_log:Function
 
-    constructor(_ws:ws.WebSocket, _messager_log:Function, _typeMap: calltype){
+    constructor(_messager_log:Function){
         this.messager_log = _messager_log
-        this.ws = _ws
-        this.typeMap = _typeMap
     }
 
-    Analysis = (h:Header) => {
+    static Create = (_ws:ws.WebSocket, _typeMap: calltype):ConsoleServerContainer => {
+        return {
+            uuid: uuidv6(),
+            ws: _ws,
+            typeMap: _typeMap
+        }
+    }
+
+    Analysis = (ws:ws.WebSocket, h:Header) => {
+        const target = this.admins.find(x => x.ws == ws)
+        if(target == undefined){
+            this.messager_log('[Source Analysis] Failed, websocket not found in record')
+            return;
+        }
         if (h == undefined){
             this.messager_log('[Source Analysis] Failed, Get a undefined value')
             return;
@@ -38,13 +55,13 @@ export class ConsoleServerManager {
             this.messager_log(`[Source Analysis] ${h.message}`)
         }
         if (h.data == undefined) return
-        if(this.typeMap.hasOwnProperty(h.name)){
-            const castingFunc = this.typeMap[h.name]
+        if(target.typeMap.hasOwnProperty(h.name)){
+            const castingFunc = target.typeMap[h.name]
             if(h.data instanceof Array){
-                if(h.data.length == 1) castingFunc(this.ws, h.data[0])
-                else castingFunc(this.ws, ...h.data)
+                if(h.data.length == 1) castingFunc(target.ws, h.data[0])
+                else castingFunc(target.ws, ...h.data)
             }else{
-                castingFunc(this.ws, h.data)
+                castingFunc(target.ws, h.data)
             }
         }else{
             this.messager_log(`[Source Analysis] Failed, Unknown, name: ${h.name}, meta: ${h.meta}`)

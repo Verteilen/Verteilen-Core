@@ -1,12 +1,22 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ConsoleServerManager = void 0;
+const uuid_1 = require("uuid");
 /**
  * Console server helper, cluster server side handle web client connection instances
  */
 class ConsoleServerManager {
-    constructor(_ws, _messager_log, _typeMap) {
-        this.Analysis = (h) => {
+    constructor(_messager_log) {
+        /**
+         * Websocket instance for admin
+         */
+        this.admins = [];
+        this.Analysis = (ws, h) => {
+            const target = this.admins.find(x => x.ws == ws);
+            if (target == undefined) {
+                this.messager_log('[Source Analysis] Failed, websocket not found in record');
+                return;
+            }
             if (h == undefined) {
                 this.messager_log('[Source Analysis] Failed, Get a undefined value');
                 return;
@@ -16,16 +26,16 @@ class ConsoleServerManager {
             }
             if (h.data == undefined)
                 return;
-            if (this.typeMap.hasOwnProperty(h.name)) {
-                const castingFunc = this.typeMap[h.name];
+            if (target.typeMap.hasOwnProperty(h.name)) {
+                const castingFunc = target.typeMap[h.name];
                 if (h.data instanceof Array) {
                     if (h.data.length == 1)
-                        castingFunc(this.ws, h.data[0]);
+                        castingFunc(target.ws, h.data[0]);
                     else
-                        castingFunc(this.ws, ...h.data);
+                        castingFunc(target.ws, ...h.data);
                 }
                 else {
-                    castingFunc(this.ws, h.data);
+                    castingFunc(target.ws, h.data);
                 }
             }
             else {
@@ -33,9 +43,14 @@ class ConsoleServerManager {
             }
         };
         this.messager_log = _messager_log;
-        this.ws = _ws;
-        this.typeMap = _typeMap;
     }
 }
 exports.ConsoleServerManager = ConsoleServerManager;
+ConsoleServerManager.Create = (_ws, _typeMap) => {
+    return {
+        uuid: (0, uuid_1.v6)(),
+        ws: _ws,
+        typeMap: _typeMap
+    };
+};
 //# sourceMappingURL=console_server_manager.js.map

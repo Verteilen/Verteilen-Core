@@ -10,5 +10,5 @@ import { ServerBase } from "./server";
  * The task schedule server
  */
 export class Server extends ServerBase {
-
+    
 }

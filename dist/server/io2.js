@@ -21,6 +21,12 @@ exports.CreateRecordMongoLoader = exports.CreateRecordIOLoader = exports.CreateR
 const mongodb_1 = require("mongodb");
 const interface_1 = require("../interface");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+/**
+ * Check if user have permission to access the container
+ * @param x Target Container
+ * @param uuid User UUID
+ * @returns Access right
+ */
 const permissionHelper = (x, uuid) => {
     const ispublic = x.owner == undefined || x.acl == interface_1.ACLType.PUBLIC;
     if (ispublic)
@@ -38,9 +44,21 @@ const permissionHelper = (x, uuid) => {
         return false;
     return true;
 };
+/**
+ * Filter out the public container out
+ * @param v The list of container
+ * @returns Result of filter
+ */
 const permissionGetPublic = (v) => {
     return v.filter(x => x.owner == undefined || x.acl == interface_1.ACLType.PUBLIC);
 };
+/**
+ * Record transfer to Project folder process
+ * @param loader
+ * @param type
+ * @param folder
+ * @returns
+ */
 const obsoleteSupport = (loader, type, folder) => __awaiter(void 0, void 0, void 0, function* () {
     if (type == interface_1.RecordType.PROJECT) {
         const path = loader.join(loader.root, "record");
@@ -212,18 +230,19 @@ const _CreateRecordMemoryLoader = (loader, type) => {
         }),
         save: (uuid, data, token) => __awaiter(void 0, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
+                const buffer = JSON.parse(data);
                 const arr = get_array(type);
                 const index = arr.findIndex(x => x.uuid == uuid);
                 const exist = index == -1 ? undefined : arr[index];
                 const ispublic = (exist === null || exist === void 0 ? void 0 : exist.owner) == undefined || (exist === null || exist === void 0 ? void 0 : exist.acl) == interface_1.ACLType.PUBLIC;
                 if (ispublic) {
                     if (!exist) {
-                        arr.push(JSON.parse(data));
+                        arr.push(buffer);
                         if (process.env.NODE_ENV == 'development')
                             console.log(`[IO2] Memory ${interface_1.RecordTypePureText[type]} save command, push successfully: ${uuid}`);
                     }
                     else {
-                        arr[index] = JSON.parse(data);
+                        arr[index] = buffer;
                         if (process.env.NODE_ENV == 'development')
                             console.log(`[IO2] Memory ${interface_1.RecordTypePureText[type]} save command, replace successfully: ${uuid}`);
                     }
@@ -252,12 +271,12 @@ const _CreateRecordMemoryLoader = (loader, type) => {
                     const payload = JSON.parse(decode.payload);
                     if (permissionHelper(exist, payload.user)) {
                         if (!exist) {
-                            arr.push(JSON.parse(data));
+                            arr.push(buffer);
                             if (process.env.NODE_ENV == 'development')
                                 console.log(`[IO2] Memory ${interface_1.RecordTypePureText[type]} save command, payload decode push successfully: ${uuid}`);
                         }
                         else {
-                            arr[index] = JSON.parse(data);
+                            arr[index] = buffer;
                             if (process.env.NODE_ENV == 'development')
                                 console.log(`[IO2] Memory ${interface_1.RecordTypePureText[type]} save command, payload decode replace successfully: ${uuid}`);
                         }

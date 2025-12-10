@@ -198,12 +198,13 @@ class Project_Module {
             const p = this.memory.tasks.find(p => p.uuid == uuid);
             if (!p)
                 return;
-            const ps = p.jobs_uuid.map(j_uuid => this.CascadeDeleteJob(j_uuid, project_change, token));
+            const ps = p.jobs_uuid.map(j_uuid => this.loader.job.delete(j_uuid, token));
             yield Promise.all(ps);
             yield this.loader.task.delete(uuid, token);
             // The project with task uuid includes
             if (!project_change)
                 return;
+            const caller = [];
             const ps2 = this.memory.projects.filter(x => x.tasks_uuid.includes(uuid)).map(x => x.uuid);
             for (let u of ps2) {
                 const index = this.memory.projects.findIndex(x => x.uuid == u);
@@ -220,8 +221,9 @@ class Project_Module {
                     continue;
                 }
                 buffer.tasks_uuid.splice(task_index, 1);
-                this.loader.project.save(u, JSON.stringify(buffer, null, 4));
+                caller.push(this.loader.project.save(u, JSON.stringify(buffer, null, 4)));
             }
+            yield Promise.all(caller);
         });
     }
     /**
@@ -233,6 +235,7 @@ class Project_Module {
             yield this.loader.job.delete(uuid, token);
             if (!task_change)
                 return;
+            const caller = [];
             const ps2 = this.memory.tasks.filter(x => x.jobs_uuid.includes(uuid)).map(x => x.uuid);
             for (let u of ps2) {
                 const index = this.memory.tasks.findIndex(x => x.uuid == u);
@@ -249,8 +252,9 @@ class Project_Module {
                     continue;
                 }
                 buffer.jobs_uuid.splice(job_index, 1);
-                this.loader.task.save(u, JSON.stringify(buffer, null, 4));
+                caller.push(this.loader.task.save(u, JSON.stringify(buffer, null, 4)));
             }
+            yield Promise.all(caller);
         });
     }
     /**

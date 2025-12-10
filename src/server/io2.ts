@@ -17,7 +17,13 @@ import {
 import jwt from 'jsonwebtoken'
 import { MemoryData, RecordIOBase, RecordIOLoader, RecordLoader } from "./io"
 
-const permissionHelper = (x:Shareable & DataHeader, uuid:string) => {
+/**
+ * Check if user have permission to access the container
+ * @param x Target Container
+ * @param uuid User UUID
+ * @returns Access right
+ */
+const permissionHelper = (x:Shareable & DataHeader, uuid:string):boolean => {
     const ispublic = x.owner == undefined || x.acl == ACLType.PUBLIC
     if(ispublic) return true
     const isowner = x.owner == uuid
@@ -29,10 +35,21 @@ const permissionHelper = (x:Shareable & DataHeader, uuid:string) => {
     if(target == undefined) return false
     return true
 }
+/**
+ * Filter out the public container out
+ * @param v The list of container
+ * @returns Result of filter
+ */
 const permissionGetPublic = (v:Array<Shareable & DataHeader>):Array<Shareable & DataHeader> => {
     return v.filter(x => x.owner == undefined || x.acl == ACLType.PUBLIC)
 }
-
+/**
+ * Record transfer to Project folder process
+ * @param loader 
+ * @param type 
+ * @param folder 
+ * @returns 
+ */
 const obsoleteSupport = async (loader:RecordIOBase, type:RecordType, folder:string) => {
     if(type == RecordType.PROJECT){
         const path = loader.join(loader.root, "record")

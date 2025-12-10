@@ -1,4 +1,5 @@
 import { ConsoleServerManager, PluginPageData } from "../interface";
+import { ServerAdmin } from "./admin";
 import { ServerDetail } from "./detail";
 import { MemoryData, RecordIOBase, RecordLoader } from "./io";
 import { Project_Module } from "./module/project";
@@ -27,7 +28,7 @@ export interface PluginFeedback {
     socket: Caller_Socket | undefined;
 }
 export declare class ServerBase {
-    manager: Array<ConsoleServerManager>;
+    manager: ConsoleServerManager | undefined;
     memory: MemoryData;
     plugin: PluginPageData;
     io: RecordIOBase | undefined;
@@ -35,6 +36,7 @@ export declare class ServerBase {
     memory_loader: RecordLoader;
     plugin_loader: PluginLoader | undefined;
     detail: ServerDetail | undefined;
+    admin: ServerAdmin | undefined;
     module_project: Project_Module;
     constructor();
     get current_loader(): RecordLoader;

@@ -5,7 +5,7 @@ const io_1 = require("./io");
 const project_1 = require("./module/project");
 class ServerBase {
     constructor() {
-        this.manager = [];
+        this.manager = undefined;
         this.memory = {
             projects: [],
             tasks: [],
@@ -22,6 +22,7 @@ class ServerBase {
         this.io = undefined;
         this.loader = undefined;
         this.plugin_loader = undefined;
+        this.admin = undefined;
         /**
          * **Data: Memory**\
          * Load every type of data from disk, store them into memory
@@ -46,11 +47,12 @@ class ServerBase {
          * @param data raw data
          */
         this.Boradcasting = (name, data) => {
+            var _a;
             const d = {
                 name: name,
                 data: data
             };
-            this.manager.forEach(x => {
+            (_a = this.manager) === null || _a === void 0 ? void 0 : _a.admins.forEach(x => {
                 x.ws.send(JSON.stringify(d));
             });
         };
