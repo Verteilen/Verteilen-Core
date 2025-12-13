@@ -4,7 +4,7 @@
 //                           
 // ========================
 import { v6 as uuidv6 } from 'uuid';
-import { BusAnalysis, Header, Node, NodeLoad, NodeProxy, NodeTable, Plugin, ShellFolder, Single, SocketState, SystemLoad, SocketPack } from "../interface";
+import { Node, NodeLoad, NodeProxy, NodeTable, Plugin, ShellFolder, Single, SystemLoad, SocketPack } from "../interface";
 import { io, Socket } from 'socket.io-client'
 
 /**
@@ -62,11 +62,7 @@ export class WebsocketManager {
             this.messager_log(`[Shell] Error cannot find the node by ID: ${uuid}`)
             return
         }
-        const d:Header = {
-            name: "open_shell",
-            data: 0
-        }
-        p.socket.send(JSON.stringify(d))
+        p.socket.emit("open_shell")
     }
 
     /**
@@ -80,11 +76,7 @@ export class WebsocketManager {
             this.messager_log(`[Shell] Error cannot find the node by ID: ${uuid}`)
             return
         }
-        const d:Header = {
-            name: "enter_shell",
-            data: text
-        }
-        p.socket.send(JSON.stringify(d))
+        p.socket.emit("enter_shell", text)
     }
 
     /**
@@ -98,11 +90,7 @@ export class WebsocketManager {
             this.messager_log(`[Shell] Error cannot find the node by ID: ${uuid}`)
             return
         }
-        const d:Header = {
-            name: "close_shell",
-            data: 0
-        }
-        p.socket.send(JSON.stringify(d))
+        p.socket.emit("close_shell")
     }
 
     /**
@@ -116,11 +104,7 @@ export class WebsocketManager {
             this.messager_log(`[Shell] Error cannot find the node by ID: ${uuid}`)
             return
         }
-        const d:Header = {
-            name: "shell_folder",
-            data: path
-        }
-        p.socket.send(JSON.stringify(d))
+        p.socket.emit("shell_folder", path)
     }
 
     /**
@@ -133,8 +117,11 @@ export class WebsocketManager {
         if(this.targets.findIndex(x => x.url.slice(0, -1) == url) != -1) return
         if(this.targets.findIndex(x => x.uuid == uuid) != -1) return
 
-        let client: Socket | undefined = undefined
-        client = io(url)
+        let client: Socket = io(url, {
+            transports: ['websocket'],
+            secure: true,
+            rejectUnauthorized: false,
+        })
         const t:SocketPack = { uuid: (uuid == undefined ? uuidv6() : uuid), url: url, socket: client, current_job: [] }
         this.targets.push(t)
         
@@ -160,16 +147,7 @@ export class WebsocketManager {
             this.newConnect(t)
         })
 
-        client.io.on('packet', (packet) => {
-            try{
-                JSON.parse(packet.data.toString())
-                const h:Header | undefined = JSON.parse(packet.data.toString());
-                const c = this.targets.find(x => x.uuid == uuid)
-                this.analysis(h, c)
-            }catch(err:any){
-                console.error("[Socket] Message error occurred: " + err.message)
-            }
-        })
+        this.analysis(client)
         return client
     }
 
@@ -178,37 +156,18 @@ export class WebsocketManager {
      * @param h Package
      * @param c Connection instance
      */
-    private analysis = (h:Header | undefined, c:SocketPack | undefined) => {
-        if (h == undefined){
-            this.messager_log('[Source Analysis] Decode failed, Get value undefined')
-            return;
-        }
-        if (h.message != undefined && h.message.length > 0){
-            this.messager_log(`[Source Analysis] ${h.message}`)
-        }
-        if (h.data == undefined) return
-
-        const d:BusAnalysis = {name: h.name, h: h, c: c}
-        const pass = this.socket_analysis(d)
-        if (!pass) this.onAnalysis(d)
+    private analysis = (socket:Socket) => {
+        this.socket_analysis(socket)
+        this.onAnalysis(socket)
     }
 
-    private socket_analysis = (d:BusAnalysis) => {
-        const typeMap:{ [key:string]:Function } = {
-            'system_info': this.system_info,
-            'shell_reply': this.shell_reply,
-            'shell_folder_reply': this.shell_folder_reply,
-            'node_info': this.node_info,
-            'pong': this.pong,
-            'plugin_info_reply': this.plugin_info_reply,
-        }
-        if(typeMap.hasOwnProperty(d.name)){
-            const castingFunc = typeMap[d.h.name]
-            castingFunc(d.h.data, d.c, d.h.meta)
-            return true
-        }else{
-            return false
-        }
+    private socket_analysis = (socket:Socket) => {
+        socket.on('system_info', this.system_info)
+        socket.on('shell_reply', this.shell_reply)
+        socket.on('shell_folder_reply', this.shell_folder_reply)
+        socket.on('node_info', this.node_info)
+        socket.on('pong', this.pong)
+        socket.on('plugin_info_reply', this.plugin_info_reply)
     }
 
     /**
@@ -264,11 +223,10 @@ export class WebsocketManager {
      * Internal update, for checking the ping of every nodes
      */
     private update = () => {
-        const h:Header = { name: 'ping', data: 0}
         this.targets.forEach(x => {
-            if(x.socket.io._readyState != 'open') return
+            if(x.socket.io._readyState != 'open' || x.socket.id == undefined) return
             x.last = Date.now()
-            x.socket.send(JSON.stringify(h))
+            x.socket.emit('ping', x.socket.id)
         })
     }
 
@@ -290,7 +248,8 @@ export class WebsocketManager {
      * @param info Data
      * @param source The node target
      */
-    private system_info = (info:SystemLoad, source:SocketPack | undefined) => {
+    private system_info = (id:string, info:SystemLoad) => {
+        const source = this.targets.find(x => x.socket.id == id)
         if(source == undefined) return
         source.information = info
     }
@@ -299,7 +258,8 @@ export class WebsocketManager {
      * @param info Data
      * @param source The node target
      */
-    private node_info = (info:NodeLoad, source:SocketPack | undefined) => {
+    private node_info = (id:string, info:NodeLoad) => {
+        const source = this.targets.find(x => x.socket.id == id)
         if(source == undefined) return
         source.load = info
     }
@@ -310,13 +270,15 @@ export class WebsocketManager {
      * @param info Dummy number, nothing important, can be ignore
      * @param source The node target
      */
-    private pong = (info:number, source:SocketPack | undefined) => {
+    private pong = (id:string) => {
+        const source = this.targets.find(x => x.socket.id == id)
         if(source == undefined || source.last == undefined) return
         source.ms = Date.now() - source.last
     }
 
-    private plugin_info_reply = (data:Array<Plugin>, source:SocketPack | undefined) => {
-        if(source == undefined || source.last == undefined) return
+    private plugin_info_reply = (id:string, data:Array<Plugin>) => {
+        const source = this.targets.find(x => x.socket.id == id)
+        if(source == undefined) return
         source.plugins = data
     }
 }

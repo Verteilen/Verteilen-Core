@@ -7,6 +7,7 @@
 //  ? Handle admin -> server
 //  ? This thing exist in admin client space
 //
+import { io, Socket } from "socket.io-client"
 import { BusType, EmitterProxy, Header, RawSend } from "../interface"
 export type Listener = (...args: any[]) => void
 
@@ -15,41 +16,45 @@ export type Listener = (...args: any[]) => void
  */
 export class ConsoleManager {
     url:string
-    ws:WebSocket
+    socket:Socket
     emitter:EmitterProxy<BusType>
     messager_log:Function
     events:Array<[string, Array<Listener>]>
     events_once:Array<[string, Array<Listener>]>
     buffer:Array<Header> = []
 
-    constructor(_url:string, _messager_log:Function, _emitter:EmitterProxy<BusType>){
-        this.messager_log = _messager_log
-        this.url = _url
-        this.emitter = _emitter
+    constructor(url:string, messager_log:Function, emitter:EmitterProxy<BusType>){
+        this.messager_log = messager_log
+        this.url = url
+        this.emitter = emitter
         this.events = []
         this.events_once = []
-        this.ws = new WebSocket(this.url)
-        this.ws.onerror = (err:any) => {
+        this.socket = io(this.url, {
+            transports: ['websocket'],
+            secure: true,
+            rejectUnauthorized: false,
+        })
+        this.socket.io.on('error', (err) => {
             this.messager_log(`[Error] Express Connection failed ${this.url}`)
-        }
-        this.ws.onclose = (ev) => {
-            this.messager_log(`[Close] Express Client close, ${ev.code}, ${ev.reason}`)
+        })
+        this.socket.io.on('close', (reason, des) => {
+            this.messager_log(`[Close] Express Client close, ${des}, ${reason}`)
             this.buffer = []
-        }
-        this.ws.onopen = () => {
+        })
+        this.socket.io.on('open', () => {
             this.messager_log('[Connection] Express New Connection !')
             for(let i = 0; i < this.buffer.length; i++){
-                this.ws.send(JSON.stringify(this.buffer[i]))
+                this.socket.send(JSON.stringify(this.buffer[i]))
             }
             this.buffer = []
-        }
-        this.ws.onmessage = (ev) => {
-            this.received(JSON.parse(ev.data.toString()))
-        }
+        })
+        this.socket.io.on('packet', (packet) => {
+            this.received(JSON.parse(packet.data.toString()))
+        })
     }
 
     public get connected() : boolean {
-        return this.ws.readyState === 1
+        return this.socket.io._readyState === 'open'
     }
 
     on = (channel: string, listener: Listener) => {
@@ -86,10 +91,10 @@ export class ConsoleManager {
             token: data.token,
             data: data.data
         }
-        if(this.ws.readyState !== WebSocket.OPEN){
+        if(this.socket.io._readyState !== 'open'){
             this.buffer.push(d)
         }else{
-            this.ws.send(JSON.stringify(d))
+            this.socket.send(JSON.stringify(d))
         }
     }
 

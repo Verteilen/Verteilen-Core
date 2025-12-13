@@ -46,12 +46,8 @@ class ExecuteManager extends runner_1.ExecuteManager_Runner {
          */
         this.Stop = () => {
             this.current_nodes.forEach(x => {
-                const h = {
-                    name: 'stop_job',
-                    message: 'Stop All Jobs',
-                    data: {}
-                };
-                x.socket.send(JSON.stringify(h));
+                x.socket.emit("message", "Stop All Jobs");
+                x.socket.emit("stop_job");
             });
             this.jobstack = 0;
             this.current_nodes.forEach(x => x.current_job = []);

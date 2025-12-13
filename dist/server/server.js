@@ -48,12 +48,8 @@ class ServerBase {
          */
         this.Boradcasting = (name, data) => {
             var _a;
-            const d = {
-                name: name,
-                data: data
-            };
             (_a = this.manager) === null || _a === void 0 ? void 0 : _a.admins.forEach(x => {
-                x.ws.send(JSON.stringify(d));
+                x.socket.emit(name, data);
             });
         };
         this.memory_loader = (0, io_1.CreateRecordMemoryLoader_Browser)(this.memory);

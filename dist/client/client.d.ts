@@ -1,4 +1,4 @@
-import { WebSocket } from 'ws';
+import { Socket } from 'socket.io';
 import { Messager, Messager_log, PluginNode } from '../interface';
 /**
  * **Compute Client**\
@@ -24,7 +24,7 @@ export declare class Client {
     /**
      * Get connected client list instance
      */
-    get clients(): Array<WebSocket>;
+    get clients(): Array<Socket>;
     constructor(_messager: Messager, _messager_log: Messager_log);
     Dispose(): void;
     /**

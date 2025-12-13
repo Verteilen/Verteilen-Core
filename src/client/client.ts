@@ -9,7 +9,6 @@
 //
 import * as path from 'path';
 import { check } from 'tcp-port-used';
-import { WebSocket } from 'ws';
 import { Server, Socket } from 'socket.io';
 import { CLIENT_UPDATETICK, DATA_FOLDER, Header, Messager, Messager_log, PluginNode, PORT } from '../interface';
 import { ClientAnalysis } from './analysis';
@@ -46,7 +45,7 @@ export class Client {
     /**
      * Get connected client list instance
      */
-    public get clients() : Array<WebSocket> {
+    public get clients() : Array<Socket> {
         return this.sources
     }
 
@@ -83,7 +82,7 @@ export class Client {
             res.end('HTTPS server is running');
         })
         this.httpss.addListener('upgrade', (req, res, head) => console.log('UPGRADE:', req.url))
-        this.client = new Server(this.httpss)
+        this.client = new Server(this.httpss, { path: '/', cors: { origin: '*' } })
         this.client.on('listening', () => {
             this.messager_log('[Server] Listen PORT: ' + port_result.toString())
         })

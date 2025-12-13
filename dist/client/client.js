@@ -108,7 +108,7 @@ class Client {
                 res.end('HTTPS server is running');
             });
             this.httpss.addListener('upgrade', (req, res, head) => console.log('UPGRADE:', req.url));
-            this.client = new socket_io_1.Server(this.httpss);
+            this.client = new socket_io_1.Server(this.httpss, { path: '/', cors: { origin: '*' } });
             this.client.on('listening', () => {
                 this.messager_log('[Server] Listen PORT: ' + port_result.toString());
             });

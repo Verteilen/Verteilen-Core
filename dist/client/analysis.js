@@ -175,9 +175,8 @@ class ClientAnalysis {
          * @param data Dummy value, should always be 0
          * @param source The cluster server websocket instance
          */
-        this.pong = (data) => {
-            const h = { name: 'pong', data: data };
-            this.socket.send(JSON.stringify(h));
+        this.pong = (id) => {
+            this.socket.emit('pong', id);
         };
         /**
          * Feedback current plugin state to computed server

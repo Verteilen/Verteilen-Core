@@ -1,11 +1,8 @@
-import * as ws from 'ws';
-import { Header } from "../interface";
-type calltype = {
-    [key: string]: Function;
-};
+import { Socket } from 'socket.io';
+type calltype = Array<[string, (...args: Array<any>) => void]>;
 export interface ConsoleServerContainer {
     uuid: string;
-    ws: ws.WebSocket;
+    socket: Socket;
     typeMap: calltype;
 }
 /**
@@ -18,7 +15,6 @@ export declare class ConsoleServerManager {
     admins: Array<ConsoleServerContainer>;
     messager_log: Function;
     constructor(_messager_log: Function);
-    static Create: (_ws: ws.WebSocket, _typeMap: calltype) => ConsoleServerContainer;
-    Analysis: (ws: ws.WebSocket, h: Header) => void;
+    Added: (socket: Socket, typeMap: calltype) => ConsoleServerContainer | undefined;
 }
 export {};

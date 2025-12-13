@@ -149,9 +149,8 @@ export class ClientAnalysis {
      * @param data Dummy value, should always be 0
      * @param source The cluster server websocket instance
      */
-    private pong = (data:number) => {
-        const h:Header = { name: 'pong', data: data }
-        this.socket.send(JSON.stringify(h))
+    private pong = (id:string) => {
+        this.socket.emit('pong', id)
     }
 
     /**

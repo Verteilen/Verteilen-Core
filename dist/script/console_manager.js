@@ -1,11 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ConsoleManager = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
+//
+//  ? Handle admin -> server
+//  ? This thing exist in admin client space
+//
+const socket_io_client_1 = require("socket.io-client");
 /**
  * Console helper, web client side handle cluster server connection instance
  */
 class ConsoleManager {
-    constructor(_url, _messager_log, _emitter) {
+    constructor(url, messager_log, emitter) {
         this.buffer = [];
         this.on = (channel, listener) => {
             const index = this.events.findIndex(x => x[0] == channel);
@@ -42,11 +52,11 @@ class ConsoleManager {
                 token: data.token,
                 data: data.data
             };
-            if (this.ws.readyState !== WebSocket.OPEN) {
+            if (this.socket.io._readyState !== 'open') {
                 this.buffer.push(d);
             }
             else {
-                this.ws.send(JSON.stringify(d));
+                this.socket.send(JSON.stringify(d));
             }
         };
         this.received = (h) => {
@@ -97,32 +107,36 @@ class ConsoleManager {
                 this.messager_log(`[Source Analysis] Analysis Failed, Unknowed header, name: ${h.name}, meta: ${h.meta}`);
             }
         };
-        this.messager_log = _messager_log;
-        this.url = _url;
-        this.emitter = _emitter;
+        this.messager_log = messager_log;
+        this.url = url;
+        this.emitter = emitter;
         this.events = [];
         this.events_once = [];
-        this.ws = new WebSocket(this.url);
-        this.ws.onerror = (err) => {
+        this.socket = (0, socket_io_client_1.io)(this.url, {
+            transports: ['websocket'],
+            secure: true,
+            rejectUnauthorized: false,
+        });
+        this.socket.io.on('error', (err) => {
             this.messager_log(`[Error] Express Connection failed ${this.url}`);
-        };
-        this.ws.onclose = (ev) => {
-            this.messager_log(`[Close] Express Client close, ${ev.code}, ${ev.reason}`);
+        });
+        this.socket.io.on('close', (reason, des) => {
+            this.messager_log(`[Close] Express Client close, ${des}, ${reason}`);
             this.buffer = [];
-        };
-        this.ws.onopen = () => {
+        });
+        this.socket.io.on('open', () => {
             this.messager_log('[Connection] Express New Connection !');
             for (let i = 0; i < this.buffer.length; i++) {
-                this.ws.send(JSON.stringify(this.buffer[i]));
+                this.socket.send(JSON.stringify(this.buffer[i]));
             }
             this.buffer = [];
-        };
-        this.ws.onmessage = (ev) => {
-            this.received(JSON.parse(ev.data.toString()));
-        };
+        });
+        this.socket.io.on('packet', (packet) => {
+            this.received(JSON.parse(packet.data.toString()));
+        });
     }
     get connected() {
-        return this.ws.readyState === 1;
+        return this.socket.io._readyState === 'open';
     }
 }
 exports.ConsoleManager = ConsoleManager;

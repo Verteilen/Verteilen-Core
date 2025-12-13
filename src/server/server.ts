@@ -91,12 +91,8 @@ export class ServerBase {
      * @param data raw data
      */
     Boradcasting = (name:string, data:any) => {
-        const d:Header = {
-            name: name,
-            data: data
-        }
         this.manager?.admins.forEach(x => {
-            x.ws.send(JSON.stringify(d))
+            x.socket.emit(name, data)
         })
     }
 }

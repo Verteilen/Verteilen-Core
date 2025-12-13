@@ -43,11 +43,7 @@ class WebsocketManager {
                 this.messager_log(`[Shell] Error cannot find the node by ID: ${uuid}`);
                 return;
             }
-            const d = {
-                name: "open_shell",
-                data: 0
-            };
-            p.socket.send(JSON.stringify(d));
+            p.socket.emit("open_shell");
         };
         /**
          * Open shell connection with target node
@@ -60,11 +56,7 @@ class WebsocketManager {
                 this.messager_log(`[Shell] Error cannot find the node by ID: ${uuid}`);
                 return;
             }
-            const d = {
-                name: "enter_shell",
-                data: text
-            };
-            p.socket.send(JSON.stringify(d));
+            p.socket.emit("enter_shell", text);
         };
         /**
          * Close shell connection with target node
@@ -77,11 +69,7 @@ class WebsocketManager {
                 this.messager_log(`[Shell] Error cannot find the node by ID: ${uuid}`);
                 return;
             }
-            const d = {
-                name: "close_shell",
-                data: 0
-            };
-            p.socket.send(JSON.stringify(d));
+            p.socket.emit("close_shell");
         };
         /**
          * Check folder structure with target node
@@ -94,11 +82,7 @@ class WebsocketManager {
                 this.messager_log(`[Shell] Error cannot find the node by ID: ${uuid}`);
                 return;
             }
-            const d = {
-                name: "shell_folder",
-                data: path
-            };
-            p.socket.send(JSON.stringify(d));
+            p.socket.emit("shell_folder", path);
         };
         /**
          * Trying to connect a node by target URL
@@ -111,8 +95,11 @@ class WebsocketManager {
                 return;
             if (this.targets.findIndex(x => x.uuid == uuid) != -1)
                 return;
-            let client = undefined;
-            client = (0, socket_io_client_1.io)(url);
+            let client = (0, socket_io_client_1.io)(url, {
+                transports: ['websocket'],
+                secure: true,
+                rejectUnauthorized: false,
+            });
             const t = { uuid: (uuid == undefined ? (0, uuid_1.v6)() : uuid), url: url, socket: client, current_job: [] };
             this.targets.push(t);
             client.io.on('error', (err) => {
@@ -134,17 +121,7 @@ class WebsocketManager {
                 this.sendUpdate();
                 this.newConnect(t);
             });
-            client.io.on('packet', (packet) => {
-                try {
-                    JSON.parse(packet.data.toString());
-                    const h = JSON.parse(packet.data.toString());
-                    const c = this.targets.find(x => x.uuid == uuid);
-                    this.analysis(h, c);
-                }
-                catch (err) {
-                    console.error("[Socket] Message error occurred: " + err.message);
-                }
-            });
+            this.analysis(client);
             return client;
         };
         /**
@@ -152,38 +129,17 @@ class WebsocketManager {
          * @param h Package
          * @param c Connection instance
          */
-        this.analysis = (h, c) => {
-            if (h == undefined) {
-                this.messager_log('[Source Analysis] Decode failed, Get value undefined');
-                return;
-            }
-            if (h.message != undefined && h.message.length > 0) {
-                this.messager_log(`[Source Analysis] ${h.message}`);
-            }
-            if (h.data == undefined)
-                return;
-            const d = { name: h.name, h: h, c: c };
-            const pass = this.socket_analysis(d);
-            if (!pass)
-                this.onAnalysis(d);
+        this.analysis = (socket) => {
+            this.socket_analysis(socket);
+            this.onAnalysis(socket);
         };
-        this.socket_analysis = (d) => {
-            const typeMap = {
-                'system_info': this.system_info,
-                'shell_reply': this.shell_reply,
-                'shell_folder_reply': this.shell_folder_reply,
-                'node_info': this.node_info,
-                'pong': this.pong,
-                'plugin_info_reply': this.plugin_info_reply,
-            };
-            if (typeMap.hasOwnProperty(d.name)) {
-                const castingFunc = typeMap[d.h.name];
-                castingFunc(d.h.data, d.c, d.h.meta);
-                return true;
-            }
-            else {
-                return false;
-            }
+        this.socket_analysis = (socket) => {
+            socket.on('system_info', this.system_info);
+            socket.on('shell_reply', this.shell_reply);
+            socket.on('shell_folder_reply', this.shell_folder_reply);
+            socket.on('node_info', this.node_info);
+            socket.on('pong', this.pong);
+            socket.on('plugin_info_reply', this.plugin_info_reply);
         };
         /**
          * Manager update, it will does things below
@@ -235,12 +191,11 @@ class WebsocketManager {
          * Internal update, for checking the ping of every nodes
          */
         this.update = () => {
-            const h = { name: 'ping', data: 0 };
             this.targets.forEach(x => {
-                if (x.socket.io._readyState != 'open')
+                if (x.socket.io._readyState != 'open' || x.socket.id == undefined)
                     return;
                 x.last = Date.now();
-                x.socket.send(JSON.stringify(h));
+                x.socket.emit('ping', x.socket.id);
             });
         };
         /**
@@ -262,7 +217,8 @@ class WebsocketManager {
          * @param info Data
          * @param source The node target
          */
-        this.system_info = (info, source) => {
+        this.system_info = (id, info) => {
+            const source = this.targets.find(x => x.socket.id == id);
             if (source == undefined)
                 return;
             source.information = info;
@@ -272,7 +228,8 @@ class WebsocketManager {
          * @param info Data
          * @param source The node target
          */
-        this.node_info = (info, source) => {
+        this.node_info = (id, info) => {
+            const source = this.targets.find(x => x.socket.id == id);
             if (source == undefined)
                 return;
             source.load = info;
@@ -283,13 +240,15 @@ class WebsocketManager {
          * @param info Dummy number, nothing important, can be ignore
          * @param source The node target
          */
-        this.pong = (info, source) => {
+        this.pong = (id) => {
+            const source = this.targets.find(x => x.socket.id == id);
             if (source == undefined || source.last == undefined)
                 return;
             source.ms = Date.now() - source.last;
         };
-        this.plugin_info_reply = (data, source) => {
-            if (source == undefined || source.last == undefined)
+        this.plugin_info_reply = (id, data) => {
+            const source = this.targets.find(x => x.socket.id == id);
+            if (source == undefined)
                 return;
             source.plugins = data;
         };
