@@ -3,7 +3,7 @@
 //      Share Codebase     
 //                           
 // ========================
-import { Database, DataType, Header, Job, JobCategory, JobType, Task, WebsocketPack } from "../../interface"
+import { Database, DataType, Header, Job, JobCategory, JobType, Task, SocketPack } from "../../interface"
 import { ExecuteManager } from "../execute_manager"
 import { Util_Parser } from "./util_parser"
 
@@ -11,9 +11,9 @@ export class Region_Job {
     target:ExecuteManager
     task:Task
     job: Job
-    wss:WebsocketPack
+    wss:SocketPack
 
-    constructor(target:ExecuteManager, task:Task, job:Job, wss:WebsocketPack){
+    constructor(target:ExecuteManager, task:Task, job:Job, wss:SocketPack){
         this.target = target
         this.task = task
         this.job = job
@@ -33,7 +33,7 @@ export class Region_Job {
         }
         this.wss.current_job.push(this.job.runtime_uuid!)
         const stringdata = JSON.stringify(h)
-        this.wss.websocket.send(stringdata)
+        this.wss.socket.send(stringdata)
         this.target.jobstack = this.target.jobstack + 1
     }
 

@@ -3,7 +3,7 @@
 //      Share Codebase     
 //                           
 // ========================
-import { BusAnalysis, CronJobState, DataType, ExecuteState, FeedBack, Header, Setter, Single, WebsocketPack, WorkState } from "../../interface"
+import { BusAnalysis, CronJobState, DataType, ExecuteState, FeedBack, Header, Setter, Single, SocketPack, WorkState } from "../../interface"
 import { ExecuteManager_Base } from "./base"
 
 /**
@@ -42,7 +42,7 @@ export class ExecuteManager_Feedback extends ExecuteManager_Base {
      * @param data feedback data, any type
      * @param source The node target
      */
-    private feedback_message = (data:Single, source:WebsocketPack | undefined, meta:string | undefined) => {
+    private feedback_message = (data:Single, source:SocketPack | undefined, meta:string | undefined) => {
         if(source == undefined) {
             this.messager_log("[Server Feedback Warn] source is none")
             return
@@ -76,7 +76,7 @@ export class ExecuteManager_Feedback extends ExecuteManager_Base {
      * @param data feedback data
      * @param source The node target
      */
-    private feedback_job = (data:FeedBack, source:WebsocketPack | undefined) => {
+    private feedback_job = (data:FeedBack, source:SocketPack | undefined) => {
         if(source == undefined) return
         if(this.state == ExecuteState.NONE) return
         this.jobstack = Math.max(this.jobstack - 1, 0)
@@ -143,7 +143,7 @@ export class ExecuteManager_Feedback extends ExecuteManager_Base {
         this.messager_log(`[String Feedback] ${data.key} = ${data.value}`)
         // Sync to other
         const d:Header = { name: 'set_database', data: this.localPara!}
-        this.current_nodes.forEach(x => x.websocket.send(JSON.stringify(d)))
+        this.current_nodes.forEach(x => x.socket.send(JSON.stringify(d)))
         this.proxy?.updateDatabase(this.localPara!)
     }
     /**
@@ -158,7 +158,7 @@ export class ExecuteManager_Feedback extends ExecuteManager_Base {
         this.messager_log(`[Number Feedback] ${data.key} = ${data.value}`)
         // Sync to other
         const d:Header = { name: 'set_database', data: this.localPara!}
-        this.current_nodes.forEach(x => x.websocket.send(JSON.stringify(d)))
+        this.current_nodes.forEach(x => x.socket.send(JSON.stringify(d)))
         this.proxy?.updateDatabase(this.localPara!)
     }
     /**
@@ -173,7 +173,7 @@ export class ExecuteManager_Feedback extends ExecuteManager_Base {
         this.messager_log(`[Object Feedback] ${data.key}`)
         // Sync to other
         const d:Header = { name: 'set_database', data: this.localPara!}
-        this.current_nodes.forEach(x => x.websocket.send(JSON.stringify(d)))
+        this.current_nodes.forEach(x => x.socket.send(JSON.stringify(d)))
         this.proxy?.updateDatabase(this.localPara!)
     }
     /**
@@ -188,11 +188,11 @@ export class ExecuteManager_Feedback extends ExecuteManager_Base {
         this.messager_log(`[Boolean Feedback] ${data.key} = ${data.value}`)
         // Sync to other
         const d:Header = { name: 'set_database', data: this.localPara!}
-        this.current_nodes.forEach(x => x.websocket.send(JSON.stringify(d)))
+        this.current_nodes.forEach(x => x.socket.send(JSON.stringify(d)))
         this.proxy?.updateDatabase(this.localPara!)
     }
 
-    private GetCronAndWork = (runtime:string, source:WebsocketPack):[CronJobState | undefined, WorkState | undefined] => {
+    private GetCronAndWork = (runtime:string, source:SocketPack):[CronJobState | undefined, WorkState | undefined] => {
         let cron:CronJobState | undefined = undefined
         let work:WorkState | undefined = undefined
         const crons = this.current_cron.filter(x => x.uuid == source.uuid)

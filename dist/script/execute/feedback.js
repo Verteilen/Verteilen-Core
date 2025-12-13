@@ -154,7 +154,7 @@ class ExecuteManager_Feedback extends base_1.ExecuteManager_Base {
             this.messager_log(`[String Feedback] ${data.key} = ${data.value}`);
             // Sync to other
             const d = { name: 'set_database', data: this.localPara };
-            this.current_nodes.forEach(x => x.websocket.send(JSON.stringify(d)));
+            this.current_nodes.forEach(x => x.socket.send(JSON.stringify(d)));
             (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.updateDatabase(this.localPara);
         };
         /**
@@ -173,7 +173,7 @@ class ExecuteManager_Feedback extends base_1.ExecuteManager_Base {
             this.messager_log(`[Number Feedback] ${data.key} = ${data.value}`);
             // Sync to other
             const d = { name: 'set_database', data: this.localPara };
-            this.current_nodes.forEach(x => x.websocket.send(JSON.stringify(d)));
+            this.current_nodes.forEach(x => x.socket.send(JSON.stringify(d)));
             (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.updateDatabase(this.localPara);
         };
         /**
@@ -192,7 +192,7 @@ class ExecuteManager_Feedback extends base_1.ExecuteManager_Base {
             this.messager_log(`[Object Feedback] ${data.key}`);
             // Sync to other
             const d = { name: 'set_database', data: this.localPara };
-            this.current_nodes.forEach(x => x.websocket.send(JSON.stringify(d)));
+            this.current_nodes.forEach(x => x.socket.send(JSON.stringify(d)));
             (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.updateDatabase(this.localPara);
         };
         /**
@@ -211,7 +211,7 @@ class ExecuteManager_Feedback extends base_1.ExecuteManager_Base {
             this.messager_log(`[Boolean Feedback] ${data.key} = ${data.value}`);
             // Sync to other
             const d = { name: 'set_database', data: this.localPara };
-            this.current_nodes.forEach(x => x.websocket.send(JSON.stringify(d)));
+            this.current_nodes.forEach(x => x.socket.send(JSON.stringify(d)));
             (_a = this.proxy) === null || _a === void 0 ? void 0 : _a.updateDatabase(this.localPara);
         };
         this.GetCronAndWork = (runtime, source) => {

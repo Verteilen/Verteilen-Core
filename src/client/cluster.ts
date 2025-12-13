@@ -6,7 +6,7 @@
 //
 //  ? For worker to run
 //
-import { Header, Job, PluginNode, ResourceType, SystemLoad } from '../interface'
+import { Header, Job, ResourceType, SystemLoad } from '../interface'
 import { ClientHTTP } from './http'
 import { ClientJobExecute } from './job_execute'
 import { ClientResource } from './resource'

@@ -1,5 +1,5 @@
-import { WebSocket } from 'ws';
-import { Header, Messager, Messager_log } from "../interface";
+import { Socket } from 'socket.io';
+import { Messager, Messager_log } from "../interface";
 import { Client } from './client';
 /**
  * The analysis worker. decode the message received from cluster server
@@ -8,6 +8,7 @@ export declare class ClientAnalysis {
     private messager;
     private messager_log;
     private client;
+    private socket;
     private exec;
     private shell;
     private resource_wanter;
@@ -19,9 +20,9 @@ export declare class ClientAnalysis {
      * @param _messager_log The log function at the higher level, Which does send back to server
      * @param _client Client instance
      */
-    constructor(_messager: Messager, _messager_log: Messager_log, _client: Client);
+    constructor(_client: Client, _socket: Socket, _messager: Messager, _messager_log: Messager_log);
     /**
-     * Analysis the package
+     * Register socket io event
      * @param h Package
      * @param source Websocket instance
      * @return
@@ -29,7 +30,8 @@ export declare class ClientAnalysis {
      * * 1: The header is undefined, cannot process
      * * 2: Cannot find the header name match with function typeMap
      */
-    analysis: (h: Header | undefined, source: WebSocket) => 0 | 1 | 2;
+    RegisterEvent: () => void;
+    private message;
     /**
      * Job execution, Pipe down to execution worker to execute the input job object
      * @param job Job Object
@@ -108,7 +110,7 @@ export declare class ClientAnalysis {
     private resource_start;
     private resource_end;
     update: (client: Client) => void;
-    disconnect: (source: WebSocket) => void;
+    disconnect: (source: Socket) => void;
     stop_all: () => void;
     destroy: () => void;
     private resource_require;

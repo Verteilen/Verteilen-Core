@@ -3,17 +3,17 @@
 //      Share Codebase     
 //                           
 // ========================
-import { WebsocketPack, ExecuteState, Job, CronJobState, Task } from "../../interface"
+import { SocketPack, ExecuteState, Job, CronJobState, Task } from "../../interface"
 import { ExecuteManager } from "../execute_manager"
 import { Region_Job } from "./region_job"
 
 export class Region_Subtask {
     target:ExecuteManager
     work:CronJobState
-    ns:WebsocketPack
+    ns:SocketPack
     runner: Region_Job | undefined
 
-    constructor(target:ExecuteManager, work:CronJobState, ns:WebsocketPack){
+    constructor(target:ExecuteManager, work:CronJobState, ns:SocketPack){
         this.target = target
         this.work = work
         this.ns = ns

@@ -1,4 +1,4 @@
-import { BusAnalysis, ExecutePair, ExecuteProxy, ExecuteRecord, ExecuteState, Messager, NodeProxy, Record, ShellFolder, Single, WebsocketPack, ServerDetailEvent, BackendAction } from "../interface";
+import { BusAnalysis, ExecutePair, ExecuteProxy, ExecuteRecord, ExecuteState, Messager, NodeProxy, Record, ShellFolder, Single, SocketPack, ServerDetailEvent, BackendAction } from "../interface";
 import { PluginFeedback } from "./server";
 import { RecordIOBase } from './io';
 import { WebsocketManager } from '../script/socket_manager';
@@ -30,8 +30,8 @@ export declare class ServerDetail implements NodeProxy, ServerDetailEvent {
      * **Caller Reference**
      */
     get nodeEvents(): NodeProxy;
-    NewConnection: (x: WebsocketPack) => void;
-    DisConnection: (x: WebsocketPack) => void;
+    NewConnection: (x: SocketPack) => void;
+    DisConnection: (x: SocketPack) => void;
     Analysis: (d: BusAnalysis) => void;
     /**
      * **Shell Reply Message Event**\
@@ -39,14 +39,14 @@ export declare class ServerDetail implements NodeProxy, ServerDetailEvent {
      * @param data Content
      * @param p Client node source
      */
-    shellReply: (data: Single, p?: WebsocketPack) => void;
+    shellReply: (data: Single, p?: SocketPack) => void;
     /**
      * **Shell Folder Location Event**\
      * Called by the client node
      * @param data Content
      * @param p Client node source
      */
-    folderReply: (data: ShellFolder, p?: WebsocketPack) => void;
+    folderReply: (data: ShellFolder, p?: SocketPack) => void;
     resource_start: (socket: any, uuid: string) => void;
     resource_end: (socket: any, uuid: string) => void;
     plugin_info: (socket: any, uuid: string) => void;
@@ -54,7 +54,7 @@ export declare class ServerDetail implements NodeProxy, ServerDetailEvent {
     shell_open: (socket: any, uuid: string) => void;
     shell_close: (socket: any, uuid: string) => void;
     shell_folder: (socket: any, uuid: string, path: string) => void;
-    node_list: (socket: any) => WebsocketPack[] | undefined;
+    node_list: (socket: any) => SocketPack[] | undefined;
     node_add: (socket: any, url: string, uuid: string) => void;
     node_update: (socket: any) => import("../interface").NodeTable[] | undefined;
     node_delete: (socket: any, uuid: string, reason?: string) => void;

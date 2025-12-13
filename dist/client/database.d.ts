@@ -1,4 +1,4 @@
-import WebSocket from "ws";
+import { Socket } from "socket.io";
 import { Setter } from "../interface";
 /**
  * The database feedback helper\
@@ -6,7 +6,7 @@ import { Setter } from "../interface";
  */
 export declare class ClientDatabase {
     private source;
-    constructor(_source: WebSocket | undefined);
+    constructor(_source: Socket | undefined);
     /**
      * Update database number on the cluster server
      * @param data Target KeyValue

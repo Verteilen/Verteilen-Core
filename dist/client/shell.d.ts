@@ -1,4 +1,4 @@
-import WebSocket from 'ws';
+import { Socket } from 'socket.io';
 import { Messager } from "../interface";
 import { Client } from "./client";
 export declare class ClientShell {
@@ -11,22 +11,22 @@ export declare class ClientShell {
      * Open shell console
      * @param input
      */
-    open_shell: (data: number, source: WebSocket) => void;
+    open_shell: (data: number, source: Socket) => void;
     /**
      * Open shell console
      * @param input
      */
-    enter_shell: (input: string, source: WebSocket) => void;
+    enter_shell: (input: string, source: Socket) => void;
     /**
      * Open shell console
      * @param input
      */
-    close_shell: (data: number, source: WebSocket) => void;
+    close_shell: (data: number, source: Socket) => void;
     /**
      * Open shell console
      * @param input
      */
     close_shell_all: (data: number) => void;
-    shell_folder: (data: string, source: WebSocket) => void;
-    disconnect: (source: WebSocket) => void;
+    shell_folder: (data: string, source: Socket) => void;
+    disconnect: (source: Socket) => void;
 }

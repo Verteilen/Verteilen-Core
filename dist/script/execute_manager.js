@@ -51,7 +51,7 @@ class ExecuteManager extends runner_1.ExecuteManager_Runner {
                     message: 'Stop All Jobs',
                     data: {}
                 };
-                x.websocket.send(JSON.stringify(h));
+                x.socket.send(JSON.stringify(h));
             });
             this.jobstack = 0;
             this.current_nodes.forEach(x => x.current_job = []);

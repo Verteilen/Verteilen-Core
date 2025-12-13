@@ -4,16 +4,14 @@
 //                           
 // ========================
 import { v6 as uuidv6 } from 'uuid';
-import { BusAnalysis, Header, Node, NodeLoad, NodeProxy, NodeTable, Plugin, ShellFolder, Single, SocketState, SystemLoad, WebsocketPack } from "../interface";
-import * as jsEnv from "browser-or-node";
-import * as ws from 'ws'
-import * as https from 'https'
+import { BusAnalysis, Header, Node, NodeLoad, NodeProxy, NodeTable, Plugin, ShellFolder, Single, SocketState, SystemLoad, SocketPack } from "../interface";
+import { io, Socket } from 'socket.io-client'
 
 /**
  * The node connection instance manager, Use by the cluster server
  */
 export class WebsocketManager {
-    targets:Array<WebsocketPack> = []
+    targets:Array<SocketPack> = []
     newConnect:Function
     disconnect:Function
     onAnalysis:Function
@@ -59,7 +57,7 @@ export class WebsocketManager {
     }
 
     shell_open = (uuid:string) => {
-        const p = this.targets.find(x => x.uuid == uuid && x.websocket.readyState == SocketState.OPEN)
+        const p = this.targets.find(x => x.uuid == uuid && x.socket.io._readyState == 'open')
         if (p == undefined){
             this.messager_log(`[Shell] Error cannot find the node by ID: ${uuid}`)
             return
@@ -68,7 +66,7 @@ export class WebsocketManager {
             name: "open_shell",
             data: 0
         }
-        p.websocket.send(JSON.stringify(d))
+        p.socket.send(JSON.stringify(d))
     }
 
     /**
@@ -77,7 +75,7 @@ export class WebsocketManager {
      * @param text input data
      */
     shell_enter = (uuid:string, text:string) => {
-        const p = this.targets.find(x => x.uuid == uuid && x.websocket.readyState == SocketState.OPEN)
+        const p = this.targets.find(x => x.uuid == uuid && x.socket.io._readyState == 'open')
         if (p == undefined){
             this.messager_log(`[Shell] Error cannot find the node by ID: ${uuid}`)
             return
@@ -86,7 +84,7 @@ export class WebsocketManager {
             name: "enter_shell",
             data: text
         }
-        p.websocket.send(JSON.stringify(d))
+        p.socket.send(JSON.stringify(d))
     }
 
     /**
@@ -95,7 +93,7 @@ export class WebsocketManager {
      * @returns 
      */
     shell_close = (uuid:string) => {
-        const p = this.targets.find(x => x.uuid == uuid && x.websocket.readyState == SocketState.OPEN)
+        const p = this.targets.find(x => x.uuid == uuid && x.socket.io._readyState == 'open')
         if (p == undefined){
             this.messager_log(`[Shell] Error cannot find the node by ID: ${uuid}`)
             return
@@ -104,7 +102,7 @@ export class WebsocketManager {
             name: "close_shell",
             data: 0
         }
-        p.websocket.send(JSON.stringify(d))
+        p.socket.send(JSON.stringify(d))
     }
 
     /**
@@ -113,7 +111,7 @@ export class WebsocketManager {
      * @param path the folder path to check
      */
     shell_folder = (uuid:string, path:string) => {
-        const p = this.targets.find(x => x.uuid == uuid && x.websocket.readyState == SocketState.OPEN)
+        const p = this.targets.find(x => x.uuid == uuid && x.socket.io._readyState == 'open')
         if (p == undefined){
             this.messager_log(`[Shell] Error cannot find the node by ID: ${uuid}`)
             return
@@ -122,7 +120,7 @@ export class WebsocketManager {
             name: "shell_folder",
             data: path
         }
-        p.websocket.send(JSON.stringify(d))
+        p.socket.send(JSON.stringify(d))
     }
 
     /**
@@ -132,43 +130,46 @@ export class WebsocketManager {
      * @returns The connection package
      */
     private serverconnect = (url:string, uuid?:string) => {
-        if(this.targets.findIndex(x => x.websocket.url.slice(0, -1) == url) != -1) return
+        if(this.targets.findIndex(x => x.url.slice(0, -1) == url) != -1) return
         if(this.targets.findIndex(x => x.uuid == uuid) != -1) return
 
-        let client: ws.WebSocket | WebSocket | undefined = undefined
-        if(jsEnv.isNode) client = new ws.WebSocket(url, { agent: new https.Agent(), rejectUnauthorized: false });
-        else client = new WebSocket(url);
-        const t:WebsocketPack = { uuid: (uuid == undefined ? uuidv6() : uuid), websocket: client, current_job: [] }
+        let client: Socket | undefined = undefined
+        client = io(url)
+        const t:SocketPack = { uuid: (uuid == undefined ? uuidv6() : uuid), url: url, socket: client, current_job: [] }
         this.targets.push(t)
-        client.onerror = (err:any) => {
+        
+        client.io.on('error', (err:any) => {
             this.messager_log(`[Socket] Connect failed ${url} ${err.message}`)
-        }
-        client.onclose = (ev) => {
+        })
+
+        client.io.on('close', (reason, des) => {
             if(t.s != undefined){
-                this.messager_log(`[Socket] Client close connection, ${ev.code}, ${ev.reason}`)
+                this.messager_log(`[Socket] Client close connection, ${des}, ${reason}`)
                 this.disconnect(t)
             }
             t.s = undefined
             t.current_job = []
-        }
-        client.onopen = () => {
-            this.messager_log('[Socket] New Connection !' + client.url)
+        })
+        
+        client.io.on('open', () => {
+            this.messager_log('[Socket] New Connection !' + client.id)
             if(t.s == undefined){
                 t.s = true
             }
             this.sendUpdate()
             this.newConnect(t)
-        }
-        client.onmessage = (ev) => {
+        })
+
+        client.io.on('packet', (packet) => {
             try{
-                JSON.parse(ev.data.toString())
-                const h:Header | undefined = JSON.parse(ev.data.toString());
+                JSON.parse(packet.data.toString())
+                const h:Header | undefined = JSON.parse(packet.data.toString());
                 const c = this.targets.find(x => x.uuid == uuid)
                 this.analysis(h, c)
             }catch(err:any){
                 console.error("[Socket] Message error occurred: " + err.message)
             }
-        }
+        })
         return client
     }
 
@@ -177,7 +178,7 @@ export class WebsocketManager {
      * @param h Package
      * @param c Connection instance
      */
-    private analysis = (h:Header | undefined, c:WebsocketPack | undefined) => {
+    private analysis = (h:Header | undefined, c:SocketPack | undefined) => {
         if (h == undefined){
             this.messager_log('[Source Analysis] Decode failed, Get value undefined')
             return;
@@ -219,8 +220,8 @@ export class WebsocketManager {
         let result:Array<NodeTable> = []
         const data:Array<Node> = []
         this.targets.forEach(x => {
-            if(x.websocket.readyState == SocketState.CLOSED){
-                data.push({cluster: false, uuid: x.uuid, url: x.websocket.url})
+            if(x.socket.io._readyState == 'closed'){
+                data.push({cluster: false, uuid: x.uuid, url: x.url ?? ""})
             }
         })
         data.forEach(d => this.removeByUUID(d.uuid))
@@ -233,8 +234,8 @@ export class WebsocketManager {
                 s: false,
                 cluster: false,
                 uuid: x.uuid,
-                state: x.websocket.readyState,
-                url: x.websocket.url,
+                state: x.socket.io._readyState,
+                url: x.url,
                 connection_rate: x.ms,
                 system: x.information,
                 plugins: x.plugins
@@ -252,8 +253,10 @@ export class WebsocketManager {
     private removeByUUID = (uuid:string, reason?:string) => {
         let index = this.targets.findIndex(x => x.uuid == uuid)
         if(index != -1) {
-            if(this.targets[index].websocket.readyState == SocketState.OPEN) this.targets[index].websocket.close(1000, reason != undefined ? reason : '')
-                this.targets.splice(index, 1)
+            if(this.targets[index].socket.io._readyState == 'open') {
+                this.targets[index].socket.close()
+            }
+            this.targets.splice(index, 1)
         }
     }
 
@@ -263,9 +266,9 @@ export class WebsocketManager {
     private update = () => {
         const h:Header = { name: 'ping', data: 0}
         this.targets.forEach(x => {
-            if(x.websocket.readyState != SocketState.OPEN) return
+            if(x.socket.io._readyState != 'open') return
             x.last = Date.now()
-            x.websocket.send(JSON.stringify(h))
+            x.socket.send(JSON.stringify(h))
         })
     }
 
@@ -273,13 +276,13 @@ export class WebsocketManager {
     /**
      * Recevied the shell text from client node
      */
-    private shell_reply = (data:Single, w?:WebsocketPack) => {
+    private shell_reply = (data:Single, w?:SocketPack) => {
         this.proxy?.shellReply(data, w)
     }
     /**
      * Recevied the folders from client node
      */
-    private shell_folder_reply = (data:ShellFolder, w?:WebsocketPack) => {
+    private shell_folder_reply = (data:ShellFolder, w?:SocketPack) => {
         this.proxy?.folderReply(data, w)
     }
     /**
@@ -287,7 +290,7 @@ export class WebsocketManager {
      * @param info Data
      * @param source The node target
      */
-    private system_info = (info:SystemLoad, source:WebsocketPack | undefined) => {
+    private system_info = (info:SystemLoad, source:SocketPack | undefined) => {
         if(source == undefined) return
         source.information = info
     }
@@ -296,7 +299,7 @@ export class WebsocketManager {
      * @param info Data
      * @param source The node target
      */
-    private node_info = (info:NodeLoad, source:WebsocketPack | undefined) => {
+    private node_info = (info:NodeLoad, source:SocketPack | undefined) => {
         if(source == undefined) return
         source.load = info
     }
@@ -307,12 +310,12 @@ export class WebsocketManager {
      * @param info Dummy number, nothing important, can be ignore
      * @param source The node target
      */
-    private pong = (info:number, source:WebsocketPack | undefined) => {
+    private pong = (info:number, source:SocketPack | undefined) => {
         if(source == undefined || source.last == undefined) return
         source.ms = Date.now() - source.last
     }
 
-    private plugin_info_reply = (data:Array<Plugin>, source:WebsocketPack | undefined) => {
+    private plugin_info_reply = (data:Array<Plugin>, source:SocketPack | undefined) => {
         if(source == undefined || source.last == undefined) return
         source.plugins = data
     }

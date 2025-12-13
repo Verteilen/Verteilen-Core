@@ -13,14 +13,14 @@ import {
     PluginWithToken, 
     Project,  
     ToastData, 
-    WebsocketPack
+    SocketPack
 } from "../interface";
 import { PluginFeedback } from "./server";
 
 /**
  * Get socket from websocket client method
  */
-export type SocketGetter = (uuid:string) => WebsocketPack | undefined
+export type SocketGetter = (uuid:string) => SocketPack | undefined
 
 /**
  * **Plugin Function Interface**\
@@ -255,13 +255,13 @@ export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, s
             const p2:PluginWithToken = {...p, token: tokens.split(' ') }
             const t = socket(uuid)
             const h:Header = { name: 'plugin_download', data: p2 }
-            t?.websocket.send(JSON.stringify(h))
+            t?.socket.send(JSON.stringify(h))
         },
         plugin_remove: async (uuid:string, plugin:string):Promise<void> => {
             const p:Plugin = JSON.parse(plugin)
             const t = socket(uuid)
             const h:Header = { name: 'plugin_remove', data: p }
-            t?.websocket.send(JSON.stringify(h))
+            t?.socket.send(JSON.stringify(h))
         },
     }
 }

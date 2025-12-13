@@ -1,37 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WebsocketManager = void 0;
 // ========================
@@ -40,10 +7,7 @@ exports.WebsocketManager = void 0;
 //                           
 // ========================
 const uuid_1 = require("uuid");
-const interface_1 = require("../interface");
-const jsEnv = __importStar(require("browser-or-node"));
-const ws = __importStar(require("ws"));
-const https = __importStar(require("https"));
+const socket_io_client_1 = require("socket.io-client");
 /**
  * The node connection instance manager, Use by the cluster server
  */
@@ -74,7 +38,7 @@ class WebsocketManager {
             });
         };
         this.shell_open = (uuid) => {
-            const p = this.targets.find(x => x.uuid == uuid && x.websocket.readyState == interface_1.SocketState.OPEN);
+            const p = this.targets.find(x => x.uuid == uuid && x.socket.io._readyState == 'open');
             if (p == undefined) {
                 this.messager_log(`[Shell] Error cannot find the node by ID: ${uuid}`);
                 return;
@@ -83,7 +47,7 @@ class WebsocketManager {
                 name: "open_shell",
                 data: 0
             };
-            p.websocket.send(JSON.stringify(d));
+            p.socket.send(JSON.stringify(d));
         };
         /**
          * Open shell connection with target node
@@ -91,7 +55,7 @@ class WebsocketManager {
          * @param text input data
          */
         this.shell_enter = (uuid, text) => {
-            const p = this.targets.find(x => x.uuid == uuid && x.websocket.readyState == interface_1.SocketState.OPEN);
+            const p = this.targets.find(x => x.uuid == uuid && x.socket.io._readyState == 'open');
             if (p == undefined) {
                 this.messager_log(`[Shell] Error cannot find the node by ID: ${uuid}`);
                 return;
@@ -100,7 +64,7 @@ class WebsocketManager {
                 name: "enter_shell",
                 data: text
             };
-            p.websocket.send(JSON.stringify(d));
+            p.socket.send(JSON.stringify(d));
         };
         /**
          * Close shell connection with target node
@@ -108,7 +72,7 @@ class WebsocketManager {
          * @returns
          */
         this.shell_close = (uuid) => {
-            const p = this.targets.find(x => x.uuid == uuid && x.websocket.readyState == interface_1.SocketState.OPEN);
+            const p = this.targets.find(x => x.uuid == uuid && x.socket.io._readyState == 'open');
             if (p == undefined) {
                 this.messager_log(`[Shell] Error cannot find the node by ID: ${uuid}`);
                 return;
@@ -117,7 +81,7 @@ class WebsocketManager {
                 name: "close_shell",
                 data: 0
             };
-            p.websocket.send(JSON.stringify(d));
+            p.socket.send(JSON.stringify(d));
         };
         /**
          * Check folder structure with target node
@@ -125,7 +89,7 @@ class WebsocketManager {
          * @param path the folder path to check
          */
         this.shell_folder = (uuid, path) => {
-            const p = this.targets.find(x => x.uuid == uuid && x.websocket.readyState == interface_1.SocketState.OPEN);
+            const p = this.targets.find(x => x.uuid == uuid && x.socket.io._readyState == 'open');
             if (p == undefined) {
                 this.messager_log(`[Shell] Error cannot find the node by ID: ${uuid}`);
                 return;
@@ -134,7 +98,7 @@ class WebsocketManager {
                 name: "shell_folder",
                 data: path
             };
-            p.websocket.send(JSON.stringify(d));
+            p.socket.send(JSON.stringify(d));
         };
         /**
          * Trying to connect a node by target URL
@@ -143,47 +107,44 @@ class WebsocketManager {
          * @returns The connection package
          */
         this.serverconnect = (url, uuid) => {
-            if (this.targets.findIndex(x => x.websocket.url.slice(0, -1) == url) != -1)
+            if (this.targets.findIndex(x => x.url.slice(0, -1) == url) != -1)
                 return;
             if (this.targets.findIndex(x => x.uuid == uuid) != -1)
                 return;
             let client = undefined;
-            if (jsEnv.isNode)
-                client = new ws.WebSocket(url, { agent: new https.Agent(), rejectUnauthorized: false });
-            else
-                client = new WebSocket(url);
-            const t = { uuid: (uuid == undefined ? (0, uuid_1.v6)() : uuid), websocket: client, current_job: [] };
+            client = (0, socket_io_client_1.io)(url);
+            const t = { uuid: (uuid == undefined ? (0, uuid_1.v6)() : uuid), url: url, socket: client, current_job: [] };
             this.targets.push(t);
-            client.onerror = (err) => {
+            client.io.on('error', (err) => {
                 this.messager_log(`[Socket] Connect failed ${url} ${err.message}`);
-            };
-            client.onclose = (ev) => {
+            });
+            client.io.on('close', (reason, des) => {
                 if (t.s != undefined) {
-                    this.messager_log(`[Socket] Client close connection, ${ev.code}, ${ev.reason}`);
+                    this.messager_log(`[Socket] Client close connection, ${des}, ${reason}`);
                     this.disconnect(t);
                 }
                 t.s = undefined;
                 t.current_job = [];
-            };
-            client.onopen = () => {
-                this.messager_log('[Socket] New Connection !' + client.url);
+            });
+            client.io.on('open', () => {
+                this.messager_log('[Socket] New Connection !' + client.id);
                 if (t.s == undefined) {
                     t.s = true;
                 }
                 this.sendUpdate();
                 this.newConnect(t);
-            };
-            client.onmessage = (ev) => {
+            });
+            client.io.on('packet', (packet) => {
                 try {
-                    JSON.parse(ev.data.toString());
-                    const h = JSON.parse(ev.data.toString());
+                    JSON.parse(packet.data.toString());
+                    const h = JSON.parse(packet.data.toString());
                     const c = this.targets.find(x => x.uuid == uuid);
                     this.analysis(h, c);
                 }
                 catch (err) {
                     console.error("[Socket] Message error occurred: " + err.message);
                 }
-            };
+            });
             return client;
         };
         /**
@@ -233,8 +194,9 @@ class WebsocketManager {
             let result = [];
             const data = [];
             this.targets.forEach(x => {
-                if (x.websocket.readyState == interface_1.SocketState.CLOSED) {
-                    data.push({ cluster: false, uuid: x.uuid, url: x.websocket.url });
+                var _a;
+                if (x.socket.io._readyState == 'closed') {
+                    data.push({ cluster: false, uuid: x.uuid, url: (_a = x.url) !== null && _a !== void 0 ? _a : "" });
                 }
             });
             data.forEach(d => this.removeByUUID(d.uuid));
@@ -246,8 +208,8 @@ class WebsocketManager {
                     s: false,
                     cluster: false,
                     uuid: x.uuid,
-                    state: x.websocket.readyState,
-                    url: x.websocket.url,
+                    state: x.socket.io._readyState,
+                    url: x.url,
                     connection_rate: x.ms,
                     system: x.information,
                     plugins: x.plugins
@@ -263,8 +225,9 @@ class WebsocketManager {
         this.removeByUUID = (uuid, reason) => {
             let index = this.targets.findIndex(x => x.uuid == uuid);
             if (index != -1) {
-                if (this.targets[index].websocket.readyState == interface_1.SocketState.OPEN)
-                    this.targets[index].websocket.close(1000, reason != undefined ? reason : '');
+                if (this.targets[index].socket.io._readyState == 'open') {
+                    this.targets[index].socket.close();
+                }
                 this.targets.splice(index, 1);
             }
         };
@@ -274,10 +237,10 @@ class WebsocketManager {
         this.update = () => {
             const h = { name: 'ping', data: 0 };
             this.targets.forEach(x => {
-                if (x.websocket.readyState != interface_1.SocketState.OPEN)
+                if (x.socket.io._readyState != 'open')
                     return;
                 x.last = Date.now();
-                x.websocket.send(JSON.stringify(h));
+                x.socket.send(JSON.stringify(h));
             });
         };
         /**

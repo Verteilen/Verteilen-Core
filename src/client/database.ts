@@ -3,17 +3,17 @@
 //      Share Codebase     
 //                           
 // ========================
-import WebSocket from "ws";
-import { Header, Setter } from "../interface";
+import { Socket } from "socket.io";
+import { Setter } from "../interface";
 
 /**
  * The database feedback helper\
  * Update the main database container on the cluster server
  */
 export class ClientDatabase {
-    private source:WebSocket | undefined
+    private source:Socket | undefined
 
-    constructor(_source:WebSocket | undefined){
+    constructor(_source:Socket | undefined){
         this.source = _source
     }
 
@@ -49,10 +49,6 @@ export class ClientDatabase {
     }
     private feedback = (title:string, data:Setter) => {
         if(this.source == undefined) return
-        const p:Header = {
-            name: title,
-            data: data
-        }
-        this.source.send(JSON.stringify(p, null, 2))
+        this.source.emit(title, data)
     }
 }

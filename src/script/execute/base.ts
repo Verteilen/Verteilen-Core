@@ -4,7 +4,7 @@
 //                           
 // ========================
 import { v6 as uuid6 } from 'uuid';
-import { CronJobState, DataType, ExecuteProxy, ExecuteState, Header, Job, JobCategory, JobType, JobType2, Libraries, Messager, Database, Project, Record, Task, WebsocketPack, WorkState } from "../../interface";
+import { CronJobState, DataType, ExecuteProxy, ExecuteState, Header, Job, JobCategory, JobType, JobType2, Libraries, Messager, Database, Project, Record, Task, SocketPack, WorkState } from "../../interface";
 import { WebsocketManager } from "../socket_manager";
 import { Util_Parser } from './util_parser';
 import { Region_Project } from './region_project';
@@ -32,7 +32,7 @@ export class ExecuteManager_Base {
     /**
      * The connection nodes list
      */
-    current_nodes:Array<WebsocketPack> = []
+    current_nodes:Array<SocketPack> = []
     /**
      * * NONE: Not yet start
      * * RUNNING: In the processing stage
@@ -114,7 +114,7 @@ export class ExecuteManager_Base {
     }
 
     //#region Helper
-    protected sync_para = (target:Database, source:WebsocketPack) => {
+    protected sync_para = (target:Database, source:SocketPack) => {
         const h:Header = {
             name: 'set_database',
             channel: this.uuid,
@@ -125,16 +125,16 @@ export class ExecuteManager_Base {
             channel: this.uuid,
             data: this.libs
         }
-        source.websocket.send(JSON.stringify(h))
-        source.websocket.send(JSON.stringify(h2))
+        source.socket.send(JSON.stringify(h))
+        source.socket.send(JSON.stringify(h2))
     }
-    protected release = (source:WebsocketPack) => {
+    protected release = (source:SocketPack) => {
         const h:Header = {
             name: 'release',
             channel: this.uuid,
             data: 0
         }
-        source.websocket.send(JSON.stringify(h))
+        source.socket.send(JSON.stringify(h))
     }
     /**
      * Check all the cronjob is finish or not
@@ -268,18 +268,18 @@ export class ExecuteManager_Base {
      * Filter out the idle and connection open nodes
      * @returns All idle and open connection nodes
      */
-    protected get_idle = ():Array<WebsocketPack> => {
-        return this.current_nodes.filter(x => this.check_socket_state(x) != ExecuteState.RUNNING && x.websocket.readyState == 1)
+    protected get_idle = ():Array<SocketPack> => {
+        return this.current_nodes.filter(x => this.check_socket_state(x) != ExecuteState.RUNNING && x.socket.io._readyState == 'open')
     }
     /**
      * Filter out the connection open nodes
      * @returns All open connection nodes
      */
-    protected get_idle_open = ():Array<WebsocketPack> => {
-        return this.current_nodes.filter(x => x.websocket.readyState == 1)
+    protected get_idle_open = ():Array<SocketPack> => {
+        return this.current_nodes.filter(x => x.socket.io._readyState == 'open')
     }
 
-    protected check_socket_state = (target:WebsocketPack) => {
+    protected check_socket_state = (target:SocketPack) => {
         return target.current_job.length == 0 ? ExecuteState.NONE : ExecuteState.RUNNING
     }
 

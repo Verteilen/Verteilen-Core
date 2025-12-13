@@ -40,7 +40,7 @@ export interface NodeTable extends Node {
      * **Select State**
      */
     s?: boolean
-    state?: number
+    state?: "opening" | "open" | "closed"
     connection_rate?: number
     plugins?: Array<Plugin>
     system?: SystemLoad

@@ -1,10 +1,10 @@
 import { RecordIOBase } from "./io";
-import { PluginPageData, WebsocketPack } from "../interface";
+import { PluginPageData, SocketPack } from "../interface";
 import { PluginFeedback } from "./server";
 /**
  * Get socket from websocket client method
  */
-export type SocketGetter = (uuid: string) => WebsocketPack | undefined;
+export type SocketGetter = (uuid: string) => SocketPack | undefined;
 /**
  * **Plugin Function Interface**\
  * Use for access the plugin store function

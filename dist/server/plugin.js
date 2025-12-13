@@ -197,13 +197,13 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
             const p2 = Object.assign(Object.assign({}, p), { token: tokens.split(' ') });
             const t = socket(uuid);
             const h = { name: 'plugin_download', data: p2 };
-            t === null || t === void 0 ? void 0 : t.websocket.send(JSON.stringify(h));
+            t === null || t === void 0 ? void 0 : t.socket.send(JSON.stringify(h));
         }),
         plugin_remove: (uuid, plugin) => __awaiter(void 0, void 0, void 0, function* () {
             const p = JSON.parse(plugin);
             const t = socket(uuid);
             const h = { name: 'plugin_remove', data: p };
-            t === null || t === void 0 ? void 0 : t.websocket.send(JSON.stringify(h));
+            t === null || t === void 0 ? void 0 : t.socket.send(JSON.stringify(h));
         }),
     };
 };

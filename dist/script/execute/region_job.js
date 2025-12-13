@@ -23,7 +23,7 @@ class Region_Job {
             };
             this.wss.current_job.push(this.job.runtime_uuid);
             const stringdata = JSON.stringify(h);
-            this.wss.websocket.send(stringdata);
+            this.wss.socket.send(stringdata);
             this.target.jobstack = this.target.jobstack + 1;
         };
         this.string_args_transform = (task, job, localPara, n) => {

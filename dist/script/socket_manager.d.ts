@@ -1,10 +1,10 @@
-import { Node, NodeProxy, NodeTable, WebsocketPack } from "../interface";
-import * as ws from 'ws';
+import { Node, NodeProxy, NodeTable, SocketPack } from "../interface";
+import { Socket } from 'socket.io-client';
 /**
  * The node connection instance manager, Use by the cluster server
  */
 export declare class WebsocketManager {
-    targets: Array<WebsocketPack>;
+    targets: Array<SocketPack>;
     newConnect: Function;
     disconnect: Function;
     onAnalysis: Function;
@@ -16,7 +16,7 @@ export declare class WebsocketManager {
      * @param url target url
      * @returns The connection package
      */
-    server_start: (url: string, uuid: string) => WebSocket | ws.WebSocket | undefined;
+    server_start: (url: string, uuid: string) => Socket<import("@socket.io/component-emitter").DefaultEventsMap, import("@socket.io/component-emitter").DefaultEventsMap> | undefined;
     /**
      * Remove the package by UUID
      * @param uuid Key

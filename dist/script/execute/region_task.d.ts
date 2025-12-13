@@ -1,4 +1,4 @@
-import { CronJobState, Database, ExecuteState, Project, Task, WebsocketPack, WorkState } from "../../interface";
+import { CronJobState, Database, ExecuteState, Project, Task, SocketPack, WorkState } from "../../interface";
 import { ExecuteManager } from "../execute_manager";
 import { Region_Job } from "./region_job";
 import { Region_Project } from "./region_project";
@@ -36,15 +36,15 @@ export declare class Region_Task {
      * Filter out the idle and connection open nodes
      * @returns All idle and open connection nodes
      */
-    get_idle: () => Array<WebsocketPack>;
-    check_socket_state: (target: WebsocketPack) => ExecuteState.NONE | ExecuteState.RUNNING;
+    get_idle: () => Array<SocketPack>;
+    check_socket_state: (target: SocketPack) => ExecuteState.NONE | ExecuteState.RUNNING;
     /**
      * This will let nodes update the database and lib
      * @param target
      */
     sync_local_para: (target: Database) => void;
-    sync_para: (target: Database, source: WebsocketPack) => void;
-    get_idle_open: () => Array<WebsocketPack>;
+    sync_para: (target: Database, source: SocketPack) => void;
+    get_idle_open: () => Array<SocketPack>;
     /**
      * Check all the cronjob is finish or not
      */

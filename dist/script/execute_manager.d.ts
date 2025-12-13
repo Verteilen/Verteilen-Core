@@ -1,4 +1,4 @@
-import { Libraries, WebsocketPack } from "../interface";
+import { Libraries, SocketPack } from "../interface";
 import { ExecuteManager_Runner } from "./execute/runner";
 /**
  * Cluster server calculation worker\
@@ -32,8 +32,8 @@ export declare class ExecuteManager extends ExecuteManager_Runner {
      * When new connection (Node) has benn connected
      * @param source Target
      */
-    NewConnection: (source: WebsocketPack) => void;
-    Disconnect: (source: WebsocketPack) => void;
+    NewConnection: (source: SocketPack) => void;
+    Disconnect: (source: SocketPack) => void;
     ClearState: (task_index: number) => void;
     /**
      * When user trying to skip project

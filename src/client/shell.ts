@@ -9,7 +9,7 @@
 //  ! It's unrelated to the job execution
 //
 import { ChildProcess, spawn } from "child_process";
-import WebSocket from 'ws';
+import { Socket } from 'socket.io';
 import { Header, Messager, ShellFolder, Single } from "../interface";
 import { Client } from "./client";
 import { ClientOS } from "./os";
@@ -19,7 +19,7 @@ export class ClientShell {
     private messager:Messager
     private messager_log:Messager
     private os:ClientOS
-    private shell_workers:Array<[WebSocket, ChildProcess]> = []
+    private shell_workers:Array<[Socket, ChildProcess]> = []
 
     constructor(_messager:Messager, _messager_log:Messager, _client:Client){
         this.os = new ClientOS(() => "SHELL", () => "", () => undefined, _messager, _messager_log)
@@ -31,7 +31,7 @@ export class ClientShell {
      * Open shell console
      * @param input 
      */
-    open_shell = (data:number, source:WebSocket) => {
+    open_shell = (data:number, source:Socket) => {
         if(this.shell_workers.find(x => x[0] == source)){
             this.messager_log(`[Shell] Error the source already open the shell`)
             return
@@ -86,7 +86,7 @@ export class ClientShell {
      * Open shell console
      * @param input 
      */
-    enter_shell = (input:string, source:WebSocket) => {
+    enter_shell = (input:string, source:Socket) => {
         const p = this.shell_workers.find(x => x[0] == source)
         if(p == undefined){
             this.messager_log(`[Shell] Cannot find shell instance`)
@@ -101,7 +101,7 @@ export class ClientShell {
      * Open shell console
      * @param input 
      */
-    close_shell = (data:number, source:WebSocket) => {
+    close_shell = (data:number, source:Socket) => {
         const p = this.shell_workers.find(x => x[0] == source)
         if(p == undefined){
             this.messager_log(`[Shell] Cannot find shell instance`)
@@ -124,7 +124,7 @@ export class ClientShell {
         })
     }
 
-    shell_folder = (data:string, source:WebSocket) => {
+    shell_folder = (data:string, source:Socket) => {
         if(data.length == 0){
             data = process.cwd()
         }
@@ -144,7 +144,7 @@ export class ClientShell {
         source.send(JSON.stringify(h))
     }
 
-    disconnect = (source:WebSocket) => {
+    disconnect = (source:Socket) => {
         const p = this.shell_workers.find(x => x[0] == source)
         if(p == undefined) return
         p[1].kill()

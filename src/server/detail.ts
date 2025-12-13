@@ -25,7 +25,7 @@ import {
     ShellFolder, 
     Single, 
     Task, 
-    WebsocketPack,
+    SocketPack,
     ServerDetailEvent,
     BackendAction,
 } from "../interface"
@@ -86,12 +86,12 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
     public get nodeEvents() : NodeProxy { return this }
     
     //#region Socket Events
-    NewConnection = (x:WebsocketPack) => {
-        if(process.env.NODE_ENV == 'development') console.warn(`[Detail] New connection detected: ${x.websocket.url} \n${x.uuid}`)
+    NewConnection = (x:SocketPack) => {
+        if(process.env.NODE_ENV == 'development') console.warn(`[Detail] New connection detected: ${x.url} \n${x.uuid}`)
         const p = {
             title: "New Connection Established",
             type: 'success',
-            message: `${x.websocket.url} \n${x.uuid}`
+            message: `${x.url} \n${x.uuid}`
         }
         if(this.feedback.electron){
             this.feedback.electron()?.send('makeToast', p)
@@ -103,12 +103,12 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
             y.manager!.NewConnection(x)
         })
     }
-    DisConnection = (x:WebsocketPack) => {
-        if(process.env.NODE_ENV == 'development') console.warn(`[Detail] Disconnect detected: ${x.websocket.url} \n${x.uuid}`)
+    DisConnection = (x:SocketPack) => {
+        if(process.env.NODE_ENV == 'development') console.warn(`[Detail] Disconnect detected: ${x.url} \n${x.uuid}`)
         const p = {
             title: "Network Disconnected",
             type: 'error',
-            message: `${x.websocket.url} \n${x.uuid}`
+            message: `${x.url} \n${x.uuid}`
         }
         if(this.feedback.electron){
             this.feedback.electron()?.send('makeToast', p)
@@ -132,7 +132,7 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
      * @param data Content
      * @param p Client node source
      */
-    shellReply = (data:Single, p?:WebsocketPack) => {
+    shellReply = (data:Single, p?:SocketPack) => {
         if(this.feedback.electron){
             this.feedback.electron()?.send("shellReply", data)
         }
@@ -153,7 +153,7 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
      * @param data Content
      * @param p Client node source
      */
-    folderReply = (data:ShellFolder, p?:WebsocketPack) => {
+    folderReply = (data:ShellFolder, p?:SocketPack) => {
         if(this.feedback.electron){
             this.feedback.electron()?.send("folderReply", data)
         }
@@ -176,19 +176,19 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
     resource_start = (socket:any, uuid:string) => {
         const p = this.websocket_manager!.targets.find(x => x.uuid == uuid)
         const d:Header = { name: 'resource_start', data: 0 }
-        p?.websocket.send(JSON.stringify(d))
+        p?.socket.send(JSON.stringify(d))
     }
 
     resource_end = (socket:any, uuid:string) => {
         const p = this.websocket_manager!.targets.find(x => x.uuid == uuid)
         const d:Header = { name: 'resource_end', data: 0 }
-        p?.websocket.send(JSON.stringify(d))
+        p?.socket.send(JSON.stringify(d))
     }
 
     plugin_info = (socket:any, uuid:string) => {
         const p = this.websocket_manager!.targets.find(x => x.uuid == uuid)
         const d:Header = { name: 'plugin_info', data: 0 }
-        p?.websocket.send(JSON.stringify(d))
+        p?.socket.send(JSON.stringify(d))
     }
 
     //#region Shell

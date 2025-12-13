@@ -1,4 +1,4 @@
-import { WebSocket } from 'ws';
+import { Socket } from 'socket.io';
 import { Job, Libraries, Messager, Messager_log, Database, Setter } from "../interface";
 import { Client } from "./client";
 /**
@@ -26,7 +26,7 @@ export declare class ClientExecute {
      * The entry function to execute the job container
      * @param job Target job
      */
-    execute_job: (job: Job, source: WebSocket) => void;
+    execute_job: (job: Job, source: Socket) => void;
     /**
      * Execute job, send it to different thread
      * @param job Job instance

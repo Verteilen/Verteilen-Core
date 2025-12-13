@@ -1,6 +1,6 @@
 {
   "name": "verteilen-core",
-  "version": "1.4.52",
+  "version": "1.4.54",
   "license": "MIT",
   "homepage": "https://verteilen.github.io/wiki/",
   "author": "Elly",
@@ -23,7 +23,6 @@
     "@types/pem": "^1.14.4",
     "@types/semver": "^7.7.1",
     "@types/tcp-port-used": "^1.0.4",
-    "@types/ws": "^8.5.14",
     "ts-jest": "^29.3.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.2.2"
@@ -40,12 +39,13 @@
     "mongodb": "^7.0.0",
     "pem": "^1.14.8",
     "semver": "^7.7.3",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "systeminformation": "^5.25.11",
     "tcp-port-used": "^1.0.2",
     "tree-kill": "^1.2.2",
     "uuid": "^11.0.5",
     "verteilen-core": "^1.4.48",
-    "vue-i18n": "^11.1.12",
-    "ws": "^8.18.0"
+    "vue-i18n": "^11.1.12"
   }
 }

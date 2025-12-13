@@ -11,7 +11,7 @@ import { ExecuteState } from "./enum"
 import { ExecutionLog, Log } from "./log"
 import { Preference } from "./record"
 import { Login } from "./server"
-import { FeedBack, Header, Setter, ShellFolder, Single, WebsocketPack } from "./struct"
+import { FeedBack, Header, Setter, ShellFolder, Single, SocketPack } from "./struct"
 import { DatabaseTable, NodeTable, ProjectTable } from "./table"
 import { ToastData } from "./ui"
 
@@ -39,7 +39,7 @@ export interface BusAnalysis {
      * **Received Weboscket Instance**\
      * Client node websocket assign by analyzer
      */
-    c:WebsocketPack | undefined
+    c:SocketPack | undefined
 }
 
 /**
@@ -113,8 +113,8 @@ export interface ExecuteProxy {
  * In this case, for shell only type of action
  */
 export interface NodeProxy { 
-    shellReply: (data:Single, w?:WebsocketPack) => void
-    folderReply: (data:ShellFolder, w?:WebsocketPack) => void
+    shellReply: (data:Single, w?:SocketPack) => void
+    folderReply: (data:ShellFolder, w?:SocketPack) => void
 }
 
 /**

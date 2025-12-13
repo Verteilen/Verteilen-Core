@@ -11,7 +11,6 @@ exports.ClientExecute = void 0;
 //  ? Send job to a different thread by using worker executable file
 //
 const child_process_1 = require("child_process");
-const ws_1 = require("ws");
 const interface_1 = require("../interface");
 const i18n_1 = require("../plugins/i18n");
 const client_1 = require("./client");
@@ -209,7 +208,7 @@ class ClientExecute {
             `[Execute] Error: ${code} ${signal}`, job.uuid, job.runtime_uuid);
         const data = { job_uuid: job.uuid, runtime_uuid: job.runtime_uuid, meta: code, message: signal };
         const h = { name: 'feedback_job', data: data };
-        if (source.readyState == ws_1.WebSocket.OPEN) {
+        if (source.conn.readyState == 'open') {
             source.send(JSON.stringify(h));
         }
         this.tag = '';

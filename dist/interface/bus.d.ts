@@ -3,7 +3,7 @@ import { ExecuteState } from "./enum";
 import { ExecutionLog, Log } from "./log";
 import { Preference } from "./record";
 import { Login } from "./server";
-import { FeedBack, Header, Setter, ShellFolder, Single, WebsocketPack } from "./struct";
+import { FeedBack, Header, Setter, ShellFolder, Single, SocketPack } from "./struct";
 import { DatabaseTable, NodeTable, ProjectTable } from "./table";
 import { ToastData } from "./ui";
 type Handler<T = unknown> = (event: T) => void;
@@ -29,7 +29,7 @@ export interface BusAnalysis {
      * **Received Weboscket Instance**\
      * Client node websocket assign by analyzer
      */
-    c: WebsocketPack | undefined;
+    c: SocketPack | undefined;
 }
 /**
  * **Websocket Data Format: Rename**
@@ -99,8 +99,8 @@ export interface ExecuteProxy {
  * In this case, for shell only type of action
  */
 export interface NodeProxy {
-    shellReply: (data: Single, w?: WebsocketPack) => void;
-    folderReply: (data: ShellFolder, w?: WebsocketPack) => void;
+    shellReply: (data: Single, w?: SocketPack) => void;
+    folderReply: (data: ShellFolder, w?: SocketPack) => void;
 }
 /**
  * **Vue Event Bus Type**\

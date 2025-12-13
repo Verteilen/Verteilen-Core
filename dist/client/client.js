@@ -54,7 +54,7 @@ exports.Client = void 0;
 //
 const path = __importStar(require("path"));
 const tcp_port_used_1 = require("tcp-port-used");
-const ws = __importStar(require("ws"));
+const socket_io_1 = require("socket.io");
 const interface_1 = require("../interface");
 const analysis_1 = require("./analysis");
 const fs_1 = require("fs");
@@ -108,7 +108,7 @@ class Client {
                 res.end('HTTPS server is running');
             });
             this.httpss.addListener('upgrade', (req, res, head) => console.log('UPGRADE:', req.url));
-            this.client = new ws.WebSocketServer({ server: this.httpss });
+            this.client = new socket_io_1.Server(this.httpss);
             this.client.on('listening', () => {
                 this.messager_log('[Server] Listen PORT: ' + port_result.toString());
             });
@@ -119,28 +119,25 @@ class Client {
                 this.messager_log('[Server] Close !');
                 this.Release();
             });
-            this.client.on('connection', (ws, request) => {
-                const a = new analysis_1.ClientAnalysis(this.messager, this.messager_log, this);
+            this.client.on('connection', (socket) => {
+                const a = new analysis_1.ClientAnalysis(this, socket, this.messager, this.messager_log);
                 this.analysis.push(a);
-                this.sources.push(ws);
-                this.messager_log(`[Server] New Connection detected, ${ws.url}`);
-                ws.on('close', (code, reason) => {
-                    const index = this.sources.findIndex(x => x == ws);
+                this.sources.push(socket);
+                this.messager_log(`[Server] New Connection detected, ${socket.handshake.url}`);
+                socket.on('close', (code, reason) => {
+                    const index = this.sources.findIndex(x => x == socket);
                     if (index != -1)
                         this.sources.splice(index, 1);
                     this.messager_log(`[Source] Close ${code} ${reason}`);
-                    a.disconnect(ws);
+                    a.disconnect(socket);
                 });
-                ws.on('error', (err) => {
+                socket.on('error', (err) => {
                     this.messager_log(`[Source] Error ${err.name}\n\t${err.message}\n\t${err.stack}`);
                 });
-                ws.on('open', () => {
-                    this.messager_log(`[Source] New source is connected, URL: ${ws === null || ws === void 0 ? void 0 : ws.url}`);
+                socket.on('open', () => {
+                    this.messager_log(`[Source] New source is connected, URL: ${socket.handshake.url}`);
                 });
-                ws.on('message', (data, isBinery) => {
-                    const h = JSON.parse(data.toString());
-                    a.analysis(h, ws);
-                });
+                a.RegisterEvent();
             });
             this.httpss.listen(port_result, () => {
                 this.messager_log('[Server] Select Port: ' + port_result.toString());

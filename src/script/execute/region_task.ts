@@ -3,7 +3,7 @@
 //      Share Codebase     
 //                           
 // ========================
-import { CronJobState, Database, DataType, ExecuteState, Header, Job, Project, Task, WebsocketPack, WorkState } from "../../interface";
+import { CronJobState, Database, DataType, ExecuteState, Header, Job, Project, Task, SocketPack, WorkState } from "../../interface";
 import { ExecuteManager } from "../execute_manager";
 import { Region_Job } from "./region_job";
 import { Region_Project } from "./region_project";
@@ -76,7 +76,7 @@ export class Region_Task {
      * @returns Is finish executing
      */
     ExecuteTask_Cronjob(project:Project, task:Task, taskCount:number):boolean {
-        let ns:Array<WebsocketPack> = this.get_idle_open()
+        let ns:Array<SocketPack> = this.get_idle_open()
         let allJobFinish = false
 
         /**
@@ -137,7 +137,7 @@ export class Region_Task {
      */
     ExecuteTask_Single(project:Project, task:Task, taskCount:number):boolean {
         let allJobFinish = false
-        let ns:Array<WebsocketPack> = []
+        let ns:Array<SocketPack> = []
         if(this.target.current_job.length > 0){
             // If disconnect or deleted...
             const last = this.target.current_nodes.find(x => x.uuid == this.job[0].uuid)
@@ -146,7 +146,7 @@ export class Region_Task {
                 this.job = []
             }else{
                 ns = [last]
-                if(ns[0].websocket.readyState != 1){
+                if(ns[0].socket.io._readyState != 'open'){
                     ns = this.get_idle()
                     this.job = []
                 }
@@ -161,7 +161,7 @@ export class Region_Task {
             }
         }
 
-        if (ns.length > 0 && ns[0].websocket.readyState == 1 && this.check_socket_state(ns[0]) != ExecuteState.RUNNING)
+        if (ns.length > 0 && ns[0].socket.io._readyState == 'open' && this.check_socket_state(ns[0]) != ExecuteState.RUNNING)
         {
             if(this.check_single_end()){
                 allJobFinish = true
@@ -187,7 +187,7 @@ export class Region_Task {
     }
 
     ExecuteTask_Setup(project:Project, task:Task, taskCount:number):boolean {
-        let ns:Array<WebsocketPack> = this.get_idle_open()
+        let ns:Array<SocketPack> = this.get_idle_open()
         let allJobFinish = false
 
         /**
@@ -265,10 +265,10 @@ export class Region_Task {
      * Filter out the idle and connection open nodes
      * @returns All idle and open connection nodes
      */
-    get_idle = ():Array<WebsocketPack> => {
-        return this.target.current_nodes.filter(x => this.check_socket_state(x) != ExecuteState.RUNNING && x.websocket.readyState == 1)
+    get_idle = ():Array<SocketPack> => {
+        return this.target.current_nodes.filter(x => this.check_socket_state(x) != ExecuteState.RUNNING && x.socket.io._readyState == 'open')
     }
-    check_socket_state = (target:WebsocketPack) => {
+    check_socket_state = (target:SocketPack) => {
         return target.current_job.length == 0 ? ExecuteState.NONE : ExecuteState.RUNNING
     }
     /**
@@ -279,7 +279,7 @@ export class Region_Task {
         this.target.current_nodes.forEach(x => this.sync_para(target, x))
         this.target.proxy?.updateDatabase(target)
     }
-    sync_para = (target:Database, source:WebsocketPack) => {
+    sync_para = (target:Database, source:SocketPack) => {
         const h:Header = {
             name: 'set_database',
             channel: this.target.uuid,
@@ -290,11 +290,11 @@ export class Region_Task {
             channel: this.target.uuid,
             data: this.target.libs
         }
-        source.websocket.send(JSON.stringify(h))
-        source.websocket.send(JSON.stringify(h2))
+        source.socket.send(JSON.stringify(h))
+        source.socket.send(JSON.stringify(h2))
     }
-    get_idle_open = ():Array<WebsocketPack> => {
-        return this.target.current_nodes.filter(x => x.websocket.readyState == 1)
+    get_idle_open = ():Array<SocketPack> => {
+        return this.target.current_nodes.filter(x => x.socket.io._readyState == 'open')
     }
     /**
      * Check all the cronjob is finish or not

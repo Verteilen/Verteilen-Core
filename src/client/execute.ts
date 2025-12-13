@@ -8,7 +8,7 @@
 //  ? Send job to a different thread by using worker executable file
 //
 import { ChildProcess, spawn } from 'child_process';
-import { WebSocket } from 'ws';
+import { Socket } from 'socket.io';
 import { DataType, FeedBack, Header, Job, JobCategory, JobType2Text, JobTypeText, Libraries, Messager, Messager_log, Database, Setter } from "../interface";
 import { i18n } from "../plugins/i18n";
 import { Client } from "./client";
@@ -59,7 +59,7 @@ export class ClientExecute {
      * The entry function to execute the job container
      * @param job Target job
      */
-    execute_job = (job:Job, source:WebSocket) => {
+    execute_job = (job:Job, source:Socket) => {
         this.messager_log(`[Execute] ${job.uuid}  ${job.category == JobCategory.Execution ? 
             i18n.global.t(JobTypeText[job.type]) : 
             i18n.global.t(JobType2Text[job.type])}`, job.uuid, job.runtime_uuid)
@@ -72,7 +72,7 @@ export class ClientExecute {
      * @param job Job instance
      * @param source Command sender
      */
-    private execute_job_worker(job:Job, source:WebSocket){
+    private execute_job_worker(job:Job, source:Socket){
         const child = spawn(Client.workerPath(), [], 
             { 
                 stdio: ['pipe', 'pipe', 'pipe'],
@@ -167,13 +167,13 @@ export class ClientExecute {
      * @param job Target job instance
      * @param source Command sender
      */
-    private job_finish(code:number, signal:string, job:Job, source:WebSocket){
+    private job_finish(code:number, signal:string, job:Job, source:Socket){
         this.messager_log( code == 0 ?
             `[Execute] Successfully: ${code} ${signal}` : 
             `[Execute] Error: ${code} ${signal}`, job.uuid, job.runtime_uuid)
         const data:FeedBack = { job_uuid: job.uuid, runtime_uuid: job.runtime_uuid!, meta: code, message: signal }
         const h:Header = { name: 'feedback_job', data: data }
-        if(source.readyState == WebSocket.OPEN){
+        if(source.conn.readyState == 'open'){
             source.send(JSON.stringify(h))
         }
         this.tag = ''

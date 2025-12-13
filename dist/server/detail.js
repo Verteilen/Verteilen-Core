@@ -32,11 +32,11 @@ class ServerDetail {
         this.NewConnection = (x) => {
             var _a;
             if (process.env.NODE_ENV == 'development')
-                console.warn(`[Detail] New connection detected: ${x.websocket.url} \n${x.uuid}`);
+                console.warn(`[Detail] New connection detected: ${x.url} \n${x.uuid}`);
             const p = {
                 title: "New Connection Established",
                 type: 'success',
-                message: `${x.websocket.url} \n${x.uuid}`
+                message: `${x.url} \n${x.uuid}`
             };
             if (this.feedback.electron) {
                 (_a = this.feedback.electron()) === null || _a === void 0 ? void 0 : _a.send('makeToast', p);
@@ -51,11 +51,11 @@ class ServerDetail {
         this.DisConnection = (x) => {
             var _a;
             if (process.env.NODE_ENV == 'development')
-                console.warn(`[Detail] Disconnect detected: ${x.websocket.url} \n${x.uuid}`);
+                console.warn(`[Detail] Disconnect detected: ${x.url} \n${x.uuid}`);
             const p = {
                 title: "Network Disconnected",
                 type: 'error',
-                message: `${x.websocket.url} \n${x.uuid}`
+                message: `${x.url} \n${x.uuid}`
             };
             if (this.feedback.electron) {
                 (_a = this.feedback.electron()) === null || _a === void 0 ? void 0 : _a.send('makeToast', p);
@@ -125,17 +125,17 @@ class ServerDetail {
         this.resource_start = (socket, uuid) => {
             const p = this.websocket_manager.targets.find(x => x.uuid == uuid);
             const d = { name: 'resource_start', data: 0 };
-            p === null || p === void 0 ? void 0 : p.websocket.send(JSON.stringify(d));
+            p === null || p === void 0 ? void 0 : p.socket.send(JSON.stringify(d));
         };
         this.resource_end = (socket, uuid) => {
             const p = this.websocket_manager.targets.find(x => x.uuid == uuid);
             const d = { name: 'resource_end', data: 0 };
-            p === null || p === void 0 ? void 0 : p.websocket.send(JSON.stringify(d));
+            p === null || p === void 0 ? void 0 : p.socket.send(JSON.stringify(d));
         };
         this.plugin_info = (socket, uuid) => {
             const p = this.websocket_manager.targets.find(x => x.uuid == uuid);
             const d = { name: 'plugin_info', data: 0 };
-            p === null || p === void 0 ? void 0 : p.websocket.send(JSON.stringify(d));
+            p === null || p === void 0 ? void 0 : p.socket.send(JSON.stringify(d));
         };
         //#region Shell
         this.shell_enter = (socket, uuid, value) => {

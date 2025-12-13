@@ -40,11 +40,7 @@ class ClientDatabase {
         this.feedback = (title, data) => {
             if (this.source == undefined)
                 return;
-            const p = {
-                name: title,
-                data: data
-            };
-            this.source.send(JSON.stringify(p, null, 2));
+            this.source.emit(title, data);
         };
         this.source = _source;
     }

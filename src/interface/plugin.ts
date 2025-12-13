@@ -5,7 +5,6 @@
 // ========================
 import { DatabaseContainer, DataTime, Project } from "./base"
 import { ACLType, LocalPermission } from "./server"
-import { KeyValue } from "./struct"
 
 /**
  * Method to generate project template (populate)

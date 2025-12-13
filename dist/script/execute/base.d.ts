@@ -1,4 +1,4 @@
-import { CronJobState, ExecuteProxy, ExecuteState, Job, Libraries, Messager, Database, Project, Record, Task, WebsocketPack, WorkState } from "../../interface";
+import { CronJobState, ExecuteProxy, ExecuteState, Job, Libraries, Messager, Database, Project, Record, Task, SocketPack, WorkState } from "../../interface";
 import { WebsocketManager } from "../socket_manager";
 import { Util_Parser } from './util_parser';
 import { Region_Project } from './region_project';
@@ -25,7 +25,7 @@ export declare class ExecuteManager_Base {
     /**
      * The connection nodes list
      */
-    current_nodes: Array<WebsocketPack>;
+    current_nodes: Array<SocketPack>;
     /**
      * * NONE: Not yet start
      * * RUNNING: In the processing stage
@@ -79,8 +79,8 @@ export declare class ExecuteManager_Base {
      * @param target
      */
     protected sync_local_para: (target: Database) => void;
-    protected sync_para: (target: Database, source: WebsocketPack) => void;
-    protected release: (source: WebsocketPack) => void;
+    protected sync_para: (target: Database, source: SocketPack) => void;
+    protected release: (source: SocketPack) => void;
     /**
      * Check all the cronjob is finish or not
      */
@@ -130,13 +130,13 @@ export declare class ExecuteManager_Base {
      * Filter out the idle and connection open nodes
      * @returns All idle and open connection nodes
      */
-    protected get_idle: () => Array<WebsocketPack>;
+    protected get_idle: () => Array<SocketPack>;
     /**
      * Filter out the connection open nodes
      * @returns All open connection nodes
      */
-    protected get_idle_open: () => Array<WebsocketPack>;
-    protected check_socket_state: (target: WebsocketPack) => ExecuteState.NONE | ExecuteState.RUNNING;
+    protected get_idle_open: () => Array<SocketPack>;
+    protected check_socket_state: (target: SocketPack) => ExecuteState.NONE | ExecuteState.RUNNING;
     static string_args_transform: (task: Task, job: Job, messager_log: Messager, localPara: Database, n: number) => void;
     static property_update: (task: Task, e: Util_Parser) => Util_Parser;
     static database_update: (localPara: Database, n?: number) => Util_Parser;

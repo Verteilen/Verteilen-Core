@@ -62,8 +62,8 @@ class ExecuteManager_Base {
                 channel: this.uuid,
                 data: this.libs
             };
-            source.websocket.send(JSON.stringify(h));
-            source.websocket.send(JSON.stringify(h2));
+            source.socket.send(JSON.stringify(h));
+            source.socket.send(JSON.stringify(h2));
         };
         this.release = (source) => {
             const h = {
@@ -71,7 +71,7 @@ class ExecuteManager_Base {
                 channel: this.uuid,
                 data: 0
             };
-            source.websocket.send(JSON.stringify(h));
+            source.socket.send(JSON.stringify(h));
         };
         /**
          * Check all the cronjob is finish or not
@@ -183,14 +183,14 @@ class ExecuteManager_Base {
          * @returns All idle and open connection nodes
          */
         this.get_idle = () => {
-            return this.current_nodes.filter(x => this.check_socket_state(x) != interface_1.ExecuteState.RUNNING && x.websocket.readyState == 1);
+            return this.current_nodes.filter(x => this.check_socket_state(x) != interface_1.ExecuteState.RUNNING && x.socket.io._readyState == 'open');
         };
         /**
          * Filter out the connection open nodes
          * @returns All open connection nodes
          */
         this.get_idle_open = () => {
-            return this.current_nodes.filter(x => x.websocket.readyState == 1);
+            return this.current_nodes.filter(x => x.socket.io._readyState == 'open');
         };
         this.check_socket_state = (target) => {
             return target.current_job.length == 0 ? interface_1.ExecuteState.NONE : interface_1.ExecuteState.RUNNING;

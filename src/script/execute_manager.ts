@@ -7,7 +7,7 @@
 //  ? Task scheduler worker
 //  ? Most important part of the game
 //
-import { ExecuteState, Header, Libraries, WebsocketPack } from "../interface";
+import { ExecuteState, Header, Libraries, SocketPack } from "../interface";
 import { Region_Project } from "./execute/region_project";
 import { Region_Task } from "./execute/region_task";
 import { ExecuteManager_Runner } from "./execute/runner";
@@ -45,7 +45,7 @@ export class ExecuteManager extends ExecuteManager_Runner {
                 message: 'Stop All Jobs',
                 data: {}
             }
-            x.websocket.send(JSON.stringify(h))
+            x.socket.send(JSON.stringify(h))
         })
         this.jobstack = 0
         this.current_nodes.forEach(x => x.current_job = [])
@@ -119,13 +119,13 @@ export class ExecuteManager extends ExecuteManager_Runner {
      * When new connection (Node) has benn connected
      * @param source Target
      */
-    NewConnection = (source:WebsocketPack) => {
+    NewConnection = (source:SocketPack) => {
         if(this.state == ExecuteState.RUNNING && this.localPara != undefined){
             this.sync_para(this.localPara, source)
         }
     }
 
-    Disconnect = (source:WebsocketPack) => {
+    Disconnect = (source:SocketPack) => {
         if(this.current_p == undefined) return
         if(this.current_t == undefined) return
         if(this.current_job.length > 0){

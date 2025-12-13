@@ -83,7 +83,7 @@ class Region_Task {
          * @returns All idle and open connection nodes
          */
         this.get_idle = () => {
-            return this.target.current_nodes.filter(x => this.check_socket_state(x) != interface_1.ExecuteState.RUNNING && x.websocket.readyState == 1);
+            return this.target.current_nodes.filter(x => this.check_socket_state(x) != interface_1.ExecuteState.RUNNING && x.socket.io._readyState == 'open');
         };
         this.check_socket_state = (target) => {
             return target.current_job.length == 0 ? interface_1.ExecuteState.NONE : interface_1.ExecuteState.RUNNING;
@@ -108,11 +108,11 @@ class Region_Task {
                 channel: this.target.uuid,
                 data: this.target.libs
             };
-            source.websocket.send(JSON.stringify(h));
-            source.websocket.send(JSON.stringify(h2));
+            source.socket.send(JSON.stringify(h));
+            source.socket.send(JSON.stringify(h2));
         };
         this.get_idle_open = () => {
-            return this.target.current_nodes.filter(x => x.websocket.readyState == 1);
+            return this.target.current_nodes.filter(x => x.socket.io._readyState == 'open');
         };
         /**
          * Check all the cronjob is finish or not
@@ -248,7 +248,7 @@ class Region_Task {
             }
             else {
                 ns = [last];
-                if (ns[0].websocket.readyState != 1) {
+                if (ns[0].socket.io._readyState != 'open') {
                     ns = this.get_idle();
                     this.job = [];
                 }
@@ -263,7 +263,7 @@ class Region_Task {
                 (_b = this.target.proxy) === null || _b === void 0 ? void 0 : _b.executeSubtaskStart([task, 0, ns[0].uuid]);
             }
         }
-        if (ns.length > 0 && ns[0].websocket.readyState == 1 && this.check_socket_state(ns[0]) != interface_1.ExecuteState.RUNNING) {
+        if (ns.length > 0 && ns[0].socket.io._readyState == 'open' && this.check_socket_state(ns[0]) != interface_1.ExecuteState.RUNNING) {
             if (this.check_single_end()) {
                 allJobFinish = true;
             }
