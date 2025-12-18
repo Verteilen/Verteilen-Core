@@ -162,6 +162,12 @@ export declare enum RecordType {
     LIB = 6,
     USER = 7
 }
+export declare enum CronJobStateType {
+    JOB = 0,
+    OR = 1,
+    AND = 2,
+    NOT = 3
+}
 /**
  * **Lib Import Type**\
  * For client-side javascript vm library import options

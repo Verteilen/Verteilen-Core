@@ -43,7 +43,7 @@ class WebsocketManager {
                 this.messager_log(`[Shell] Error cannot find the node by ID: ${uuid}`);
                 return;
             }
-            p.socket.emit("open_shell");
+            p.socket.emit("open_shell", uuid);
         };
         /**
          * Open shell connection with target node
@@ -56,7 +56,7 @@ class WebsocketManager {
                 this.messager_log(`[Shell] Error cannot find the node by ID: ${uuid}`);
                 return;
             }
-            p.socket.emit("enter_shell", text);
+            p.socket.emit("enter_shell", uuid, text);
         };
         /**
          * Close shell connection with target node
@@ -69,7 +69,7 @@ class WebsocketManager {
                 this.messager_log(`[Shell] Error cannot find the node by ID: ${uuid}`);
                 return;
             }
-            p.socket.emit("close_shell");
+            p.socket.emit("close_shell", uuid);
         };
         /**
          * Check folder structure with target node
@@ -82,7 +82,7 @@ class WebsocketManager {
                 this.messager_log(`[Shell] Error cannot find the node by ID: ${uuid}`);
                 return;
             }
-            p.socket.emit("shell_folder", path);
+            p.socket.emit("shell_folder", uuid, path);
         };
         /**
          * Trying to connect a node by target URL

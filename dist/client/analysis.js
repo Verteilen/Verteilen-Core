@@ -90,7 +90,7 @@ class ClientAnalysis {
             this.socket.on('set_database', this.set_database);
             this.socket.on('set_libs', this.set_libs);
             this.socket.on('shell_folder', this.shell.shell_folder);
-            this.socket.on('open_shell', this.shell.open_shell);
+            this.socket.on('open_shell', (uuid) => this.shell.open_shell(uuid, this.socket));
             this.socket.on('close_shell', this.shell.close_shell);
             this.socket.on('enter_shell', this.shell.enter_shell);
             this.socket.on('resource_start', this.resource_start);
@@ -362,7 +362,7 @@ class ClientAnalysis {
             }
         };
         this.disconnect = (source) => {
-            this.shell.disconnect(source);
+            this.shell.disconnect2(source);
             this.exec.forEach(x => x.stop_job());
         };
         this.stop_all = () => {

@@ -163,6 +163,14 @@ export enum RecordType {
     LIB, 
     USER,
 }
+
+export enum CronJobStateType{
+    JOB,
+    OR,
+    AND,
+    NOT,
+}
+
 /**
  * **Lib Import Type**\
  * For client-side javascript vm library import options

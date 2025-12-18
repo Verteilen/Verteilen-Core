@@ -27,6 +27,11 @@ export interface ExecutePair {
     meta?: any;
 }
 /**
+ * Group state of the job execution
+ */
+export interface CronJobStateGroup {
+}
+/**
  * The cronjob package, contain subtask state
  */
 export interface CronJobState {

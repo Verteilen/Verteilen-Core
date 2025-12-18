@@ -8,25 +8,25 @@ export declare class ClientShell {
     private shell_workers;
     constructor(_messager: Messager, _messager_log: Messager, _client: Client);
     /**
-     * Open shell console
-     * @param input
+     * Open shell consolet
      */
-    open_shell: (data: number, source: Socket) => void;
+    open_shell: (uuid: string, source: Socket) => void;
     /**
      * Open shell console
      * @param input
      */
-    enter_shell: (input: string, source: Socket) => void;
+    enter_shell: (uuid: string, input: string) => void;
     /**
      * Open shell console
      * @param input
      */
-    close_shell: (data: number, source: Socket) => void;
+    close_shell: (uuid: string) => void;
     /**
      * Open shell console
      * @param input
      */
-    close_shell_all: (data: number) => void;
-    shell_folder: (data: string, source: Socket) => void;
-    disconnect: (source: Socket) => void;
+    close_shell_all: () => void;
+    shell_folder: (uuid: string, path: string) => void;
+    disconnect: (uuid: string) => void;
+    disconnect2: (source: Socket) => void;
 }

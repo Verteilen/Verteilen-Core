@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DatabaseTemplateText = exports.ProjectTemplateText = exports.JobType2Text = exports.JobTypeText = exports.JobResultText = exports.ConnectionText = exports.JobCategoryText = exports.ExecuteStateText = exports.DataTypeText = exports.RecordTypePureText = exports.ServiceMode = exports.JavascriptLib = exports.RecordType = exports.ExecuteState = exports.DatabaseTemplate = exports.ProjectTemplate = exports.JobType2 = exports.JobType = exports.ConditionResult = exports.JobCategory = exports.FrontendUpdate = exports.ResourceType = exports.DataTypeBase = exports.BackendType = exports.DataType = exports.SocketState = exports.TaskLogicType = void 0;
+exports.DatabaseTemplateText = exports.ProjectTemplateText = exports.JobType2Text = exports.JobTypeText = exports.JobResultText = exports.ConnectionText = exports.JobCategoryText = exports.ExecuteStateText = exports.DataTypeText = exports.RecordTypePureText = exports.ServiceMode = exports.JavascriptLib = exports.CronJobStateType = exports.RecordType = exports.ExecuteState = exports.DatabaseTemplate = exports.ProjectTemplate = exports.JobType2 = exports.JobType = exports.ConditionResult = exports.JobCategory = exports.FrontendUpdate = exports.ResourceType = exports.DataTypeBase = exports.BackendType = exports.DataType = exports.SocketState = exports.TaskLogicType = void 0;
 // ========================
 //                           
 //      Share Codebase     
@@ -188,6 +188,13 @@ var RecordType;
     RecordType[RecordType["LIB"] = 6] = "LIB";
     RecordType[RecordType["USER"] = 7] = "USER";
 })(RecordType || (exports.RecordType = RecordType = {}));
+var CronJobStateType;
+(function (CronJobStateType) {
+    CronJobStateType[CronJobStateType["JOB"] = 0] = "JOB";
+    CronJobStateType[CronJobStateType["OR"] = 1] = "OR";
+    CronJobStateType[CronJobStateType["AND"] = 2] = "AND";
+    CronJobStateType[CronJobStateType["NOT"] = 3] = "NOT";
+})(CronJobStateType || (exports.CronJobStateType = CronJobStateType = {}));
 /**
  * **Lib Import Type**\
  * For client-side javascript vm library import options
