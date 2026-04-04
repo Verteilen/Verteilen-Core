@@ -1,9 +1,9 @@
 import { Socket } from 'socket.io';
-type calltype = Array<[string, (...args: Array<any>) => void]>;
+import { TypeMap } from '../interface';
 export interface ConsoleServerContainer {
     uuid: string;
     socket: Socket;
-    typeMap: calltype;
+    typeMap: TypeMap;
 }
 /**
  * Console server helper, cluster server side handle web client connection instances
@@ -15,6 +15,17 @@ export declare class ConsoleServerManager {
     admins: Array<ConsoleServerContainer>;
     messager_log: Function;
     constructor(_messager_log: Function);
-    Added: (socket: Socket, typeMap: calltype) => ConsoleServerContainer | undefined;
+    /**
+     * Adding a frontend socket to the list\
+     * This include add auto delete event when socket disconnect
+     * @param socket Target frontend
+     * @param typeMap The event map
+     * @returns The socket record
+     */
+    Added: (socket: Socket, typeMap: TypeMap) => ConsoleServerContainer | undefined;
+    /**
+     * Manually remove the frontend socket
+     * @param socket Target frontend
+     */
+    Remove: (socket: Socket) => void;
 }
-export {};

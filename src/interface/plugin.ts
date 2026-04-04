@@ -83,7 +83,7 @@ export interface Plugin {
  */
 export interface PluginNode {
     /**
-     * A;; installed or installing 
+     * A: installed or installing 
      */
     plugins: Array<Plugin>
 }

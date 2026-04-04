@@ -9,13 +9,12 @@
 //
 import { Socket } from 'socket.io';
 import { v6 as uuidv6 } from 'uuid'
-
-type calltype = Array<[string, (...args: Array<any>) => void]>
+import { TypeMap } from '../interface';
 
 export interface ConsoleServerContainer {
     uuid: string
     socket:Socket
-    typeMap: calltype
+    typeMap: TypeMap
 }
 
 /**
@@ -31,8 +30,14 @@ export class ConsoleServerManager {
     constructor(_messager_log:Function){
         this.messager_log = _messager_log
     }
-
-    Added = (socket:Socket, typeMap: calltype):ConsoleServerContainer | undefined => {
+    /**
+     * Adding a frontend socket to the list\
+     * This include add auto delete event when socket disconnect
+     * @param socket Target frontend
+     * @param typeMap The event map
+     * @returns The socket record
+     */
+    Added = (socket:Socket, typeMap: TypeMap): ConsoleServerContainer | undefined => {
         const buffer:ConsoleServerContainer = {
             uuid: uuidv6(),
             socket: socket,
@@ -57,5 +62,17 @@ export class ConsoleServerManager {
         })
         
         return buffer
+    }
+    /**
+     * Manually remove the frontend socket
+     * @param socket Target frontend
+     */
+    Remove = (socket:Socket) => {
+        const target = this.admins.findIndex(x => x.socket.id == socket.id)
+        if(target != -1){
+            this.admins.splice(target, 1);
+        }else{
+            this.messager_log('[Source Remove Analysis] Failed, Socket is not in record')
+        }
     }
 }

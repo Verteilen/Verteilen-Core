@@ -11,6 +11,13 @@ class ConsoleServerManager {
          * Websocket instance for admin
          */
         this.admins = [];
+        /**
+         * Adding a frontend socket to the list\
+         * This include add auto delete event when socket disconnect
+         * @param socket Target frontend
+         * @param typeMap The event map
+         * @returns The socket record
+         */
         this.Added = (socket, typeMap) => {
             const buffer = {
                 uuid: (0, uuid_1.v6)(),
@@ -32,6 +39,19 @@ class ConsoleServerManager {
                 socket.on(x[0], x[1]);
             });
             return buffer;
+        };
+        /**
+         * Manually remove the frontend socket
+         * @param socket Target frontend
+         */
+        this.Remove = (socket) => {
+            const target = this.admins.findIndex(x => x.socket.id == socket.id);
+            if (target != -1) {
+                this.admins.splice(target, 1);
+            }
+            else {
+                this.messager_log('[Source Remove Analysis] Failed, Socket is not in record');
+            }
         };
         this.messager_log = _messager_log;
     }
