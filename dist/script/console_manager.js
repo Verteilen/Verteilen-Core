@@ -135,8 +135,11 @@ class ConsoleManager {
             this.received(JSON.parse(packet.data.toString()));
         });
     }
+    get readyState() {
+        return this.socket.io._readyState;
+    }
     get connected() {
-        return this.socket.io._readyState === 'open';
+        return this.readyState === 'open';
     }
 }
 exports.ConsoleManager = ConsoleManager;

@@ -53,8 +53,12 @@ export class ConsoleManager {
         })
     }
 
+    public get readyState() : string {
+        return this.socket.io._readyState
+    }
+
     public get connected() : boolean {
-        return this.socket.io._readyState === 'open'
+        return this.readyState === 'open'
     }
 
     on = (channel: string, listener: Listener) => {

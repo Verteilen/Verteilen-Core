@@ -29,6 +29,8 @@ export declare const i18nDefaultData: {
                 account: string;
                 password: string;
                 failed: string;
+                guest: string;
+                server: string;
             };
             guides: {
                 workflow: string;
@@ -488,6 +490,8 @@ export declare const i18nDefaultData: {
                 account: string;
                 password: string;
                 failed: string;
+                guest: string;
+                server: string;
             };
             guides: {
                 workflow: string;
@@ -954,6 +958,8 @@ export declare const i18n: import("vue-i18n").I18n<{
             account: string;
             password: string;
             failed: string;
+            guest: string;
+            server: string;
         };
         guides: {
             workflow: string;
@@ -1413,6 +1419,8 @@ export declare const i18n: import("vue-i18n").I18n<{
             account: string;
             password: string;
             failed: string;
+            guest: string;
+            server: string;
         };
         guides: {
             workflow: string;

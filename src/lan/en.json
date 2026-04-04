@@ -9,7 +9,9 @@
         "submit": "Submit",
         "account": "Account",
         "password": "Password",
-        "failed": "Login Failed"
+        "failed": "Login Failed",
+        "guest": "Login as Guest",
+        "server": "Server"
     },
     "guides": {
         "workflow": "Workflow",

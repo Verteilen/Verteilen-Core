@@ -13,6 +13,7 @@ export declare class ConsoleManager {
     events_once: Array<[string, Array<Listener>]>;
     buffer: Array<Header>;
     constructor(url: string, messager_log: Function, emitter: EmitterProxy<BusType>);
+    get readyState(): string;
     get connected(): boolean;
     on: (channel: string, listener: Listener) => void;
     once: (channel: string, listener: Listener) => void;

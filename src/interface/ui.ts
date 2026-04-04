@@ -15,16 +15,9 @@ import { BackendType } from "./enum"
  * Defined by the backend proxy worker
  */
 export interface AppConfig {
-    /**
-     * **FLAG: Express**\
-     * For browser check if it's connect to a express server
-     */
-    isExpress: boolean
-    /**
-     * **FLAG: Electron**\
-     * For browser check if it's use Electron desktop app currently
-     */
-    isElectron: boolean
+    http_url?: string
+    websocket_url?: string
+    setup: boolean
     /**
      * **FLAG: Admin**\
      * If use express server, check user have root permission

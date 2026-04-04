@@ -9,7 +9,9 @@
         "submit": "登入",
         "account": "帳號",
         "password": "密碼",
-        "failed": "登入失敗"
+        "failed": "登入失敗",
+        "guest": "遊客登入",
+        "server": "伺服器位址"
     },
     "guides": {
         "workflow": "工作流程",
