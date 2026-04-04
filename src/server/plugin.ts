@@ -182,9 +182,6 @@ export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, s
                 // Query data failed
                 const p:ToastData = { title: "Import Failed", type: "error", message: `Cannot find the json from url ${url}, or maybe just the wrong token` }
                 const h:Header = { name: "makeToast", data: JSON.stringify(p) }
-                if (feedback.electron){
-                    feedback.electron()?.send("makeToast", JSON.stringify(p))
-                }
                 if (feedback.socket){
                     feedback.socket(JSON.stringify(h))
                 }
@@ -227,9 +224,6 @@ export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, s
             for(let x of error_children){
                 const p:ToastData = { title: x[0], type: "error", message: x[1] }
                 const h:Header = { name: "makeToast", data: JSON.stringify(p) }
-                if (feedback.electron){
-                    feedback.electron()?.send("makeToast", JSON.stringify(p))
-                }
                 if (feedback.socket){
                     feedback.socket(JSON.stringify(h))
                 }

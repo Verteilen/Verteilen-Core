@@ -18,7 +18,7 @@ class ConsoleServerManager {
          * @param typeMap The event map
          * @returns The socket record
          */
-        this.Added = (socket, typeMap) => {
+        this.Add = (socket, typeMap) => {
             const buffer = {
                 uuid: (0, uuid_1.v6)(),
                 socket: socket,

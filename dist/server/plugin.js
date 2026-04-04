@@ -80,7 +80,6 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
             return loader.exists(path) ? loader.read_string(path) : undefined;
         },
         import_plugin: (name, url, token) => __awaiter(void 0, void 0, void 0, function* () {
-            var _a, _b;
             const error_children = [];
             const root = loader.join(loader.root, 'plugin');
             const project_folder = loader.join(root, name, 'project');
@@ -123,9 +122,6 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
                 // Query data failed
                 const p = { title: "Import Failed", type: "error", message: `Cannot find the json from url ${url}, or maybe just the wrong token` };
                 const h = { name: "makeToast", data: JSON.stringify(p) };
-                if (feedback.electron) {
-                    (_a = feedback.electron()) === null || _a === void 0 ? void 0 : _a.send("makeToast", JSON.stringify(p));
-                }
                 if (feedback.socket) {
                     feedback.socket(JSON.stringify(h));
                 }
@@ -169,9 +165,6 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
             for (let x of error_children) {
                 const p = { title: x[0], type: "error", message: x[1] };
                 const h = { name: "makeToast", data: JSON.stringify(p) };
-                if (feedback.electron) {
-                    (_b = feedback.electron()) === null || _b === void 0 ? void 0 : _b.send("makeToast", JSON.stringify(p));
-                }
                 if (feedback.socket) {
                     feedback.socket(JSON.stringify(h));
                 }

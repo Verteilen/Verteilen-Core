@@ -37,7 +37,7 @@ export class ConsoleServerManager {
      * @param typeMap The event map
      * @returns The socket record
      */
-    Added = (socket:Socket, typeMap: TypeMap): ConsoleServerContainer | undefined => {
+    Add = (socket:Socket, typeMap: TypeMap): ConsoleServerContainer => {
         const buffer:ConsoleServerContainer = {
             uuid: uuidv6(),
             socket: socket,
@@ -67,7 +67,7 @@ export class ConsoleServerManager {
      * Manually remove the frontend socket
      * @param socket Target frontend
      */
-    Remove = (socket:Socket) => {
+    Remove = (socket:Socket): void => {
         const target = this.admins.findIndex(x => x.socket.id == socket.id)
         if(target != -1){
             this.admins.splice(target, 1);

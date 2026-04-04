@@ -93,9 +93,6 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
             type: 'success',
             message: `${x.url} \n${x.uuid}`
         }
-        if(this.feedback.electron){
-            this.feedback.electron()?.send('makeToast', p)
-        }
         if(this.feedback.socket && this.backend.Broadcasting){
             this.backend.Broadcasting('makeToast', p)
         }
@@ -109,9 +106,6 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
             title: "Network Disconnected",
             type: 'error',
             message: `${x.url} \n${x.uuid}`
-        }
-        if(this.feedback.electron){
-            this.feedback.electron()?.send('makeToast', p)
         }
         if(this.feedback.socket && this.backend.Broadcasting){
             this.backend.Broadcasting('makeToast', p)
@@ -133,9 +127,6 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
      * @param p Client node source
      */
     shellReply = (data:Single, p?:SocketPack) => {
-        if(this.feedback.electron){
-            this.feedback.electron()?.send("shellReply", data)
-        }
         if(this.feedback.socket){
             if(p == undefined) return
             if(this.shellBind.has(p.uuid)){
@@ -154,9 +145,6 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
      * @param p Client node source
      */
     folderReply = (data:ShellFolder, p?:SocketPack) => {
-        if(this.feedback.electron){
-            this.feedback.electron()?.send("folderReply", data)
-        }
         if(this.feedback.socket){
             if(p == undefined) return
             if(this.shellBind.has(p.uuid)){
@@ -261,16 +249,14 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
 
     //#region Console
     console_list = (socket:any) => {
-        if(this.feedback.electron){
-            return this.execute_manager.map(x => x.record).filter(x => x != undefined)
-        }
-        if(this.feedback.socket){
+        if(this.feedback.socket != undefined){
             const h:Header = {
                 name: "console_list-feedback",
                 data: this.execute_manager.map(x => x.record)
             }
             this.feedback.socket(JSON.stringify(h))
         }
+        return undefined;
     }
     console_record = (socket:any, uuid:string) => {
         const r = this.execute_manager.find(x => x.record?.uuid == uuid)?.record
@@ -339,7 +325,6 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
             }
             socket.send(JSON.stringify(h))
         }
-        if(this.feedback.electron) return r ? er : undefined
     }
     console_update_call = () => {
         const p = this.re

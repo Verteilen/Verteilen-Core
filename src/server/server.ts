@@ -24,10 +24,6 @@ export type TypeMap = { [key:string]:Function }
  */
 export interface PluginFeedback {
     /**
-     * Eletron feedback
-     */
-    electron:(() => (Caller_Electron | undefined)) | undefined
-    /**
      * WebServer feedback
      */
     socket:Caller_Socket | undefined

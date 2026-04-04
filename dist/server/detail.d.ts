@@ -1,4 +1,4 @@
-import { BusAnalysis, ExecutePair, ExecuteProxy, ExecuteRecord, ExecuteState, Messager, NodeProxy, Record, ShellFolder, Single, SocketPack, ServerDetailEvent, BackendAction } from "../interface";
+import { BusAnalysis, ExecutePair, ExecuteProxy, ExecuteState, Messager, NodeProxy, Record, ShellFolder, Single, SocketPack, ServerDetailEvent, BackendAction } from "../interface";
 import { PluginFeedback } from "./server";
 import { RecordIOBase } from './io';
 import { WebsocketManager } from '../script/socket_manager';
@@ -58,11 +58,11 @@ export declare class ServerDetail implements NodeProxy, ServerDetailEvent {
     node_add: (socket: any, url: string, uuid: string) => void;
     node_update: (socket: any) => import("../interface").NodeTable[] | undefined;
     node_delete: (socket: any, uuid: string, reason?: string) => void;
-    console_list: (socket: any) => ExecuteRecord[] | undefined;
+    console_list: (socket: any) => undefined;
     console_record: (socket: any, uuid: string) => string;
     console_execute: (socket: any, uuid: string, type: number) => void;
     console_stop: (socket: any, uuid: string) => void;
-    console_add: (socket: any, name: string, record: Record, uuid: string | undefined) => ExecuteRecord | undefined;
+    console_add: (socket: any, name: string, record: Record, uuid: string | undefined) => void;
     console_update_call: () => void;
     console_clean: (socket: any, uuid: string) => void;
     console_skip: (socket: any, uuid: string, forward: boolean, type: number, state?: ExecuteState) => void;

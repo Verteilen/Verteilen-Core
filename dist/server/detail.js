@@ -30,7 +30,6 @@ class ServerDetail {
         this.re = [];
         //#region Socket Events
         this.NewConnection = (x) => {
-            var _a;
             if (process.env.NODE_ENV == 'development')
                 console.warn(`[Detail] New connection detected: ${x.url} \n${x.uuid}`);
             const p = {
@@ -38,9 +37,6 @@ class ServerDetail {
                 type: 'success',
                 message: `${x.url} \n${x.uuid}`
             };
-            if (this.feedback.electron) {
-                (_a = this.feedback.electron()) === null || _a === void 0 ? void 0 : _a.send('makeToast', p);
-            }
             if (this.feedback.socket && this.backend.Broadcasting) {
                 this.backend.Broadcasting('makeToast', p);
             }
@@ -49,7 +45,6 @@ class ServerDetail {
             });
         };
         this.DisConnection = (x) => {
-            var _a;
             if (process.env.NODE_ENV == 'development')
                 console.warn(`[Detail] Disconnect detected: ${x.url} \n${x.uuid}`);
             const p = {
@@ -57,9 +52,6 @@ class ServerDetail {
                 type: 'error',
                 message: `${x.url} \n${x.uuid}`
             };
-            if (this.feedback.electron) {
-                (_a = this.feedback.electron()) === null || _a === void 0 ? void 0 : _a.send('makeToast', p);
-            }
             if (this.feedback.socket && this.backend.Broadcasting) {
                 this.backend.Broadcasting('makeToast', p);
             }
@@ -79,10 +71,6 @@ class ServerDetail {
          * @param p Client node source
          */
         this.shellReply = (data, p) => {
-            var _a;
-            if (this.feedback.electron) {
-                (_a = this.feedback.electron()) === null || _a === void 0 ? void 0 : _a.send("shellReply", data);
-            }
             if (this.feedback.socket) {
                 if (p == undefined)
                     return;
@@ -102,10 +90,6 @@ class ServerDetail {
          * @param p Client node source
          */
         this.folderReply = (data, p) => {
-            var _a;
-            if (this.feedback.electron) {
-                (_a = this.feedback.electron()) === null || _a === void 0 ? void 0 : _a.send("folderReply", data);
-            }
             if (this.feedback.socket) {
                 if (p == undefined)
                     return;
@@ -209,16 +193,14 @@ class ServerDetail {
         //#endregion
         //#region Console
         this.console_list = (socket) => {
-            if (this.feedback.electron) {
-                return this.execute_manager.map(x => x.record).filter(x => x != undefined);
-            }
-            if (this.feedback.socket) {
+            if (this.feedback.socket != undefined) {
                 const h = {
                     name: "console_list-feedback",
                     data: this.execute_manager.map(x => x.record)
                 };
                 this.feedback.socket(JSON.stringify(h));
             }
+            return undefined;
         };
         this.console_record = (socket, uuid) => {
             var _a;
@@ -267,8 +249,6 @@ class ServerDetail {
                 };
                 socket.send(JSON.stringify(h));
             }
-            if (this.feedback.electron)
-                return r ? er : undefined;
         };
         this.console_update_call = () => {
             const p = this.re;

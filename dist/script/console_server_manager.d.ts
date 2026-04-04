@@ -22,7 +22,7 @@ export declare class ConsoleServerManager {
      * @param typeMap The event map
      * @returns The socket record
      */
-    Added: (socket: Socket, typeMap: TypeMap) => ConsoleServerContainer | undefined;
+    Add: (socket: Socket, typeMap: TypeMap) => ConsoleServerContainer;
     /**
      * Manually remove the frontend socket
      * @param socket Target frontend
