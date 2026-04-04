@@ -263,6 +263,20 @@ export interface UserProfileClient {
 export interface ServerSetting {
     open_guest: boolean;
 }
+export interface ServerSetupRoot {
+    root_username: string;
+    root_password: string;
+}
+export interface ServerSetupAuth {
+    external_auth: boolean;
+    auth_server: string;
+    auth_username: string;
+    auth_password: string;
+}
+export interface ServerSetupRequire {
+    root?: ServerSetupRoot;
+    auth?: ServerSetupAuth;
+}
 export declare const CreateRootLocalPermission: () => LocalPermission;
 export declare const CreateRootPermission: () => GlobalPermission;
 export declare const CreateRootUser: () => UserProfile;

@@ -1,4 +1,5 @@
-import { Job, Project, Task } from "../../interface";
+import { Socket } from "socket.io";
+import { Project, Task } from "../../interface";
 import { MemoryData, RecordLoader } from "../io";
 import { ServerBase } from "../server";
 export declare class Project_Module {
@@ -6,66 +7,71 @@ export declare class Project_Module {
     constructor(memory: ServerBase);
     get memory(): MemoryData;
     get loader(): RecordLoader;
-    ProjectJobCount(uuid: string, token?: string | undefined): Promise<number>;
-    ReOrderProjectTask(uuid: string, uuids: Array<string>, token?: string | undefined): Promise<void>;
+    ProjectJobCount(socket: Socket | undefined, uuid: string, token?: string | undefined): Promise<void>;
+    ReOrderProjectTask(socket: Socket | undefined, uuid: string, uuids: Array<string>, token?: string | undefined): Promise<void>;
+    PopulateProject(socket: Socket | undefined, uuid: string, token?: string | undefined): Promise<void>;
     /**
      * Assign real data to instance
      * @param uuid Project UUID
      */
-    PopulateProject(uuid: string, token?: string | undefined): Promise<Project | undefined>;
+    _PopulateProject(socket: Socket | undefined, uuid: string, token?: string | undefined): Promise<Project | undefined>;
+    PopulateTask(socket: Socket | undefined, uuid: string, token?: string | undefined): Promise<void>;
     /**
      * Assign real data to instance
      * @param uuid Task UUID
      */
-    PopulateTask(uuid: string, token?: string | undefined): Promise<Task | undefined>;
+    _PopulateTask(socket: Socket | undefined, uuid: string, token?: string | undefined): Promise<Task | undefined>;
     /**
      * Get tasks from project related
      * @param uuid Project UUID
      * @returns Related Tasks
      */
-    GetProjectRelatedTask(uuid: string, token?: string | undefined): Promise<Array<Task>>;
+    GetProjectRelatedTask(socket: Socket | undefined, uuid: string, token?: string | undefined): Promise<void>;
     /**
      * Get jobs from task related
      * @param uuid Task UUID
      * @returns Related Jobs
      */
-    GetTaskRelatedJob(uuid: string, token?: string | undefined): Promise<Array<Job>>;
+    GetTaskRelatedJob(socket: Socket | undefined, uuid: string, token?: string | undefined): Promise<void>;
+    CloneProjects(socket: Socket | undefined, uuids: Array<string>, token?: string | undefined): Promise<void>;
     /**
      * Clone Project Container
      * @param uuids project uuids
      * @returns The new uuids list
      */
-    CloneProjects(uuids: Array<string>, token?: string | undefined): Promise<Array<string>>;
+    _CloneProjects(socket: Socket | undefined, uuids: Array<string>, token?: string | undefined): Promise<Array<string>>;
+    CloneTasks(socket: Socket | undefined, uuids: Array<string>, token?: string | undefined): Promise<void>;
     /**
      * Clone Task Container
      * @param uuids task uuids
      * @returns The new uuids list
      */
-    CloneTasks(uuids: Array<string>, token?: string | undefined): Promise<Array<string>>;
+    _CloneTasks(socket: Socket | undefined, uuids: Array<string>, token?: string | undefined): Promise<Array<string>>;
+    CloneJobs(socket: Socket | undefined, uuids: Array<string>, token?: string | undefined): Promise<void>;
     /**
      * Clone Job Container
      * @param uuids job uuids
      * @returns The new uuids list
      */
-    CloneJobs(uuids: Array<string>, token?: string | undefined): Promise<Array<string>>;
+    _CloneJobs(socket: Socket | undefined, uuids: Array<string>, token?: string | undefined): Promise<Array<string>>;
     /**
      * Delete project related data and project itself
      * @param uuid Project UUID
      */
-    CascadeDeleteProject(uuid: string, bind: boolean, token?: string | undefined): Promise<void>;
+    CascadeDeleteProject(socket: Socket | undefined, uuid: string, bind: boolean, token?: string | undefined): Promise<void>;
     /**
      * Delete Task related data and project itself
      * @param uuid Task UUID
      */
-    CascadeDeleteTask(uuid: string, project_change?: boolean, token?: string | undefined): Promise<void>;
+    CascadeDeleteTask(socket: Socket | undefined, uuid: string, project_change?: boolean, token?: string | undefined): Promise<void>;
     /**
      * Delete Task related data and project itself
      * @param uuid Task UUID
      */
-    CascadeDeleteJob(uuid: string, task_change?: boolean, token?: string | undefined): Promise<void>;
+    CascadeDeleteJob(socket: Socket | undefined, uuid: string, task_change?: boolean, token?: string | undefined): Promise<void>;
     /**
      * Delete idle database
      * @param uuid Database UUID
      */
-    Delete_Database_Idle(uuid: string, token?: string | undefined): Promise<void>;
+    Delete_Database_Idle(socket: Socket | undefined, uuid: string, token?: string | undefined): Promise<void>;
 }

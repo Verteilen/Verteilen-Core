@@ -1,9 +1,7 @@
 import { Socket } from 'socket.io';
-import { TypeMap } from '../interface';
 export interface ConsoleServerContainer {
     uuid: string;
     socket: Socket;
-    typeMap: TypeMap;
 }
 /**
  * Console server helper, cluster server side handle web client connection instances
@@ -22,7 +20,7 @@ export declare class ConsoleServerManager {
      * @param typeMap The event map
      * @returns The socket record
      */
-    Add: (socket: Socket, typeMap: TypeMap) => ConsoleServerContainer;
+    Add: (socket: Socket) => ConsoleServerContainer;
     /**
      * Manually remove the frontend socket
      * @param socket Target frontend

@@ -35,6 +35,7 @@ import { receivedPack, Console_Proxy } from './detail/console_handle'
 import { Log_Proxy } from './detail/log_handle'
 import { ExecuteManager } from '../script/execute_manager'
 import { WebsocketManager } from '../script/socket_manager'
+import { Socket } from 'socket.io'
 
 /**
  * **Server Inner-Work Handler**\
@@ -161,29 +162,29 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
     //#endregion
 
     //#region For Backend
-    resource_start = (socket:any, uuid:string) => {
+    resource_start = (socket:Socket | undefined, uuid:string) => {
         const p = this.websocket_manager!.targets.find(x => x.uuid == uuid)
         const d:Header = { name: 'resource_start', data: 0 }
         p?.socket.send(JSON.stringify(d))
     }
 
-    resource_end = (socket:any, uuid:string) => {
+    resource_end = (socket:Socket | undefined, uuid:string) => {
         const p = this.websocket_manager!.targets.find(x => x.uuid == uuid)
         const d:Header = { name: 'resource_end', data: 0 }
         p?.socket.send(JSON.stringify(d))
     }
 
-    plugin_info = (socket:any, uuid:string) => {
+    plugin_info = (socket:Socket | undefined, uuid:string) => {
         const p = this.websocket_manager!.targets.find(x => x.uuid == uuid)
         const d:Header = { name: 'plugin_info', data: 0 }
         p?.socket.send(JSON.stringify(d))
     }
 
     //#region Shell
-    shell_enter = (socket:any, uuid: string, value:string) => {
+    shell_enter = (socket:Socket | undefined, uuid: string, value:string) => {
         this.websocket_manager!.shell_enter(uuid, value)
     }
-    shell_open = (socket:any, uuid: string) => {
+    shell_open = (socket:Socket | undefined, uuid: string) => {
         this.websocket_manager!.shell_open(uuid)
         if(this.feedback.socket){
             if(this.shellBind.has(uuid)){
@@ -193,7 +194,7 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
             }
         }
     }
-    shell_close = (socket:any, uuid: string) => {
+    shell_close = (socket:Socket | undefined, uuid: string) => {
         this.websocket_manager!.shell_close(uuid)
         if(this.feedback.socket){
             if(this.shellBind.has(uuid)){
@@ -204,13 +205,13 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
             }
         }
     }
-    shell_folder = (socket:any, uuid: string, path:string) => {
+    shell_folder = (socket:Socket | undefined, uuid: string, path:string) => {
         this.websocket_manager!.shell_folder(uuid, path)
     }
     //#endregion
 
     //#region Node
-    node_list = (socket:any) => {
+    node_list = (socket:Socket | undefined) => {
         const p = this.websocket_manager?.targets
         if(this.feedback.socket != undefined){
             const h:Header = {
@@ -221,7 +222,7 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
         }
         return p
     }
-    node_add = (socket:any, url:string, uuid:string) => {
+    node_add = (socket:Socket | undefined, url:string, uuid:string) => {
         const p = this.websocket_manager!.server_start(url, uuid)
         if(this.feedback.socket != undefined){
             const h:Header = {
@@ -231,7 +232,7 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
             this.feedback.socket(JSON.stringify(h))
         }
     }
-    node_update = (socket:any) => {
+    node_update = (socket:Socket | undefined) => {
         const p = this.websocket_manager?.server_update()
         if(this.feedback.socket != undefined){
             const h:Header = {
@@ -242,13 +243,13 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
         }
         return p
     }
-    node_delete = (socket:any, uuid:string, reason?:string) => {
+    node_delete = (socket:Socket | undefined, uuid:string, reason?:string) => {
         this.websocket_manager!.server_stop(uuid, reason)
     }
     //#endregion
 
     //#region Console
-    console_list = (socket:any) => {
+    console_list = (socket:Socket | undefined) => {
         if(this.feedback.socket != undefined){
             const h:Header = {
                 name: "console_list-feedback",
@@ -258,7 +259,7 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
         }
         return undefined;
     }
-    console_record = (socket:any, uuid:string) => {
+    console_record = (socket:Socket | undefined, uuid:string) => {
         const r = this.execute_manager.find(x => x.record?.uuid == uuid)?.record
         if(socket != undefined){
             const h:Header = {
@@ -269,7 +270,7 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
         }
         return JSON.stringify(r)
     }
-    console_execute = (socket:any, uuid:string, type:number) => {
+    console_execute = (socket:Socket | undefined, uuid:string, type:number) => {
         const target = this.execute_manager.find(x => x.record!.uuid == uuid)
         if(target == undefined) return
         target.record!.process_type = type
@@ -277,13 +278,13 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
         target.record!.stop = false
         target.manager!.first = true
     }
-    console_stop = (socket:any, uuid:string) => {
+    console_stop = (socket:Socket | undefined, uuid:string) => {
         const target = this.execute_manager.find(x => x.record!.uuid == uuid)
         if(target == undefined) return
         target.record!.stop = true
         target.manager!.Stop()
     }
-    console_add = (socket:any, name:string, record:Record, uuid:string | undefined) => {
+    console_add = (socket:Socket | undefined, name:string, record:Record, uuid:string | undefined) => {
         record.projects.forEach(x => x.uuid = uuidv6())
         const em:ExecuteManager = new ExecuteManager(
             name,
@@ -337,7 +338,7 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
             this.feedback.socket(JSON.stringify(h))
         }
     }
-    console_clean = (socket:any, uuid:string) => {
+    console_clean = (socket:Socket | undefined, uuid:string) => {
         const target = this.execute_manager.find(x => x.record!.uuid == uuid)
         if(target == undefined) return
         target.manager!.Clean()
@@ -353,7 +354,7 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
         const index = this.execute_manager.findIndex(x => x.record!.uuid == uuid)
         this.execute_manager.splice(index, 1)
     }
-    console_skip = (socket:any, uuid:string, forward:boolean, type:number, state:ExecuteState = ExecuteState.FINISH) => {
+    console_skip = (socket:Socket | undefined, uuid:string, forward:boolean, type:number, state:ExecuteState = ExecuteState.FINISH) => {
         const target = this.execute_manager.find(x => x.record!.uuid == uuid)
         if(target == undefined) return
         if(type == 0){
@@ -417,7 +418,7 @@ export class ServerDetail implements NodeProxy, ServerDetailEvent {
             }
         }
     }
-    console_skip2 = (socket:any, uuid:string, v:number) => {
+    console_skip2 = (socket:Socket | undefined, uuid:string, v:number) => {
         const target = this.execute_manager.find(x => x.record!.uuid == uuid)
         if(target == undefined) return
         const index = target.manager!.SkipSubTask(v)

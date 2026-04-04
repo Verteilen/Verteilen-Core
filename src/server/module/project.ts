@@ -9,6 +9,7 @@
 //    * delete project trigger cascade chain reaction
 //    * Populate the project to a single JSON object
 //
+import { Socket } from "socket.io"
 import { Job, Project, Task } from "../../interface"
 import { MemoryData, RecordLoader } from "../io"
 import { ServerBase } from "../server"
@@ -24,15 +25,16 @@ export class Project_Module {
     public get memory(): MemoryData { return this.server.memory }
     public get loader(): RecordLoader { return this.server.current_loader }
 
-    async ProjectJobCount(uuid:string, token?: string | undefined):Promise<number> {
+    async ProjectJobCount(socket:Socket | undefined, uuid:string, token?: string | undefined):Promise<void> {
         await this.loader.project.load(uuid, token)
         const p:Project | undefined = this.memory.projects.find(p=> p.uuid == uuid)
-        if(!p) return 0
+        if(!p) return
         const t:Array<Task> = p.tasks_uuid.map(t_uuid => this.memory.tasks.find(t => t.uuid == t_uuid)).filter(t => t != undefined)
         const counts = t.map(x => x.jobs_uuid.length)
-        return counts.reduce((a,b) => a + b, 0)
+        const v = counts.reduce((a,b) => a + b, 0)
+        socket?.emit("project_module:get_job_count-feedback", v)
     }
-    async ReOrderProjectTask(uuid:string, uuids:Array<string>, token?: string | undefined):Promise<void> {
+    async ReOrderProjectTask(socket:Socket | undefined, uuid:string, uuids:Array<string>, token?: string | undefined):Promise<void> {
         await this.loader.project.load(uuid, token)
         const p:Project | undefined = this.memory.projects.find(p=> p.uuid == uuid)
         if(!p) return
@@ -40,24 +42,32 @@ export class Project_Module {
         this.loader.project.save(uuid, JSON.stringify(p, null, 4), token)
     }
 
+    async PopulateProject(socket:Socket | undefined, uuid:string, token?: string | undefined):Promise<void> {
+        const v = await this._PopulateProject(socket, uuid, token)
+        socket?.emit("project_module:populate_project-feedback", v)
+    }
     /**
      * Assign real data to instance
      * @param uuid Project UUID
      */
-    async PopulateProject(uuid:string, token?: string | undefined):Promise<Project | undefined> {
+    async _PopulateProject(socket:Socket | undefined, uuid:string, token?: string | undefined):Promise<Project | undefined> {
         await this.loader.project.load(uuid, token)
         const p:Project | undefined = this.memory.projects.find(p=> p.uuid == uuid)
-        if(!p) return undefined
+        if(!p) return
         const buffer:Project = Object.assign({}, p) as Project
-        const ts = buffer.tasks_uuid.map(x => this.PopulateTask(x, token))
+        const ts = buffer.tasks_uuid.map(x => this.PopulateTask(socket, x, token))
         buffer.tasks = (await Promise.all(ts)).filter(x => x != undefined)
         return buffer
+    }
+    async PopulateTask(socket:Socket | undefined, uuid:string, token?: string | undefined):Promise<void> {
+        const v = await this._PopulateTask(socket, uuid, token)
+        socket?.emit("project_module:populate_task-feedback", v)
     }
     /**
      * Assign real data to instance
      * @param uuid Task UUID
      */
-    async PopulateTask(uuid:string, token?: string | undefined):Promise<Task | undefined> {
+    async _PopulateTask(socket:Socket | undefined, uuid:string, token?: string | undefined):Promise<Task | undefined> {
         await this.loader.task.load(uuid, token)
         const p:Task | undefined = this.memory.tasks.find(p=> p.uuid == uuid)
         if(!p) return undefined
@@ -74,44 +84,54 @@ export class Project_Module {
      * @param uuid Project UUID
      * @returns Related Tasks
      */
-    async GetProjectRelatedTask(uuid:string, token?: string | undefined):Promise<Array<Task>> {
+    async GetProjectRelatedTask(socket:Socket | undefined, uuid:string, token?: string | undefined):Promise<void> {
         await this.loader.project.load(uuid, token)
         const p = this.memory.projects.find(x => x.uuid == uuid)
-        if(!p) return []
+        if(!p) {
+            socket?.emit("project_module:get_tasks-feedback", [])
+            return
+        }
         const r = p.tasks_uuid.map(x => {
             return this.loader.task.load(x, token)
         })
         await Promise.all(r)
         const tasks = p.tasks_uuid.map(x => this.memory.tasks.find(y => y.uuid == x)).filter(x => x != undefined)
-        return tasks
+        socket?.emit("project_module:get_tasks-feedback", tasks)
     }
     /**
      * Get jobs from task related
      * @param uuid Task UUID
      * @returns Related Jobs
      */
-    async GetTaskRelatedJob(uuid:string, token?: string | undefined):Promise<Array<Job>> {
+    async GetTaskRelatedJob(socket:Socket | undefined, uuid:string, token?: string | undefined):Promise<void> {
         await this.loader.task.load(uuid, token)
         const p = this.memory.tasks.find(x => x.uuid == uuid)
-        if(!p) return []
+        if(!p) {
+            socket?.emit("project_module:get_jobs-feedback", [])
+            return
+        }
         const r = p.jobs_uuid.map(x => {
             return this.loader.job.load(x, token)
         })
         await Promise.all(r)
         const jobs = p.jobs_uuid.map(x => this.memory.jobs.find(y => y.uuid == x)).filter(x => x != undefined)
-        return jobs
+        socket?.emit("project_module:get_jobs-feedback", jobs)
+    }
+    async CloneProjects(socket:Socket | undefined, uuids:Array<string>, token?: string | undefined):Promise<void> {
+        const v = await this._CloneProjects(socket, uuids, token)
+        socket?.emit("project_module:clone_projects-feedback", v);
     }
     /**
      * Clone Project Container
      * @param uuids project uuids
      * @returns The new uuids list
      */
-    async CloneProjects(uuids:Array<string>, token?: string | undefined):Promise<Array<string>>{
+    async _CloneProjects(socket:Socket | undefined, uuids:Array<string>, token?: string | undefined):Promise<Array<string>>{
         const p = uuids.map(x => this.loader.project.load(x, token))
         const ps = await Promise.all(p)
         const projects:Array<Project> = ps.map(x => JSON.parse(x))
         projects.forEach((x, i) => x.uuid = uuidv6({}, undefined, i))
-        const jus = projects.map(x => this.CloneTasks(x.tasks_uuid, token))
+        const jus = projects.map(x => this._CloneTasks(socket, x.tasks_uuid, token))
         const ju = await Promise.all(jus)
         projects.forEach((t, index) => {
             t.tasks_uuid = ju[index]
@@ -120,17 +140,21 @@ export class Project_Module {
         await Promise.all(js)
         return projects.map(x => x.uuid)
     }
+    async CloneTasks(socket:Socket | undefined, uuids:Array<string>, token?: string | undefined):Promise<void> {
+        const v = await this._CloneTasks(socket, uuids, token)
+        socket?.emit("project_module:clone_tasks-feedback", v)
+    }
     /**
      * Clone Task Container
      * @param uuids task uuids
      * @returns The new uuids list
      */
-    async CloneTasks(uuids:Array<string>, token?: string | undefined):Promise<Array<string>>{
+    async _CloneTasks(socket:Socket | undefined, uuids:Array<string>, token?: string | undefined):Promise<Array<string>> {
         const p = uuids.map(x => this.loader.task.load(x, token))
         const ps = await Promise.all(p)
         const tasks:Array<Task> = ps.map(x => JSON.parse(x))
         tasks.forEach((x, i) => x.uuid = uuidv6({}, undefined, 2500 + i))
-        const jus = tasks.map(x => this.CloneJobs(x.jobs_uuid, token))
+        const jus = tasks.map(x => this._CloneJobs(socket, x.jobs_uuid, token))
         const ju = await Promise.all(jus)
         tasks.forEach((t, index) => {
             t.jobs_uuid = ju[index]
@@ -139,12 +163,16 @@ export class Project_Module {
         await Promise.all(js)
         return tasks.map(x => x.uuid)
     }
+    async CloneJobs(socket:Socket | undefined, uuids:Array<string>, token?: string | undefined):Promise<void> {
+        const v = await this._CloneJobs(socket, uuids, token)
+        socket?.emit("project_module:clone_jobs-feedback", v);
+    }
     /**
      * Clone Job Container
      * @param uuids job uuids
      * @returns The new uuids list
      */
-    async CloneJobs(uuids:Array<string>, token?: string | undefined):Promise<Array<string>>{
+    async _CloneJobs(socket:Socket | undefined, uuids:Array<string>, token?: string | undefined):Promise<Array<string>>{
         const p = uuids.map(x => this.loader.job.load(x, token))
         const ps = await Promise.all(p)
         const jobs:Array<Job> = ps.map(x => JSON.parse(x))
@@ -157,22 +185,22 @@ export class Project_Module {
      * Delete project related data and project itself
      * @param uuid Project UUID
      */
-    async CascadeDeleteProject(uuid:string, bind:boolean, token?: string | undefined):Promise<void>{
+    async CascadeDeleteProject(socket:Socket | undefined, uuid:string, bind:boolean, token?: string | undefined):Promise<void>{
         await this.loader.project.load(uuid, token)
         const p:Project = this.memory.projects.find(p=> p.uuid == uuid)!
         if(!p) return
-        const ps = p.tasks_uuid.map(t_uuid => this.CascadeDeleteTask(t_uuid, false, token))
+        const ps = p.tasks_uuid.map(t_uuid => this.CascadeDeleteTask(socket, t_uuid, false, token))
         await Promise.all(ps)
         const del = await this.loader.project.delete(uuid, token)
         console.log("Delete project: ", del)
         const db = p.database_uuid
-        if(bind) await this.Delete_Database_Idle(db, token)
+        if(bind) await this.Delete_Database_Idle(socket, db, token)
     }
     /**
      * Delete Task related data and project itself
      * @param uuid Task UUID
      */
-    async CascadeDeleteTask(uuid:string, project_change:boolean = true, token?: string | undefined):Promise<void>{
+    async CascadeDeleteTask(socket:Socket | undefined, uuid:string, project_change:boolean = true, token?: string | undefined):Promise<void>{
         await this.loader.task.load(uuid, token)
         const p:Task = this.memory.tasks.find(p=> p.uuid == uuid)!
         if(!p) return
@@ -204,7 +232,7 @@ export class Project_Module {
      * Delete Task related data and project itself
      * @param uuid Task UUID
      */
-    async CascadeDeleteJob(uuid:string, task_change:boolean = true, token?: string | undefined):Promise<void>{
+    async CascadeDeleteJob(socket:Socket | undefined, uuid:string, task_change:boolean = true, token?: string | undefined):Promise<void>{
         await this.loader.job.delete(uuid, token)
         if(!task_change) return
         const caller:Array<Promise<boolean>> = []
@@ -230,7 +258,7 @@ export class Project_Module {
      * Delete idle database
      * @param uuid Database UUID
      */
-    async Delete_Database_Idle(uuid:string, token?: string | undefined){
+    async Delete_Database_Idle(socket:Socket | undefined, uuid:string, token?: string | undefined){
         return this.loader.project.load_all(token).then(() => {
             const f = this.memory.projects.find(x => x.database_uuid == uuid)
             if(f == undefined){

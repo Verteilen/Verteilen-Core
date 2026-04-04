@@ -17,18 +17,19 @@ class Project_Module {
     }
     get memory() { return this.server.memory; }
     get loader() { return this.server.current_loader; }
-    ProjectJobCount(uuid, token) {
+    ProjectJobCount(socket, uuid, token) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.loader.project.load(uuid, token);
             const p = this.memory.projects.find(p => p.uuid == uuid);
             if (!p)
-                return 0;
+                return;
             const t = p.tasks_uuid.map(t_uuid => this.memory.tasks.find(t => t.uuid == t_uuid)).filter(t => t != undefined);
             const counts = t.map(x => x.jobs_uuid.length);
-            return counts.reduce((a, b) => a + b, 0);
+            const v = counts.reduce((a, b) => a + b, 0);
+            socket === null || socket === void 0 ? void 0 : socket.emit("project_module:get_job_count-feedback", v);
         });
     }
-    ReOrderProjectTask(uuid, uuids, token) {
+    ReOrderProjectTask(socket, uuid, uuids, token) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.loader.project.load(uuid, token);
             const p = this.memory.projects.find(p => p.uuid == uuid);
@@ -38,27 +39,39 @@ class Project_Module {
             this.loader.project.save(uuid, JSON.stringify(p, null, 4), token);
         });
     }
+    PopulateProject(socket, uuid, token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const v = yield this._PopulateProject(socket, uuid, token);
+            socket === null || socket === void 0 ? void 0 : socket.emit("project_module:populate_project-feedback", v);
+        });
+    }
     /**
      * Assign real data to instance
      * @param uuid Project UUID
      */
-    PopulateProject(uuid, token) {
+    _PopulateProject(socket, uuid, token) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.loader.project.load(uuid, token);
             const p = this.memory.projects.find(p => p.uuid == uuid);
             if (!p)
-                return undefined;
+                return;
             const buffer = Object.assign({}, p);
-            const ts = buffer.tasks_uuid.map(x => this.PopulateTask(x, token));
+            const ts = buffer.tasks_uuid.map(x => this.PopulateTask(socket, x, token));
             buffer.tasks = (yield Promise.all(ts)).filter(x => x != undefined);
             return buffer;
+        });
+    }
+    PopulateTask(socket, uuid, token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const v = yield this._PopulateTask(socket, uuid, token);
+            socket === null || socket === void 0 ? void 0 : socket.emit("project_module:populate_task-feedback", v);
         });
     }
     /**
      * Assign real data to instance
      * @param uuid Task UUID
      */
-    PopulateTask(uuid, token) {
+    _PopulateTask(socket, uuid, token) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.loader.task.load(uuid, token);
             const p = this.memory.tasks.find(p => p.uuid == uuid);
@@ -78,18 +91,20 @@ class Project_Module {
      * @param uuid Project UUID
      * @returns Related Tasks
      */
-    GetProjectRelatedTask(uuid, token) {
+    GetProjectRelatedTask(socket, uuid, token) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.loader.project.load(uuid, token);
             const p = this.memory.projects.find(x => x.uuid == uuid);
-            if (!p)
-                return [];
+            if (!p) {
+                socket === null || socket === void 0 ? void 0 : socket.emit("project_module:get_tasks-feedback", []);
+                return;
+            }
             const r = p.tasks_uuid.map(x => {
                 return this.loader.task.load(x, token);
             });
             yield Promise.all(r);
             const tasks = p.tasks_uuid.map(x => this.memory.tasks.find(y => y.uuid == x)).filter(x => x != undefined);
-            return tasks;
+            socket === null || socket === void 0 ? void 0 : socket.emit("project_module:get_tasks-feedback", tasks);
         });
     }
     /**
@@ -97,18 +112,26 @@ class Project_Module {
      * @param uuid Task UUID
      * @returns Related Jobs
      */
-    GetTaskRelatedJob(uuid, token) {
+    GetTaskRelatedJob(socket, uuid, token) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.loader.task.load(uuid, token);
             const p = this.memory.tasks.find(x => x.uuid == uuid);
-            if (!p)
-                return [];
+            if (!p) {
+                socket === null || socket === void 0 ? void 0 : socket.emit("project_module:get_jobs-feedback", []);
+                return;
+            }
             const r = p.jobs_uuid.map(x => {
                 return this.loader.job.load(x, token);
             });
             yield Promise.all(r);
             const jobs = p.jobs_uuid.map(x => this.memory.jobs.find(y => y.uuid == x)).filter(x => x != undefined);
-            return jobs;
+            socket === null || socket === void 0 ? void 0 : socket.emit("project_module:get_jobs-feedback", jobs);
+        });
+    }
+    CloneProjects(socket, uuids, token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const v = yield this._CloneProjects(socket, uuids, token);
+            socket === null || socket === void 0 ? void 0 : socket.emit("project_module:clone_projects-feedback", v);
         });
     }
     /**
@@ -116,13 +139,13 @@ class Project_Module {
      * @param uuids project uuids
      * @returns The new uuids list
      */
-    CloneProjects(uuids, token) {
+    _CloneProjects(socket, uuids, token) {
         return __awaiter(this, void 0, void 0, function* () {
             const p = uuids.map(x => this.loader.project.load(x, token));
             const ps = yield Promise.all(p);
             const projects = ps.map(x => JSON.parse(x));
             projects.forEach((x, i) => x.uuid = (0, uuid_1.v6)({}, undefined, i));
-            const jus = projects.map(x => this.CloneTasks(x.tasks_uuid, token));
+            const jus = projects.map(x => this._CloneTasks(socket, x.tasks_uuid, token));
             const ju = yield Promise.all(jus);
             projects.forEach((t, index) => {
                 t.tasks_uuid = ju[index];
@@ -132,18 +155,24 @@ class Project_Module {
             return projects.map(x => x.uuid);
         });
     }
+    CloneTasks(socket, uuids, token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const v = yield this._CloneTasks(socket, uuids, token);
+            socket === null || socket === void 0 ? void 0 : socket.emit("project_module:clone_tasks-feedback", v);
+        });
+    }
     /**
      * Clone Task Container
      * @param uuids task uuids
      * @returns The new uuids list
      */
-    CloneTasks(uuids, token) {
+    _CloneTasks(socket, uuids, token) {
         return __awaiter(this, void 0, void 0, function* () {
             const p = uuids.map(x => this.loader.task.load(x, token));
             const ps = yield Promise.all(p);
             const tasks = ps.map(x => JSON.parse(x));
             tasks.forEach((x, i) => x.uuid = (0, uuid_1.v6)({}, undefined, 2500 + i));
-            const jus = tasks.map(x => this.CloneJobs(x.jobs_uuid, token));
+            const jus = tasks.map(x => this._CloneJobs(socket, x.jobs_uuid, token));
             const ju = yield Promise.all(jus);
             tasks.forEach((t, index) => {
                 t.jobs_uuid = ju[index];
@@ -153,12 +182,18 @@ class Project_Module {
             return tasks.map(x => x.uuid);
         });
     }
+    CloneJobs(socket, uuids, token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const v = yield this._CloneJobs(socket, uuids, token);
+            socket === null || socket === void 0 ? void 0 : socket.emit("project_module:clone_jobs-feedback", v);
+        });
+    }
     /**
      * Clone Job Container
      * @param uuids job uuids
      * @returns The new uuids list
      */
-    CloneJobs(uuids, token) {
+    _CloneJobs(socket, uuids, token) {
         return __awaiter(this, void 0, void 0, function* () {
             const p = uuids.map(x => this.loader.job.load(x, token));
             const ps = yield Promise.all(p);
@@ -173,27 +208,27 @@ class Project_Module {
      * Delete project related data and project itself
      * @param uuid Project UUID
      */
-    CascadeDeleteProject(uuid, bind, token) {
+    CascadeDeleteProject(socket, uuid, bind, token) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.loader.project.load(uuid, token);
             const p = this.memory.projects.find(p => p.uuid == uuid);
             if (!p)
                 return;
-            const ps = p.tasks_uuid.map(t_uuid => this.CascadeDeleteTask(t_uuid, false, token));
+            const ps = p.tasks_uuid.map(t_uuid => this.CascadeDeleteTask(socket, t_uuid, false, token));
             yield Promise.all(ps);
             const del = yield this.loader.project.delete(uuid, token);
             console.log("Delete project: ", del);
             const db = p.database_uuid;
             if (bind)
-                yield this.Delete_Database_Idle(db, token);
+                yield this.Delete_Database_Idle(socket, db, token);
         });
     }
     /**
      * Delete Task related data and project itself
      * @param uuid Task UUID
      */
-    CascadeDeleteTask(uuid_2) {
-        return __awaiter(this, arguments, void 0, function* (uuid, project_change = true, token) {
+    CascadeDeleteTask(socket_1, uuid_2) {
+        return __awaiter(this, arguments, void 0, function* (socket, uuid, project_change = true, token) {
             yield this.loader.task.load(uuid, token);
             const p = this.memory.tasks.find(p => p.uuid == uuid);
             if (!p)
@@ -230,8 +265,8 @@ class Project_Module {
      * Delete Task related data and project itself
      * @param uuid Task UUID
      */
-    CascadeDeleteJob(uuid_2) {
-        return __awaiter(this, arguments, void 0, function* (uuid, task_change = true, token) {
+    CascadeDeleteJob(socket_1, uuid_2) {
+        return __awaiter(this, arguments, void 0, function* (socket, uuid, task_change = true, token) {
             yield this.loader.job.delete(uuid, token);
             if (!task_change)
                 return;
@@ -261,7 +296,7 @@ class Project_Module {
      * Delete idle database
      * @param uuid Database UUID
      */
-    Delete_Database_Idle(uuid, token) {
+    Delete_Database_Idle(socket, uuid, token) {
         return __awaiter(this, void 0, void 0, function* () {
             return this.loader.project.load_all(token).then(() => {
                 const f = this.memory.projects.find(x => x.database_uuid == uuid);

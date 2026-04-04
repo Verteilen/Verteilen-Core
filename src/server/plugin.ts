@@ -16,6 +16,7 @@ import {
     SocketPack
 } from "../interface";
 import { PluginFeedback } from "./server";
+import { Socket } from "socket.io";
 
 /**
  * Get socket from websocket client method
@@ -30,50 +31,50 @@ export interface PluginLoader {
     /**
      * Loading all plugins
      */
-    load_all: () => Promise<PluginPageData>
+    load_all: () => Promise<void>
     /**
      * Loading plugins from cache
      */
-    get_plugins: () => Promise<PluginPageData>
+    get_plugins: (socket:Socket | undefined) => void
     /**
      * Get project template
      * @param name Plugin name
      * @param group Group search
      * @param filename Template filename
      */
-    get_project: (name:string, group:string, filename:string) => Promise<string> | undefined
+    get_project: (socket:Socket | undefined, name:string, group:string, filename:string) => void
     /**
      * Get database template
      * @param name Plugin name
      * @param group Group search
      * @param filename Template filename
      */
-    get_database: (name:string, group:string, filename:string) => Promise<string> | undefined
+    get_database: (socket:Socket | undefined, name:string, group:string, filename:string) => void
     /**
      * Import plugin from web
      * @param name Plugin name
      * @param url The URL for plugin manifest
      * @param token Token list, use space to seperate
      */
-    import_plugin: (name:string, url:string, token:string) => Promise<PluginPageData>
+    import_plugin: (socket:Socket | undefined, name:string, url:string, token:string) => Promise<void>
     /**
      * Delete plugin by name
      * @param name Plugin name
      */
-    delete_plugin: (name:string) => Promise<PluginPageData>
+    delete_plugin: (socket:Socket | undefined, name:string) => Promise<void>
     /**
      * Telling node Download plugin
      * @param uuid Node ID
      * @param plugin Plugin name
      * @param token Token list, use space to seperate
      */
-    plugin_download: (uuid:string, plugin:string, tokens:string) => Promise<void>
+    plugin_download: (socket:Socket | undefined, uuid:string, plugin:string, tokens:string) => Promise<void>
     /**
      * Telling node Remove plugin
      * @param uuid Node ID
      * @param plugin Plugin name
      */
-    plugin_remove: (uuid:string, plugin:string) => Promise<void>
+    plugin_remove: (socket:Socket | undefined, uuid:string, plugin:string) => Promise<void>
 }
 
 /**
@@ -128,23 +129,24 @@ export const GetCurrentPlugin = async (loader:RecordIOBase):Promise<PluginPageDa
 
 export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, socket:SocketGetter, feedback:PluginFeedback):PluginLoader => {
     return {
-        load_all: async ():Promise<PluginPageData> => {
+        load_all: async ():Promise<void> => {
             const cp = await GetCurrentPlugin(loader)
             memory.plugins = cp.plugins
-            return cp
         },
-        get_plugins: async ():Promise<PluginPageData> => {
-            return memory
+        get_plugins: (socket:Socket | undefined):void => {
+            socket?.emit("get_plugin-feedback", memory)
         },
-        get_project: (name:string, group:string, filename:string):Promise<string> | undefined => {
+        get_project: (socket:Socket | undefined, name:string, group:string, filename:string): void => {
             const path = loader.join(loader.root, "plugin", name, "project", filename)
-            return loader.exists(path) ? loader.read_string(path) : undefined
+            const data = loader.exists(path) ? loader.read_string(path) : undefined
+            socket?.emit("get_project-feedback", data)
         },
-        get_database: (name:string, group:string, filename:string):Promise<string> | undefined => {
+        get_database: (socket:Socket | undefined, name:string, group:string, filename:string): void => {
             const path = loader.join(loader.root, "plugin", name, "database", filename)
-            return loader.exists(path) ? loader.read_string(path) : undefined
+            const data = loader.exists(path) ? loader.read_string(path) : undefined
+            socket?.emit("get_database-feedback", data)
         },
-        import_plugin: async (name:string, url:string, token:string):Promise<PluginPageData> => {
+        import_plugin: async (socket:Socket | undefined, name:string, url:string, token:string): Promise<void> => {
             const error_children:Array<[string, string]> = []
             const root = loader.join(loader.root, 'plugin')
             const project_folder = loader.join(root, name, 'project')
@@ -185,7 +187,8 @@ export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, s
                 if (feedback.socket){
                     feedback.socket(JSON.stringify(h))
                 }
-                return memory
+                socket?.emit("import_plugin-feedback", memory)
+                return
             }
             ob.url = url
             loader.write_string(loader.join(root, name, 'manifest.json'), JSON.stringify(ob, null, 4))
@@ -227,14 +230,15 @@ export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, s
                 if (feedback.socket){
                     feedback.socket(JSON.stringify(h))
                 }
-                return memory
+                socket?.emit("import_plugin-feedback", memory)
+                return
             }
 
             const cp = await GetCurrentPlugin(loader)
             memory.plugins = cp.plugins
-            return cp
+            socket?.emit("import_plugin-feedback", cp)
         },
-        delete_plugin: async (name:string):Promise<PluginPageData> => {
+        delete_plugin: async (socket:Socket | undefined, name:string): Promise<void> => {
             const index = memory.plugins.findIndex(x => x.title == name)
             if(index != -1) memory.plugins.splice(index, 1)
             const root = loader.join(loader.root, 'plugin', name)
@@ -242,16 +246,16 @@ export const CreatePluginLoader = (loader:RecordIOBase, memory:PluginPageData, s
                 await loader.rm(root);
             const cp = await GetCurrentPlugin(loader)
             memory.plugins = cp.plugins
-            return cp
+            socket?.emit("delete_plugin-feedback", cp)
         },
-        plugin_download: async (uuid:string, plugin:string, tokens:string):Promise<void> => {
+        plugin_download: async (_socket:Socket | undefined, uuid:string, plugin:string, tokens:string):Promise<void> => {
             const p:Plugin = JSON.parse(plugin)
             const p2:PluginWithToken = {...p, token: tokens.split(' ') }
             const t = socket(uuid)
             const h:Header = { name: 'plugin_download', data: p2 }
             t?.socket.send(JSON.stringify(h))
         },
-        plugin_remove: async (uuid:string, plugin:string):Promise<void> => {
+        plugin_remove: async (_socket:Socket | undefined, uuid:string, plugin:string):Promise<void> => {
             const p:Plugin = JSON.parse(plugin)
             const t = socket(uuid)
             const h:Header = { name: 'plugin_remove', data: p }

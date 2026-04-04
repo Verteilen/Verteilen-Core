@@ -14,7 +14,6 @@ import { TypeMap } from '../interface';
 export interface ConsoleServerContainer {
     uuid: string
     socket:Socket
-    typeMap: TypeMap
 }
 
 /**
@@ -37,11 +36,10 @@ export class ConsoleServerManager {
      * @param typeMap The event map
      * @returns The socket record
      */
-    Add = (socket:Socket, typeMap: TypeMap): ConsoleServerContainer => {
+    Add = (socket:Socket): ConsoleServerContainer => {
         const buffer:ConsoleServerContainer = {
             uuid: uuidv6(),
             socket: socket,
-            typeMap: typeMap
         }
 
         const target = this.admins.find(x => x.socket == socket)
@@ -55,10 +53,6 @@ export class ConsoleServerManager {
             if(index != -1){
                 this.admins.splice(index, 1)
             }
-        })
-
-        typeMap.forEach(x => {
-            socket.on(x[0], x[1])
         })
         
         return buffer

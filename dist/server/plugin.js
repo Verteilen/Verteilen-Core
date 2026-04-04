@@ -66,20 +66,21 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
         load_all: () => __awaiter(void 0, void 0, void 0, function* () {
             const cp = yield (0, exports.GetCurrentPlugin)(loader);
             memory.plugins = cp.plugins;
-            return cp;
         }),
-        get_plugins: () => __awaiter(void 0, void 0, void 0, function* () {
-            return memory;
-        }),
-        get_project: (name, group, filename) => {
+        get_plugins: (socket) => {
+            socket === null || socket === void 0 ? void 0 : socket.emit("get_plugin-feedback", memory);
+        },
+        get_project: (socket, name, group, filename) => {
             const path = loader.join(loader.root, "plugin", name, "project", filename);
-            return loader.exists(path) ? loader.read_string(path) : undefined;
+            const data = loader.exists(path) ? loader.read_string(path) : undefined;
+            socket === null || socket === void 0 ? void 0 : socket.emit("get_project-feedback", data);
         },
-        get_database: (name, group, filename) => {
+        get_database: (socket, name, group, filename) => {
             const path = loader.join(loader.root, "plugin", name, "database", filename);
-            return loader.exists(path) ? loader.read_string(path) : undefined;
+            const data = loader.exists(path) ? loader.read_string(path) : undefined;
+            socket === null || socket === void 0 ? void 0 : socket.emit("get_database-feedback", data);
         },
-        import_plugin: (name, url, token) => __awaiter(void 0, void 0, void 0, function* () {
+        import_plugin: (socket, name, url, token) => __awaiter(void 0, void 0, void 0, function* () {
             const error_children = [];
             const root = loader.join(loader.root, 'plugin');
             const project_folder = loader.join(root, name, 'project');
@@ -125,7 +126,8 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
                 if (feedback.socket) {
                     feedback.socket(JSON.stringify(h));
                 }
-                return memory;
+                socket === null || socket === void 0 ? void 0 : socket.emit("import_plugin-feedback", memory);
+                return;
             }
             ob.url = url;
             loader.write_string(loader.join(root, name, 'manifest.json'), JSON.stringify(ob, null, 4));
@@ -168,13 +170,14 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
                 if (feedback.socket) {
                     feedback.socket(JSON.stringify(h));
                 }
-                return memory;
+                socket === null || socket === void 0 ? void 0 : socket.emit("import_plugin-feedback", memory);
+                return;
             }
             const cp = yield (0, exports.GetCurrentPlugin)(loader);
             memory.plugins = cp.plugins;
-            return cp;
+            socket === null || socket === void 0 ? void 0 : socket.emit("import_plugin-feedback", cp);
         }),
-        delete_plugin: (name) => __awaiter(void 0, void 0, void 0, function* () {
+        delete_plugin: (socket, name) => __awaiter(void 0, void 0, void 0, function* () {
             const index = memory.plugins.findIndex(x => x.title == name);
             if (index != -1)
                 memory.plugins.splice(index, 1);
@@ -183,16 +186,16 @@ const CreatePluginLoader = (loader, memory, socket, feedback) => {
                 yield loader.rm(root);
             const cp = yield (0, exports.GetCurrentPlugin)(loader);
             memory.plugins = cp.plugins;
-            return cp;
+            socket === null || socket === void 0 ? void 0 : socket.emit("delete_plugin-feedback", cp);
         }),
-        plugin_download: (uuid, plugin, tokens) => __awaiter(void 0, void 0, void 0, function* () {
+        plugin_download: (_socket, uuid, plugin, tokens) => __awaiter(void 0, void 0, void 0, function* () {
             const p = JSON.parse(plugin);
             const p2 = Object.assign(Object.assign({}, p), { token: tokens.split(' ') });
             const t = socket(uuid);
             const h = { name: 'plugin_download', data: p2 };
             t === null || t === void 0 ? void 0 : t.socket.send(JSON.stringify(h));
         }),
-        plugin_remove: (uuid, plugin) => __awaiter(void 0, void 0, void 0, function* () {
+        plugin_remove: (_socket, uuid, plugin) => __awaiter(void 0, void 0, void 0, function* () {
             const p = JSON.parse(plugin);
             const t = socket(uuid);
             const h = { name: 'plugin_remove', data: p };

@@ -2,6 +2,7 @@ import { BusAnalysis, ExecutePair, ExecuteProxy, ExecuteState, Messager, NodePro
 import { PluginFeedback } from "./server";
 import { RecordIOBase } from './io';
 import { WebsocketManager } from '../script/socket_manager';
+import { Socket } from 'socket.io';
 /**
  * **Server Inner-Work Handler**\
  * Include the core cluster logic here
@@ -47,26 +48,26 @@ export declare class ServerDetail implements NodeProxy, ServerDetailEvent {
      * @param p Client node source
      */
     folderReply: (data: ShellFolder, p?: SocketPack) => void;
-    resource_start: (socket: any, uuid: string) => void;
-    resource_end: (socket: any, uuid: string) => void;
-    plugin_info: (socket: any, uuid: string) => void;
-    shell_enter: (socket: any, uuid: string, value: string) => void;
-    shell_open: (socket: any, uuid: string) => void;
-    shell_close: (socket: any, uuid: string) => void;
-    shell_folder: (socket: any, uuid: string, path: string) => void;
-    node_list: (socket: any) => SocketPack[] | undefined;
-    node_add: (socket: any, url: string, uuid: string) => void;
-    node_update: (socket: any) => import("../interface").NodeTable[] | undefined;
-    node_delete: (socket: any, uuid: string, reason?: string) => void;
-    console_list: (socket: any) => undefined;
-    console_record: (socket: any, uuid: string) => string;
-    console_execute: (socket: any, uuid: string, type: number) => void;
-    console_stop: (socket: any, uuid: string) => void;
-    console_add: (socket: any, name: string, record: Record, uuid: string | undefined) => void;
+    resource_start: (socket: Socket | undefined, uuid: string) => void;
+    resource_end: (socket: Socket | undefined, uuid: string) => void;
+    plugin_info: (socket: Socket | undefined, uuid: string) => void;
+    shell_enter: (socket: Socket | undefined, uuid: string, value: string) => void;
+    shell_open: (socket: Socket | undefined, uuid: string) => void;
+    shell_close: (socket: Socket | undefined, uuid: string) => void;
+    shell_folder: (socket: Socket | undefined, uuid: string, path: string) => void;
+    node_list: (socket: Socket | undefined) => SocketPack[] | undefined;
+    node_add: (socket: Socket | undefined, url: string, uuid: string) => void;
+    node_update: (socket: Socket | undefined) => import("../interface").NodeTable[] | undefined;
+    node_delete: (socket: Socket | undefined, uuid: string, reason?: string) => void;
+    console_list: (socket: Socket | undefined) => undefined;
+    console_record: (socket: Socket | undefined, uuid: string) => string;
+    console_execute: (socket: Socket | undefined, uuid: string, type: number) => void;
+    console_stop: (socket: Socket | undefined, uuid: string) => void;
+    console_add: (socket: Socket | undefined, name: string, record: Record, uuid: string | undefined) => void;
     console_update_call: () => void;
-    console_clean: (socket: any, uuid: string) => void;
-    console_skip: (socket: any, uuid: string, forward: boolean, type: number, state?: ExecuteState) => void;
-    console_skip2: (socket: any, uuid: string, v: number) => void;
+    console_clean: (socket: Socket | undefined, uuid: string) => void;
+    console_skip: (socket: Socket | undefined, uuid: string, forward: boolean, type: number, state?: ExecuteState) => void;
+    console_skip2: (socket: Socket | undefined, uuid: string, v: number) => void;
     console_update: () => any[];
     CombineProxy: (eps: Array<ExecuteProxy>) => ExecuteProxy;
 }

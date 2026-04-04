@@ -18,11 +18,10 @@ class ConsoleServerManager {
          * @param typeMap The event map
          * @returns The socket record
          */
-        this.Add = (socket, typeMap) => {
+        this.Add = (socket) => {
             const buffer = {
                 uuid: (0, uuid_1.v6)(),
                 socket: socket,
-                typeMap: typeMap
             };
             const target = this.admins.find(x => x.socket == socket);
             if (target != undefined) {
@@ -34,9 +33,6 @@ class ConsoleServerManager {
                 if (index != -1) {
                     this.admins.splice(index, 1);
                 }
-            });
-            typeMap.forEach(x => {
-                socket.on(x[0], x[1]);
             });
             return buffer;
         };

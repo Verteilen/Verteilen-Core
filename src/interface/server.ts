@@ -284,6 +284,23 @@ export interface ServerSetting {
     open_guest: boolean
 }
 
+export interface ServerSetupRoot {
+    root_username: string
+    root_password: string
+}
+
+export interface ServerSetupAuth {
+    external_auth: boolean
+    auth_server: string
+    auth_username: string
+    auth_password: string
+}
+
+export interface ServerSetupRequire {
+    root?: ServerSetupRoot
+    auth?: ServerSetupAuth
+}
+
 export const CreateRootLocalPermission = ():LocalPermission => {
     return {
         view: true,
