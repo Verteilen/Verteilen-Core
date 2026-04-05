@@ -295,7 +295,6 @@ export interface ServerSetupRoot {
 export interface ServerSetupRequire {
     setting?: ServerSetting;
     root?: ServerSetupRoot;
-    auth?: ServerSetupAuth;
 }
 export declare const CreateRootLocalPermission: () => LocalPermission;
 export declare const CreateRootPermission: () => GlobalPermission;

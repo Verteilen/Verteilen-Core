@@ -321,7 +321,6 @@ export interface ServerSetupRoot {
 export interface ServerSetupRequire {
     setting?: ServerSetting
     root?: ServerSetupRoot
-    auth?: ServerSetupAuth
 }
 
 export const CreateRootLocalPermission = ():LocalPermission => {
