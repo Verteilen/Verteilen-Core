@@ -5,7 +5,24 @@
         "no-permission-action": "你沒有權限做此動作"
     },
     "setup": {
-        "title": "伺服器設置"
+        "title": "伺服器設置",
+        "auth_type": "認證方法",
+        "auth_types": {
+            "self": "自行認證",
+            "external": "外部認證",
+            "service": "雲端認證"
+        },
+        "auth_db": "認證資料庫",
+        "auth_service": "認證雲端",
+        "content_type": "內容方法",
+        "content_types": {
+            "local": "本地儲存",
+            "external": "外部儲存",
+            "service": "雲端儲存"
+        },
+        "content_db": "內容資料庫",
+        "content_service": "內容雲端",
+        "open_guest": "遊客登入"
     },
     "login": {
         "title": "帳號登入",

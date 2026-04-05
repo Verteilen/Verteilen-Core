@@ -31,6 +31,24 @@ export enum AuthService {
     SUPABASE
 }
 
+export enum ContentType {
+    LOCAL,
+    EXTERNAL,
+    SERVICE
+}
+
+export enum ContentDB {
+    FTP,
+    MONGODB
+}
+
+export enum ContentService {
+    MONGODB,
+    DYNAMODB,
+    COSMOS,
+    BIGTABLE
+}
+
 /**
  * **Backend Interface**\
  * The backend object must contain some utility functions\
@@ -308,9 +326,20 @@ export interface ServerSetupAuth {
     db_password?: string
 }
 
+export interface ServerSetupContent {
+    content_type: ContentType
+    content_service: ContentService
+    content_db: ContentDB
+    api_key?: string
+    db_url?: string
+    db_username?: string
+    db_password?: string
+}
+
 export interface ServerSetting {
     open_guest: boolean
     auth: ServerSetupAuth
+    content: ServerSetupContent
 }
 
 export interface ServerSetupRoot {
@@ -319,8 +348,30 @@ export interface ServerSetupRoot {
 }
 
 export interface ServerSetupRequire {
-    setting?: ServerSetting
-    root?: ServerSetupRoot
+    setting: ServerSetting
+    root: ServerSetupRoot
+}
+
+export const CreateServerSetupRequire = ():ServerSetupRequire => {
+    return {
+        setting: {
+            open_guest: false,
+            auth: {
+                auth_type: AuthType.SELF,
+                auth_service: AuthService.FIREBASE,
+                auth_db: AuthDB.SQLITE3
+            },
+            content: {
+                content_type: ContentType.LOCAL,
+                content_service: ContentService.MONGODB,
+                content_db: ContentDB.FTP
+            }
+        },
+        root: {
+            root_username: "",
+            root_password: ""
+        }
+    }
 }
 
 export const CreateRootLocalPermission = ():LocalPermission => {
