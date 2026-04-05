@@ -4,6 +4,9 @@
         "unverify": "Un verify",
         "no-permission-action": "You have no permission"
     },
+    "setup": {
+        "title": "Server Setup"
+    },
     "login": {
         "title": "Account Login",
         "submit": "Submit",

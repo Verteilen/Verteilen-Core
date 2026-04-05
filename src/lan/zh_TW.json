@@ -4,6 +4,9 @@
         "unverify": "尚未驗證",
         "no-permission-action": "你沒有權限做此動作"
     },
+    "setup": {
+        "title": "伺服器設置"
+    },
     "login": {
         "title": "帳號登入",
         "submit": "登入",
