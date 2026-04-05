@@ -11,7 +11,10 @@
         "password": "Password",
         "failed": "Login Failed",
         "guest": "Login as Guest",
-        "server": "Server"
+        "server": "Server",
+        "connect": "Connect",
+        "connect_failed": "Connect Failed",
+        "connect_success": "Connect Successfully"
     },
     "guides": {
         "workflow": "Workflow",
