@@ -3,6 +3,20 @@
  */
 import { BackendType } from "./enum";
 /**
+ * Shows the frontend page selection login
+ */
+export declare enum FrontendState {
+    NONE = 0,
+    LOGIN_BACKEND = 1,
+    LOGOUT_BACKEND = 2,
+    SETUP_BACKEND = 3,
+    LOGIN_STATIC = 4,
+    LOGOUT_STATIC = 5,
+    SETUP_STATIC = 6,
+    CLUSTER = 7,
+    NODE = 8
+}
+/**
  * **Application Configuration**\
  * Show current state of the app\
  * Defined by the backend proxy worker

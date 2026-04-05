@@ -6,6 +6,21 @@ import { DataHeader, Shareable } from "./base";
 import { ExecuteState } from "./enum";
 import { ExecuteRecord, Record } from "./log";
 import { Preference } from "./record";
+export declare enum AuthType {
+    SELF = 0,
+    EXTERNAL = 1,
+    SERVICE = 2
+}
+export declare enum AuthDB {
+    SQLITE3 = 0,
+    MONGODB = 1
+}
+export declare enum AuthService {
+    FIREBASE = 0,
+    AUTH0 = 1,
+    CLERK = 2,
+    SUPABASE = 3
+}
 /**
  * **Backend Interface**\
  * The backend object must contain some utility functions\
@@ -260,20 +275,25 @@ export interface UserProfileClient {
     description?: string;
     permission?: GlobalPermission;
 }
+export interface ServerSetupAuth {
+    auth_type: AuthType;
+    auth_service: AuthService;
+    auth_db: AuthDB;
+    api_key?: string;
+    db_url?: string;
+    db_username?: string;
+    db_password?: string;
+}
 export interface ServerSetting {
     open_guest: boolean;
+    auth: ServerSetupAuth;
 }
 export interface ServerSetupRoot {
     root_username: string;
     root_password: string;
 }
-export interface ServerSetupAuth {
-    external_auth: boolean;
-    auth_server: string;
-    auth_username: string;
-    auth_password: string;
-}
 export interface ServerSetupRequire {
+    setting?: ServerSetting;
     root?: ServerSetupRoot;
     auth?: ServerSetupAuth;
 }

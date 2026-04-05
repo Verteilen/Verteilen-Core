@@ -31,6 +31,10 @@ export declare const i18nDefaultData: {
                 failed: string;
                 guest: string;
                 server: string;
+                connect: string;
+                disconnect: string;
+                connect_failed: string;
+                connect_success: string;
             };
             guides: {
                 workflow: string;
@@ -492,6 +496,10 @@ export declare const i18nDefaultData: {
                 failed: string;
                 guest: string;
                 server: string;
+                connect: string;
+                disconnect: string;
+                connect_failed: string;
+                connect_success: string;
             };
             guides: {
                 workflow: string;
@@ -960,6 +968,10 @@ export declare const i18n: import("vue-i18n").I18n<{
             failed: string;
             guest: string;
             server: string;
+            connect: string;
+            disconnect: string;
+            connect_failed: string;
+            connect_success: string;
         };
         guides: {
             workflow: string;
@@ -1421,6 +1433,10 @@ export declare const i18n: import("vue-i18n").I18n<{
             failed: string;
             guest: string;
             server: string;
+            connect: string;
+            disconnect: string;
+            connect_failed: string;
+            connect_success: string;
         };
         guides: {
             workflow: string;

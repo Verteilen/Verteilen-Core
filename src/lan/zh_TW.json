@@ -13,6 +13,7 @@
         "guest": "遊客登入",
         "server": "伺服器位址",
         "connect": "連結",
+        "disconnect": "中斷連結",
         "connect_failed": "連結失敗",
         "connect_success": "連結成功"
     },

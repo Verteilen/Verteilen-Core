@@ -13,6 +13,7 @@
         "guest": "Login as Guest",
         "server": "Server",
         "connect": "Connect",
+        "disconnect": "Disconnect",
         "connect_failed": "Connect Failed",
         "connect_success": "Connect Successfully"
     },

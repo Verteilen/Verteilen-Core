@@ -1,7 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateRootUser = exports.CreateRootPermission = exports.CreateRootLocalPermission = exports.PermissionType = exports.UserType = exports.ACLType = void 0;
+exports.CreateRootUser = exports.CreateRootPermission = exports.CreateRootLocalPermission = exports.PermissionType = exports.UserType = exports.ACLType = exports.AuthService = exports.AuthDB = exports.AuthType = void 0;
 const uuid_1 = require("uuid");
+var AuthType;
+(function (AuthType) {
+    AuthType[AuthType["SELF"] = 0] = "SELF";
+    AuthType[AuthType["EXTERNAL"] = 1] = "EXTERNAL";
+    AuthType[AuthType["SERVICE"] = 2] = "SERVICE";
+})(AuthType || (exports.AuthType = AuthType = {}));
+var AuthDB;
+(function (AuthDB) {
+    AuthDB[AuthDB["SQLITE3"] = 0] = "SQLITE3";
+    AuthDB[AuthDB["MONGODB"] = 1] = "MONGODB";
+})(AuthDB || (exports.AuthDB = AuthDB = {}));
+var AuthService;
+(function (AuthService) {
+    AuthService[AuthService["FIREBASE"] = 0] = "FIREBASE";
+    AuthService[AuthService["AUTH0"] = 1] = "AUTH0";
+    AuthService[AuthService["CLERK"] = 2] = "CLERK";
+    AuthService[AuthService["SUPABASE"] = 3] = "SUPABASE";
+})(AuthService || (exports.AuthService = AuthService = {}));
 /**
  * **Access Control Type**\
  * Ot will have effect on permission value

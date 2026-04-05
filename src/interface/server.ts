@@ -13,6 +13,24 @@ import { ExecuteRecord, Record } from "./log"
 import { Preference } from "./record"
 import { v6 as uuidv6 } from 'uuid'
 
+export enum AuthType {
+    SELF,
+    EXTERNAL,
+    SERVICE
+}
+
+export enum AuthDB {
+    SQLITE3,
+    MONGODB
+}
+
+export enum AuthService {
+    FIREBASE,
+    AUTH0,
+    CLERK,
+    SUPABASE
+}
+
 /**
  * **Backend Interface**\
  * The backend object must contain some utility functions\
@@ -280,8 +298,19 @@ export interface UserProfileClient {
     permission?: GlobalPermission
 }
 
+export interface ServerSetupAuth {
+    auth_type: AuthType
+    auth_service: AuthService
+    auth_db: AuthDB
+    api_key?: string
+    db_url?: string
+    db_username?: string
+    db_password?: string
+}
+
 export interface ServerSetting {
     open_guest: boolean
+    auth: ServerSetupAuth
 }
 
 export interface ServerSetupRoot {
@@ -289,14 +318,8 @@ export interface ServerSetupRoot {
     root_password: string
 }
 
-export interface ServerSetupAuth {
-    external_auth: boolean
-    auth_server: string
-    auth_username: string
-    auth_password: string
-}
-
 export interface ServerSetupRequire {
+    setting?: ServerSetting
     root?: ServerSetupRoot
     auth?: ServerSetupAuth
 }

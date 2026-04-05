@@ -49,7 +49,7 @@ exports.WebhookServerManager = void 0;
 //                           
 // ========================
 const path = __importStar(require("path"));
-const ws = __importStar(require("ws"));
+const socket_io_1 = require("socket.io");
 const pem = __importStar(require("pem"));
 const https = __importStar(require("https"));
 const os = __importStar(require("os"));
@@ -79,7 +79,7 @@ class WebhookServerManager {
                 res.end('HTTPS server is running');
             });
             this.httpss.addListener('upgrade', (req, res, head) => console.log('UPGRADE:', req.url));
-            this.server = new ws.WebSocketServer({ server: this.httpss });
+            this.server = new socket_io_1.Server(this.httpss);
             this.server.on('listening', () => {
                 this.messager_log('[Server] Listen PORT: ' + port_result.toString());
             });
@@ -90,18 +90,18 @@ class WebhookServerManager {
                 this.messager_log('[Server] Close !');
                 this.Release();
             });
-            this.server.on('connection', (ws, request) => {
-                this.messager_log(`[Server] New Connection detected, ${ws.url}`);
-                ws.on('close', (code, reason) => {
+            this.server.on('connection', (socket) => {
+                this.messager_log(`[Server] New Connection detected, ${socket.id}`);
+                socket.on('close', (code, reason) => {
                     this.messager_log(`[Source] Close ${code} ${reason}`);
                 });
-                ws.on('error', (err) => {
+                socket.on('error', (err) => {
                     this.messager_log(`[Source] Error ${err.name}\n\t${err.message}\n\t${err.stack}`);
                 });
-                ws.on('open', () => {
-                    this.messager_log(`[Source] New source is connected, URL: ${ws === null || ws === void 0 ? void 0 : ws.url}`);
+                socket.on('open', () => {
+                    this.messager_log(`[Source] New source is connected, URL: ${socket === null || socket === void 0 ? void 0 : socket.id}`);
                 });
-                ws.on('message', (data, isBinery) => {
+                socket.on('message', (data, isBinery) => {
                     const h = JSON.parse(data.toString());
                 });
             });

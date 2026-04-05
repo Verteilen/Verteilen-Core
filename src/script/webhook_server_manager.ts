@@ -4,7 +4,7 @@
 //                           
 // ========================
 import * as path from 'path';
-import * as ws from 'ws'
+import { Socket, Server as SocketServer } from 'socket.io'
 import * as pem from 'pem'
 import * as https from 'https'
 import * as os from 'os'
@@ -15,7 +15,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 export class WebhookServerManager {
 
     private httpss:https.Server<any> | undefined = undefined
-    private server:ws.Server | undefined = undefined
+    private server:SocketServer | undefined = undefined
     private sources:Array<WebSocket> = []
     private messager:Messager
     private messager_log:Messager_log
@@ -44,7 +44,7 @@ export class WebhookServerManager {
             res.end('HTTPS server is running');
         })
         this.httpss.addListener('upgrade', (req, res, head) => console.log('UPGRADE:', req.url))
-        this.server = new ws.WebSocketServer({server: this.httpss})
+        this.server = new SocketServer(this.httpss)
         this.server.on('listening', () => {
             this.messager_log('[Server] Listen PORT: ' + port_result.toString())
         })
@@ -55,18 +55,18 @@ export class WebhookServerManager {
             this.messager_log('[Server] Close !')
             this.Release()
         })
-        this.server.on('connection', (ws, request) => {
-            this.messager_log(`[Server] New Connection detected, ${ws.url}`)
-            ws.on('close', (code, reason) => {
+        this.server.on('connection', (socket) => {
+            this.messager_log(`[Server] New Connection detected, ${socket.id}`)
+            socket.on('close', (code, reason) => {
                 this.messager_log(`[Source] Close ${code} ${reason}`)
             })
-            ws.on('error', (err) => {
+            socket.on('error', (err) => {
                 this.messager_log(`[Source] Error ${err.name}\n\t${err.message}\n\t${err.stack}`)
             })
-            ws.on('open', () => {
-                this.messager_log(`[Source] New source is connected, URL: ${ws?.url}`)
+            socket.on('open', () => {
+                this.messager_log(`[Source] New source is connected, URL: ${socket?.id}`)
             })
-            ws.on('message', (data, isBinery) => {
+            socket.on('message', (data, isBinery) => {
                 const h:Header | undefined = JSON.parse(data.toString());
             })
         })

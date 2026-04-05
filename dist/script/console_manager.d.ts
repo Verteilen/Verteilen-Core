@@ -15,9 +15,11 @@ export declare class ConsoleManager {
     constructor(url: string, messager_log: Function, emitter: EmitterProxy<BusType>);
     get readyState(): string;
     get connected(): boolean;
+    connect: () => void;
     on: (channel: string, listener: Listener) => void;
     once: (channel: string, listener: Listener) => void;
     off: (channel: string, listener: Listener) => void;
+    close: () => void;
     send: (data: RawSend) => void;
     received: (h: Header) => void;
 }

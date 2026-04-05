@@ -49,7 +49,7 @@ export class ConsoleManager {
             this.buffer = []
         })
         this.socket.io.on('packet', (packet) => {
-            this.received(JSON.parse(packet.data.toString()))
+            this.received(packet.data)
         })
     }
 
@@ -59,6 +59,10 @@ export class ConsoleManager {
 
     public get connected() : boolean {
         return this.readyState === 'open'
+    }
+
+    connect = () => {
+        
     }
 
     on = (channel: string, listener: Listener) => {
@@ -86,6 +90,12 @@ export class ConsoleManager {
         }else{
             const index2 = this.events[index][1].findIndex(x => x == listener)
             if(index2 != -1) this.events[index][1].splice(index2, 1)
+        }
+    }
+
+    close = () => {
+        if(this.connected){
+            this.socket.close()
         }
     }
 

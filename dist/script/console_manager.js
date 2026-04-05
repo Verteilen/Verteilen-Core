@@ -17,6 +17,8 @@ const socket_io_client_1 = require("socket.io-client");
 class ConsoleManager {
     constructor(url, messager_log, emitter) {
         this.buffer = [];
+        this.connect = () => {
+        };
         this.on = (channel, listener) => {
             const index = this.events.findIndex(x => x[0] == channel);
             if (index == -1) {
@@ -44,6 +46,11 @@ class ConsoleManager {
                 const index2 = this.events[index][1].findIndex(x => x == listener);
                 if (index2 != -1)
                     this.events[index][1].splice(index2, 1);
+            }
+        };
+        this.close = () => {
+            if (this.connected) {
+                this.socket.close();
             }
         };
         this.send = (data) => {
@@ -132,7 +139,7 @@ class ConsoleManager {
             this.buffer = [];
         });
         this.socket.io.on('packet', (packet) => {
-            this.received(JSON.parse(packet.data.toString()));
+            this.received(packet.data);
         });
     }
     get readyState() {
