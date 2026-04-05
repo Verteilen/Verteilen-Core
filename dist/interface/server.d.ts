@@ -1,11 +1,10 @@
 /**
  * Express server related data structure
  */
-import { MemoryData } from "../server/io";
-import { DataHeader, Shareable } from "./base";
+import { Database, DataHeader, Job, Node, Project, Shareable, Task } from "./base";
 import { ExecuteState } from "./enum";
-import { ExecuteRecord, Record } from "./log";
-import { Preference } from "./record";
+import { ExecuteRecord, ExecutionLog, Record } from "./log";
+import { Library, Preference } from "./record";
 export declare enum AuthType {
     SELF = 0,
     EXTERNAL = 1,
@@ -35,6 +34,19 @@ export declare enum ContentService {
     DYNAMODB = 1,
     COSMOS = 2,
     BIGTABLE = 3
+}
+/**
+ * **Record Data**
+ */
+export interface MemoryData {
+    projects: Array<Project>;
+    tasks: Array<Task>;
+    jobs: Array<Job>;
+    database: Array<Database>;
+    nodes: Array<Node>;
+    logs: Array<ExecutionLog>;
+    libs: Array<Library>;
+    user: Array<UserProfile>;
 }
 /**
  * **Backend Interface**\

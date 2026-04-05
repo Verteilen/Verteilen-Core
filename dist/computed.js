@@ -30,16 +30,6 @@ __exportStar(require("./client/database"), exports);
 __exportStar(require("./client/resource"), exports);
 __exportStar(require("./client/shell"), exports);
 /**
- * Scripts
- */
-__exportStar(require("./script/webhook_server_manager"), exports);
-/**
- * Server
- */
-__exportStar(require("./server/server2"), exports);
-__exportStar(require("./server/io2"), exports);
-__exportStar(require("./server/module/account"), exports);
-/**
  * util
  */
 __exportStar(require("./util/port"), exports);

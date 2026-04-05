@@ -47,25 +47,3 @@ export * from './interface/log';
  * Plugin
  */
 export * as I18N from './plugins/i18n';
-/**
- * Scripts
- */
-export * from './script/execute';
-export * from './script/console_manager';
-export * from './script/console_server_manager';
-export * from './script/execute_manager';
-export * from './script/socket_manager';
-export * from './script/webhook_manager';
-/**
- * Util
- */
-export * from './server/detail/console_handle';
-export * from './server/detail/log_handle';
-/**
- * Server Components
- */
-export * from './server/detail';
-export * from './server/io';
-export * from './server/plugin';
-export * from './server/server';
-export * from './server/module';

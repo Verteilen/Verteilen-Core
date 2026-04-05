@@ -43,6 +43,7 @@ exports.I18N = exports.MONGODB_NAME = exports.DATA_FOLDER = exports.IGNORE_CHARA
 //                           
 // ========================
 const DefaultSerect = "aVdWN1gWTTUsAQ06aZHyyLMXo0kEJYhU";
+//@ts-ignore
 exports.SERECT = typeof process !== 'undefined' ? (process.env.SERECT || DefaultSerect) : DefaultSerect;
 /**
  * Default client node port
@@ -92,26 +93,4 @@ __exportStar(require("./interface/log"), exports);
  * Plugin
  */
 exports.I18N = __importStar(require("./plugins/i18n"));
-/**
- * Scripts
- */
-__exportStar(require("./script/execute"), exports);
-__exportStar(require("./script/console_manager"), exports);
-__exportStar(require("./script/console_server_manager"), exports);
-__exportStar(require("./script/execute_manager"), exports);
-__exportStar(require("./script/socket_manager"), exports);
-__exportStar(require("./script/webhook_manager"), exports);
-/**
- * Util
- */
-__exportStar(require("./server/detail/console_handle"), exports);
-__exportStar(require("./server/detail/log_handle"), exports);
-/**
- * Server Components
- */
-__exportStar(require("./server/detail"), exports);
-__exportStar(require("./server/io"), exports);
-__exportStar(require("./server/plugin"), exports);
-__exportStar(require("./server/server"), exports);
-__exportStar(require("./server/module"), exports);
 //# sourceMappingURL=interface.js.map

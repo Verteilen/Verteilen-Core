@@ -14,16 +14,6 @@ export * from './client/database';
 export * from './client/resource';
 export * from './client/shell';
 /**
- * Scripts
- */
-export * from './script/webhook_server_manager';
-/**
- * Server
- */
-export * from './server/server2';
-export * from './server/io2';
-export * from './server/module/account';
-/**
  * util
  */
 export * from './util/port';

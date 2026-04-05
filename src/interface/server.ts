@@ -6,11 +6,10 @@
 /**
  * Express server related data structure
  */
-import { MemoryData } from "../server/io"
-import { DataHeader, Shareable } from "./base"
+import { Database, DataHeader, Job, Node, Project, Shareable, Task } from "./base"
 import { ExecuteState } from "./enum"
-import { ExecuteRecord, Record } from "./log"
-import { Preference } from "./record"
+import { ExecuteRecord, ExecutionLog, Record } from "./log"
+import { Library, Preference } from "./record"
 import { v6 as uuidv6 } from 'uuid'
 
 export enum AuthType {
@@ -47,6 +46,20 @@ export enum ContentService {
     DYNAMODB,
     COSMOS,
     BIGTABLE
+}
+
+/**
+ * **Record Data**
+ */
+export interface MemoryData {
+    projects: Array<Project>
+    tasks: Array<Task>
+    jobs: Array<Job>
+    database: Array<Database>
+    nodes: Array<Node>
+    logs: Array<ExecutionLog>
+    libs: Array<Library>
+    user: Array<UserProfile>
 }
 
 /**
