@@ -23,6 +23,28 @@ export declare const i18nDefaultData: {
                 unverify: string;
                 "no-permission-action": string;
             };
+            setup: {
+                title: string;
+                auth: string;
+                auth_type: string;
+                auth_types: {
+                    self: string;
+                    external: string;
+                    service: string;
+                };
+                auth_db: string;
+                auth_service: string;
+                content: string;
+                content_type: string;
+                content_types: {
+                    local: string;
+                    external: string;
+                    service: string;
+                };
+                content_db: string;
+                content_service: string;
+                open_guest: string;
+            };
             login: {
                 title: string;
                 submit: string;
@@ -487,6 +509,28 @@ export declare const i18nDefaultData: {
                 success: string;
                 unverify: string;
                 "no-permission-action": string;
+            };
+            setup: {
+                title: string;
+                auth: string;
+                auth_type: string;
+                auth_types: {
+                    self: string;
+                    external: string;
+                    service: string;
+                };
+                auth_db: string;
+                auth_service: string;
+                content: string;
+                content_type: string;
+                content_types: {
+                    local: string;
+                    external: string;
+                    service: string;
+                };
+                content_db: string;
+                content_service: string;
+                open_guest: string;
             };
             login: {
                 title: string;
@@ -960,6 +1004,28 @@ export declare const i18n: import("vue-i18n").I18n<{
             unverify: string;
             "no-permission-action": string;
         };
+        setup: {
+            title: string;
+            auth: string;
+            auth_type: string;
+            auth_types: {
+                self: string;
+                external: string;
+                service: string;
+            };
+            auth_db: string;
+            auth_service: string;
+            content: string;
+            content_type: string;
+            content_types: {
+                local: string;
+                external: string;
+                service: string;
+            };
+            content_db: string;
+            content_service: string;
+            open_guest: string;
+        };
         login: {
             title: string;
             submit: string;
@@ -1424,6 +1490,28 @@ export declare const i18n: import("vue-i18n").I18n<{
             success: string;
             unverify: string;
             "no-permission-action": string;
+        };
+        setup: {
+            title: string;
+            auth: string;
+            auth_type: string;
+            auth_types: {
+                self: string;
+                external: string;
+                service: string;
+            };
+            auth_db: string;
+            auth_service: string;
+            content: string;
+            content_type: string;
+            content_types: {
+                local: string;
+                external: string;
+                service: string;
+            };
+            content_db: string;
+            content_service: string;
+            open_guest: string;
         };
         login: {
             title: string;

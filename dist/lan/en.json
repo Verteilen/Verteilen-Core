@@ -4,6 +4,28 @@
         "unverify": "Un verify",
         "no-permission-action": "You have no permission"
     },
+    "setup": {
+        "title": "Server Setup",
+        "auth": "Authentication",
+        "auth_type": "Authentication Method",
+        "auth_types": {
+            "self": "Self Auth",
+            "external": "External",
+            "service": "Service"
+        },
+        "auth_db": "Authentication Database",
+        "auth_service": "Authentication Service",
+        "content": "Content",
+        "content_type": "Content Method",
+        "content_types": {
+            "local": "Store Local",
+            "external": "External",
+            "service": "Service"
+        },
+        "content_db": "Content Database",
+        "content_service": "Content Service",
+        "open_guest": "Guest Login"
+    },
     "login": {
         "title": "Account Login",
         "submit": "Submit",

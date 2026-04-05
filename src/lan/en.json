@@ -6,6 +6,7 @@
     },
     "setup": {
         "title": "Server Setup",
+        "auth": "Authentication",
         "auth_type": "Authentication Method",
         "auth_types": {
             "self": "Self Auth",
@@ -14,6 +15,7 @@
         },
         "auth_db": "Authentication Database",
         "auth_service": "Authentication Service",
+        "content": "Content",
         "content_type": "Content Method",
         "content_types": {
             "local": "Store Local",

@@ -6,6 +6,7 @@
     },
     "setup": {
         "title": "伺服器設置",
+        "auth": "認證",
         "auth_type": "認證方法",
         "auth_types": {
             "self": "自行認證",
@@ -14,6 +15,7 @@
         },
         "auth_db": "認證資料庫",
         "auth_service": "認證雲端",
+        "content": "內容",
         "content_type": "內容方法",
         "content_types": {
             "local": "本地儲存",

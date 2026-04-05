@@ -21,6 +21,21 @@ export declare enum AuthService {
     CLERK = 2,
     SUPABASE = 3
 }
+export declare enum ContentType {
+    LOCAL = 0,
+    EXTERNAL = 1,
+    SERVICE = 2
+}
+export declare enum ContentDB {
+    FTP = 0,
+    MONGODB = 1
+}
+export declare enum ContentService {
+    MONGODB = 0,
+    DYNAMODB = 1,
+    COSMOS = 2,
+    BIGTABLE = 3
+}
 /**
  * **Backend Interface**\
  * The backend object must contain some utility functions\
@@ -284,18 +299,29 @@ export interface ServerSetupAuth {
     db_username?: string;
     db_password?: string;
 }
+export interface ServerSetupContent {
+    content_type: ContentType;
+    content_service: ContentService;
+    content_db: ContentDB;
+    api_key?: string;
+    db_url?: string;
+    db_username?: string;
+    db_password?: string;
+}
 export interface ServerSetting {
     open_guest: boolean;
     auth: ServerSetupAuth;
+    content: ServerSetupContent;
 }
 export interface ServerSetupRoot {
     root_username: string;
     root_password: string;
 }
 export interface ServerSetupRequire {
-    setting?: ServerSetting;
-    root?: ServerSetupRoot;
+    setting: ServerSetting;
+    root: ServerSetupRoot;
 }
+export declare const CreateServerSetupRequire: () => ServerSetupRequire;
 export declare const CreateRootLocalPermission: () => LocalPermission;
 export declare const CreateRootPermission: () => GlobalPermission;
 export declare const CreateRootUser: () => UserProfile;
