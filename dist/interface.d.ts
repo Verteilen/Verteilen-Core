@@ -1,4 +1,3 @@
-export declare const SERECT: string;
 /**
  * Default client node port
  */

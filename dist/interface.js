@@ -36,15 +36,12 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.I18N = exports.MONGODB_NAME = exports.DATA_FOLDER = exports.IGNORE_CHARACTER = exports.ENV_CHARACTER = exports.SCROLL_LIMIT = exports.RENDER_FILE_UPDATETICK = exports.RENDER_UPDATETICK = exports.CLIENT_UPDATETICK = exports.MESSAGE_LIMIT = exports.WebHookPORT = exports.WebPORT = exports.PORT = exports.SERECT = void 0;
+exports.I18N = exports.MONGODB_NAME = exports.DATA_FOLDER = exports.IGNORE_CHARACTER = exports.ENV_CHARACTER = exports.SCROLL_LIMIT = exports.RENDER_FILE_UPDATETICK = exports.RENDER_UPDATETICK = exports.CLIENT_UPDATETICK = exports.MESSAGE_LIMIT = exports.WebHookPORT = exports.WebPORT = exports.PORT = void 0;
 // ========================
 //                           
 //      Share Codebase     
 //                           
 // ========================
-const DefaultSerect = "aVdWN1gWTTUsAQ06aZHyyLMXo0kEJYhU";
-//@ts-ignore
-exports.SERECT = typeof process !== 'undefined' ? (process.env.SERECT || DefaultSerect) : DefaultSerect;
 /**
  * Default client node port
  */
