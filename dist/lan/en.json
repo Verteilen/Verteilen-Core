@@ -24,7 +24,9 @@
         },
         "content_db": "Content Database",
         "content_service": "Content Service",
-        "open_guest": "Guest Login"
+        "open_guest": "Guest Login",
+        "account": "Root Account",
+        "password": "Root Password"
     },
     "login": {
         "title": "Account Login",
