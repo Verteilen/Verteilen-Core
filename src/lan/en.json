@@ -27,7 +27,8 @@
         "open_guest": "Guest Login",
         "open_register": "Open Register",
         "account": "Root Account",
-        "password": "Root Password"
+        "password": "Root Password",
+        "success": "Setup Successfully !"
     },
     "login": {
         "title": "Account Login",
