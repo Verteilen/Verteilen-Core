@@ -322,6 +322,7 @@ export interface ServerSetupContent {
 }
 export interface ServerSetting {
     open_guest: boolean;
+    open_register: boolean;
     auth: ServerSetupAuth;
     content: ServerSetupContent;
 }

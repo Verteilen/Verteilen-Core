@@ -351,6 +351,7 @@ export interface ServerSetupContent {
 
 export interface ServerSetting {
     open_guest: boolean
+    open_register: boolean
     auth: ServerSetupAuth
     content: ServerSetupContent
 }
@@ -369,6 +370,7 @@ export const CreateServerSetupRequire = ():ServerSetupRequire => {
     return {
         setting: {
             open_guest: false,
+            open_register: false,
             auth: {
                 auth_type: AuthType.SELF,
                 auth_service: AuthService.FIREBASE,

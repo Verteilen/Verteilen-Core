@@ -75,6 +75,7 @@ const CreateServerSetupRequire = () => {
     return {
         setting: {
             open_guest: false,
+            open_register: false,
             auth: {
                 auth_type: AuthType.SELF,
                 auth_service: AuthService.FIREBASE,

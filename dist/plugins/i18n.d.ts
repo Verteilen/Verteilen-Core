@@ -44,6 +44,7 @@ export declare const i18nDefaultData: {
                 content_db: string;
                 content_service: string;
                 open_guest: string;
+                open_register: string;
                 account: string;
                 password: string;
             };
@@ -533,6 +534,7 @@ export declare const i18nDefaultData: {
                 content_db: string;
                 content_service: string;
                 open_guest: string;
+                open_register: string;
                 account: string;
                 password: string;
             };
@@ -1029,6 +1031,7 @@ export declare const i18n: import("vue-i18n").I18n<{
             content_db: string;
             content_service: string;
             open_guest: string;
+            open_register: string;
             account: string;
             password: string;
         };
@@ -1518,6 +1521,7 @@ export declare const i18n: import("vue-i18n").I18n<{
             content_db: string;
             content_service: string;
             open_guest: string;
+            open_register: string;
             account: string;
             password: string;
         };

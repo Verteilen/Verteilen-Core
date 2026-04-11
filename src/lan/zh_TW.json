@@ -25,6 +25,7 @@
         "content_db": "內容資料庫",
         "content_service": "內容雲端",
         "open_guest": "遊客登入",
+        "open_register": "開放註冊",
         "account": "管理員帳號",
         "password": "管理員密碼"
     },
