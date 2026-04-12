@@ -27,7 +27,8 @@
         "open_guest": "遊客登入",
         "open_register": "開放註冊",
         "account": "管理員帳號",
-        "password": "管理員密碼"
+        "password": "管理員密碼",
+        "success": "設置成功 !"
     },
     "login": {
         "title": "帳號登入",

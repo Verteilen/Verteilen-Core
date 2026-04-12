@@ -47,6 +47,7 @@ export declare const i18nDefaultData: {
                 open_register: string;
                 account: string;
                 password: string;
+                success: string;
             };
             login: {
                 title: string;
@@ -537,6 +538,7 @@ export declare const i18nDefaultData: {
                 open_register: string;
                 account: string;
                 password: string;
+                success: string;
             };
             login: {
                 title: string;
@@ -1034,6 +1036,7 @@ export declare const i18n: import("vue-i18n").I18n<{
             open_register: string;
             account: string;
             password: string;
+            success: string;
         };
         login: {
             title: string;
@@ -1524,6 +1527,7 @@ export declare const i18n: import("vue-i18n").I18n<{
             open_register: string;
             account: string;
             password: string;
+            success: string;
         };
         login: {
             title: string;

@@ -154,6 +154,7 @@ export interface KeyValue {
 export interface JWT {
     user: string
     create: number
+    expire: number
 }
 
 export interface SystemLoad_GPU {
