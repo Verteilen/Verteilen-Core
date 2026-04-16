@@ -128,7 +128,6 @@ exports.CreateRootPermission = CreateRootPermission;
 const CreateRootUser = () => {
     return {
         uuid: (0, uuid_1.v6)(),
-        token: (0, uuid_1.v6)(),
         type: UserType.ROOT,
         preference: {
             lan: 'en',

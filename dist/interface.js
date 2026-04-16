@@ -78,6 +78,7 @@ exports.MONGODB_NAME = "verteilen";
 __exportStar(require("./interface/base"), exports);
 __exportStar(require("./interface/bus"), exports);
 __exportStar(require("./interface/enum"), exports);
+__exportStar(require("./interface/error"), exports);
 __exportStar(require("./interface/execute"), exports);
 __exportStar(require("./interface/record"), exports);
 __exportStar(require("./interface/server"), exports);

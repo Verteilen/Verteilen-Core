@@ -248,7 +248,7 @@ export declare enum PermissionType {
 /**
  * **Websocket Data Format: Login**
  */
-export interface Login {
+export interface Login extends DataHeader {
     username: string;
     password: string;
 }
@@ -283,13 +283,11 @@ export interface LocalPermissionContainer2 {
  * The data structure store in the DATA_Folder
  */
 export interface UserProfile extends DataHeader, Shareable {
-    token: string;
     name: string;
     email?: string;
     preference: Preference;
     type: UserType;
     description?: string;
-    password?: string;
     global_permission: GlobalPermission;
 }
 /**
