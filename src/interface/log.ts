@@ -1,4 +1,4 @@
-import { Database, DataHeader, Node, Project, Shareable } from "./base"
+import { Database, DataHeader, DataTime, Node, Project, Shareable } from "./base"
 import { ExecuteState } from "./enum"
 import { ExecuteData } from "./record"
 
@@ -28,7 +28,7 @@ export interface ExecutionLog extends DataHeader, Shareable {
     logs: Array<ExecutionTaskLog>
 }
 
-export interface Log {
+export interface Log extends DataHeader, DataTime, Shareable {
     logs: Array<ExecutionLog>
 }
 
