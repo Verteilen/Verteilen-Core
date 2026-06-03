@@ -4,12 +4,44 @@
         "unverify": "尚未驗證",
         "no-permission-action": "你沒有權限做此動作"
     },
+    "setup": {
+        "title": "伺服器設置",
+        "auth": "認證",
+        "auth_type": "認證方法",
+        "auth_types": {
+            "self": "自行認證",
+            "external": "外部認證",
+            "service": "雲端認證"
+        },
+        "auth_db": "認證資料庫",
+        "auth_service": "認證雲端",
+        "content": "內容",
+        "content_type": "內容方法",
+        "content_types": {
+            "local": "本地儲存",
+            "external": "外部儲存",
+            "service": "雲端儲存"
+        },
+        "content_db": "內容資料庫",
+        "content_service": "內容雲端",
+        "open_guest": "遊客登入",
+        "open_register": "開放註冊",
+        "account": "管理員帳號",
+        "password": "管理員密碼",
+        "success": "設置成功 !"
+    },
     "login": {
         "title": "帳號登入",
         "submit": "登入",
         "account": "帳號",
         "password": "密碼",
-        "failed": "登入失敗"
+        "failed": "登入失敗",
+        "guest": "遊客登入",
+        "server": "伺服器位址",
+        "connect": "連結",
+        "disconnect": "中斷連結",
+        "connect_failed": "連結失敗",
+        "connect_success": "連結成功"
     },
     "guides": {
         "workflow": "工作流程",
@@ -149,7 +181,14 @@
         "delete-service": "刪除服務",
         "delete-service-confirm": "確定刪除選取的服務嗎?",
         "new-condition": "建立條件",
-        "generate-database": "生成資料庫"
+        "generate-database": "生成資料庫",
+        "owner": "擁有者",
+        "version": "版本",
+        "description": "敘述",
+        "project-template": "專案",
+        "database-template": "資料庫",
+        "script": "腳本",
+        "plugin": "檔案"
     },
     "toolbar": {
         "server": "伺服器",
@@ -189,7 +228,7 @@
         "path": "路徑",
         "content": "內容",
         "command": "命令",
-        "databases": "資料庫值"
+        "variable": "參數"
     },
     "enum": {
         "jobtype": {
@@ -447,5 +486,6 @@
     "state": "狀態",
     "delay": "延遲",
     "zoom": "放大",
-    "unzoom": "縮小"
+    "unzoom": "縮小",
+    "summary": "總結"
 }

@@ -1,3 +1,6 @@
+/**
+ * Client
+ */
 export * from './client/analysis';
 export * from './client/client';
 export * from './client/cluster';
@@ -10,8 +13,7 @@ export * from './client/os';
 export * from './client/database';
 export * from './client/resource';
 export * from './client/shell';
-export * from './script/webhook_server_manager';
-export * from './server/server2';
-export * from './server/io2';
-export * from './server/module/account';
+/**
+ * util
+ */
 export * from './util/port';

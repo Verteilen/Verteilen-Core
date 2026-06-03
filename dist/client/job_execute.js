@@ -15,9 +15,18 @@ const i18n_1 = require("../plugins/i18n");
 const javascript_1 = require("./javascript");
 const job_database_1 = require("./job_database");
 const os_1 = require("./os");
+/**
+ * The job execute worker\
+ * This class should spawn by the cluster thread to prevent heavy calculation on the main thread
+ */
 class ClientJobExecute {
-    constructor(_messager, _messager_log, _job, _source, _plugin) {
+    constructor(_messager, _messager_log, _job, _source) {
+        /**
+         * The entry function to execute the job container
+         * @param job Target job
+         */
         this.execute = () => {
+            // Output the job type message to let user know what is going on
             this.messager_log(`[Execute] ${this.job.uuid}  ${this.job.category == interface_1.JobCategory.Execution ? i18n_1.i18n.global.t(interface_1.JobTypeText[this.job.type]) : i18n_1.i18n.global.t(interface_1.JobType2Text[this.job.type])}`, this.tag, this.runtime);
             const child = this.job.category == interface_1.JobCategory.Execution ? this.execute_job_exe() : this.execute_job_con();
             return child;
@@ -25,8 +34,14 @@ class ClientJobExecute {
         this.stop_all = () => {
             this.os.stopall();
         };
+        /**
+         * Execute the job that classify as run
+         * @param job Target job
+         * @returns Promise instance
+         */
         this.execute_job_exe = () => {
             return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                var _a;
                 switch (this.job.type) {
                     case interface_1.JobType.COPY_FILE:
                         {
@@ -97,7 +112,7 @@ class ClientJobExecute {
                         }
                     case interface_1.JobType.LIB_COMMAND:
                         {
-                            const target = this.plugin.plugins.find(x => x.name == this.job.string_args[0]);
+                            const target = (_a = this.plugin) === null || _a === void 0 ? void 0 : _a.plugins.find(x => x.name == this.job.string_args[0]);
                             if (target == undefined) {
                                 reject("Cannot find plugin " + this.job.string_args[0]);
                                 return;
@@ -120,6 +135,11 @@ class ClientJobExecute {
                 }
             }));
         };
+        /**
+         * Execute the job that classify as condition
+         * @param job Target job
+         * @returns Promise instance
+         */
         this.execute_job_con = () => {
             return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
                 switch (this.job.type) {
@@ -159,10 +179,10 @@ class ClientJobExecute {
         this.tag = _job.uuid;
         this.runtime = _job.runtime_uuid || '';
         this.job = _job;
-        this.plugin = _plugin;
         this.para = new job_database_1.ClientJobDatabase();
-        this.os = new os_1.ClientOS(() => this.tag, () => this.job.runtime_uuid || '', _messager, _messager_log);
+        this.os = new os_1.ClientOS(() => this.tag, () => this.job.runtime_uuid || '', () => this.plugin, _messager, _messager_log);
         this.javascript = new javascript_1.ClientJavascript(_messager, _messager_log, () => this.job);
+        this.plugin = process.env.plugin != undefined ? JSON.parse(process.env.plugin) : undefined;
         this.database = process.env.database != undefined ? JSON.parse(process.env.database) : undefined;
         this.libraries = process.env.libraries != undefined ? JSON.parse(process.env.libraries) : undefined;
         javascript_1.ClientJavascript.Init(_messager, _messager_log, this.os, this.para, () => this.libraries, () => this.database, () => this.job);

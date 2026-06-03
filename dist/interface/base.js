@@ -1,6 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateDefaultDatabase = exports.CreateDefaultJob = exports.CreateDefaultTask = exports.CreateDefaultProject = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
+//
+//  ? Defined the basic compute use data structure
+//
 const enum_1 = require("./enum");
 const uuid_1 = require("uuid");
 const CreateDefaultProject = () => {

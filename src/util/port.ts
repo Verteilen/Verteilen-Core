@@ -1,3 +1,12 @@
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
+//
+//  ? Port checker for NodeJS side
+//  ! Cannot use in browser
+//
 import tcpPortUsed from 'tcp-port-used'
 
 /**

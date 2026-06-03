@@ -1,20 +1,48 @@
-import { ExecuteManager } from "../script/execute_manager";
+/**
+ * The data structure which will use in execute stage
+ */
 import { Job } from "./base";
 import { ExecuteState } from "./enum";
-import { ExecuteRecord } from "./log";
-export interface ExecutePair {
-    manager?: ExecuteManager;
-    record?: ExecuteRecord;
-    meta?: any;
+/**
+ * Group state of the job execution
+ */
+export interface CronJobStateGroup {
 }
+/**
+ * The cronjob package, contain subtask state
+ */
 export interface CronJobState {
+    /**
+     * The index order for the cron pacakge
+     */
     id: number;
+    /**
+     * The network instance uuid
+     */
     uuid: string;
+    /**
+     * All the job state package
+     */
     work: Array<WorkState>;
 }
+/**
+ * The job package, contain jobs state
+ */
 export interface WorkState {
+    /**
+     * The network instance uuid
+     */
     uuid: string;
+    /**
+     * Runtime uuid
+     */
     runtime: string;
+    /**
+     * Job state
+     */
     state: ExecuteState;
+    /**
+     * The job instance
+     */
     job: Job;
 }

@@ -43,6 +43,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ClientAnalysis = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
+//
+//  ? Analysis the packets send from the computed server
+//
 const child_process_1 = require("child_process");
 const interface_1 = require("../interface");
 const client_1 = require("./client");
@@ -51,57 +59,69 @@ const shell_1 = require("./shell");
 const fs_1 = require("fs");
 const path = __importStar(require("path"));
 const os = __importStar(require("os"));
+/**
+ * The analysis worker. decode the message received from cluster server
+ */
 class ClientAnalysis {
-    constructor(_messager, _messager_log, _client) {
+    /**
+     * Create the worker
+     * @param _messager The log function at the lower level, Which does not send back to server
+     * @param _messager_log The log function at the higher level, Which does send back to server
+     * @param _client Client instance
+     */
+    constructor(_client, _socket, _messager, _messager_log) {
         this.resource_wanter = [];
         this.resource_thread = undefined;
         this.resource_cache = undefined;
-        this.analysis = (h, source) => {
-            const typeMap = {
-                'execute_job': this.execute_job,
-                'release': this.release,
-                'stop_job': this.stop_all,
-                'set_database': this.set_database,
-                'set_libs': this.set_libs,
-                'shell_folder': this.shell.shell_folder,
-                'open_shell': this.shell.open_shell,
-                'close_shell': this.shell.close_shell,
-                'enter_shell': this.shell.enter_shell,
-                'resource_start': this.resource_start,
-                'resource_end': this.resource_end,
-                'ping': this.pong,
-                'plugin_info': this.plugin_info,
-                'plugin_download': this.plugin_download,
-                'plugin_remove': this.plugin_remove,
-            };
-            if (h == undefined) {
-                this.messager_log('[Client Analysis] Analysis Failed, Value is undefined');
-                return 1;
-            }
-            if (h.message != undefined && h.message.length > 0) {
-                this.messager_log(`[Client Analysis] ${h.message}`);
-            }
-            if (h.data == undefined) {
-                this.messager_log('[Client Analysis] Analysis Warn, Data is undefined');
-                h.data = 0;
-            }
-            if (typeMap.hasOwnProperty(h.name)) {
-                const castingFunc = typeMap[h.name];
-                castingFunc(h.data, source, h.channel);
-                return 0;
-            }
-            else {
-                this.messager_log(`[Client Analysis] Analysis Failed, Unknowed header, name: ${h.name}, meta: ${h.meta}`);
-                return 2;
-            }
+        /**
+         * Register socket io event
+         * @param h Package
+         * @param source Websocket instance
+         * @return
+         * * 0: Successfully execute command
+         * * 1: The header is undefined, cannot process
+         * * 2: Cannot find the header name match with function typeMap
+         */
+        this.RegisterEvent = () => {
+            this.socket.on('message', this.message);
+            this.socket.on('execute_job', this.execute_job);
+            this.socket.on('release', this.release);
+            this.socket.on('stop_job', this.stop_all);
+            this.socket.on('set_database', this.set_database);
+            this.socket.on('set_libs', this.set_libs);
+            this.socket.on('shell_folder', this.shell.shell_folder);
+            this.socket.on('open_shell', (uuid) => this.shell.open_shell(uuid, this.socket));
+            this.socket.on('close_shell', this.shell.close_shell);
+            this.socket.on('enter_shell', this.shell.enter_shell);
+            this.socket.on('resource_start', this.resource_start);
+            this.socket.on('resource_end', this.resource_end);
+            this.socket.on('ping', this.pong);
+            this.socket.on('plugin_info', this.plugin_info);
+            this.socket.on('plugin_download', this.plugin_download);
+            this.socket.on('plugin_remove', this.plugin_remove);
         };
-        this.execute_job = (job, source, channel) => {
+        this.message = (msg) => {
+            this.messager_log(`[Client Analysis] ${msg}`);
+        };
+        /**
+         * Job execution, Pipe down to execution worker to execute the input job object
+         * @param job Job Object
+         * @param source Command source
+         * @param channel Job thread UUID channel
+         */
+        this.execute_job = (job, channel) => {
             if (channel == undefined)
                 return;
             const target = this.exec_checker(channel);
-            target.execute_job(job, source);
+            target.execute_job(job, this.socket);
         };
-        this.release = (dummy, source, channel) => {
+        /**
+         * Release the job execution thread
+         * @param dummy Not important
+         * @param source Command source
+         * @param channel Job thread UUID channel
+         */
+        this.release = (channel) => {
             if (channel == undefined)
                 return;
             const index = this.exec.findIndex(x => x.uuid == channel);
@@ -109,18 +129,35 @@ class ClientAnalysis {
                 return;
             this.exec.splice(index, 1);
         };
-        this.set_database = (data, source, channel) => {
+        /**
+         * Set buffer database
+         * @param data Database Object
+         * @param source Command source
+         * @param channel Job thread UUID channel
+         */
+        this.set_database = (data, channel) => {
             if (channel == undefined)
                 return;
             const target = this.exec_checker(channel);
             target.set_database(data);
         };
-        this.set_libs = (data, source, channel) => {
+        /**
+         * Set buffer libraries
+         * @param data Libraries Object
+         * @param source Command source
+         * @param channel Job thread UUID channel
+         */
+        this.set_libs = (data, channel) => {
             if (channel == undefined)
                 return;
             const target = this.exec_checker(channel);
             target.set_libs(data);
         };
+        /**
+         * Get the execution channel by UUID
+         * @param uuid UUID
+         * @returns Execution worker instance
+         */
         this.exec_checker = (uuid) => {
             let r = undefined;
             const index = this.exec.findIndex(x => x.uuid == uuid);
@@ -133,24 +170,40 @@ class ClientAnalysis {
             }
             return r;
         };
-        this.pong = (data, source) => {
-            const h = { name: 'pong', data: data };
-            source.send(JSON.stringify(h));
+        /**
+         * Network delay request
+         * @param data Dummy value, should always be 0
+         * @param source The cluster server websocket instance
+         */
+        this.pong = (id) => {
+            this.socket.emit('pong', id);
         };
-        this.plugin_info = (data, source) => {
+        /**
+         * Feedback current plugin state to computed server
+         * @param dummy Not important
+         * @param source The cluster server websocket instance
+         */
+        this.plugin_info = () => {
             const pat = path.join(os.homedir(), interface_1.DATA_FOLDER, "node_plugin", "plugin.json");
             if ((0, fs_1.existsSync)(pat)) {
                 const p = JSON.parse((0, fs_1.readFileSync)(pat).toString());
                 const h = { name: 'plugin_info_reply', data: p.plugins };
-                source.send(JSON.stringify(h));
+                this.socket.send(JSON.stringify(h));
             }
             else {
                 const p = { plugins: [] };
                 const h = { name: 'plugin_info_reply', data: p.plugins };
                 (0, fs_1.writeFileSync)(pat, JSON.stringify(p));
-                source.send(JSON.stringify(h));
+                this.socket.send(JSON.stringify(h));
             }
         };
+        /**
+         * ? utility for plugin download\
+         * Get release info
+         * @param repo Repository name
+         * @param token If it's for private repo, You will need token here
+         * @returns The Json string info
+         */
         this.get_releases = (repo, token) => __awaiter(this, void 0, void 0, function* () {
             const qu = yield fetch(`https://api.github.com/repos/${repo}/releases`, {
                 headers: {
@@ -160,6 +213,16 @@ class ClientAnalysis {
             });
             return qu.text();
         });
+        /**
+         * ? utility for plugin download\
+         * Get the asset id from repo release info and filename, version\
+         * It's useful for getting a download link
+         * @param repo Repository
+         * @param token If it's for private repo, You will need token here
+         * @param version Target version
+         * @param filename Target filename
+         * @returns
+         */
         this.filterout = (repo, token, version, filename) => __awaiter(this, void 0, void 0, function* () {
             const text = yield this.get_releases(repo, token);
             const json = JSON.parse(text);
@@ -171,7 +234,7 @@ class ClientAnalysis {
                 return;
             return f.id;
         });
-        this.write_plugin = (t, plugin, source) => {
+        this.write_plugin = (t, plugin) => {
             const list = this.client.plugins.plugins;
             const index = list.findIndex(x => x.name == plugin.name);
             plugin.token = t ? [t] : [];
@@ -183,9 +246,9 @@ class ClientAnalysis {
                 list[index] = plugin;
             }
             this.client.savePlugin();
-            this.plugin_info(0, source);
+            this.plugin_info();
         };
-        this.finish_plugin = (plugin, source) => {
+        this.finish_plugin = (plugin) => {
             const list = this.client.plugins.plugins;
             const index = list.findIndex(x => x.name == plugin.name);
             plugin.progress = 1;
@@ -196,9 +259,15 @@ class ClientAnalysis {
                 list[index] = plugin;
             }
             this.client.savePlugin();
-            this.plugin_info(0, source);
+            this.plugin_info();
         };
-        this.plugin_download = (plugin, source) => __awaiter(this, void 0, void 0, function* () {
+        /**
+         * Download the exe file from target plugin\
+         * And overwrite the plugin record
+         * @param plugin Target plugin
+         * @param source Command source
+         */
+        this.plugin_download = (plugin) => __awaiter(this, void 0, void 0, function* () {
             const target = plugin.contents.find(x => x.arch == process.arch && x.platform == process.platform);
             if (target == undefined) {
                 this.messager_log(`[Plugin] Cannot find target plugin for ${plugin.name} on ${process.platform} ${process.arch}`);
@@ -233,7 +302,7 @@ class ClientAnalysis {
                         if (!res.ok) {
                             throw new Error(`Failed to download file: ${res.status} ${res.statusText}`);
                         }
-                        this.write_plugin(t, plugin, source);
+                        this.write_plugin(t, plugin);
                         return res.blob();
                     })).then(blob => {
                         return blob.stream().getReader().read();
@@ -247,10 +316,13 @@ class ClientAnalysis {
                         fileStream.end();
                         if (process.platform == 'linux') {
                             (0, child_process_1.exec)(`chmod +x ${path.join(dir, target.filename)}`, (err) => {
-                                this.messager_log(`[Plugin] Permission failed ${err === null || err === void 0 ? void 0 : err.message}`);
+                                if (err)
+                                    this.messager_log(`[Plugin] Permission failed ${err === null || err === void 0 ? void 0 : err.message}`);
+                                else
+                                    this.messager_log(`[Plugin] Apply Execute Permission Successfully`);
                             });
                         }
-                        this.finish_plugin(plugin, source);
+                        this.finish_plugin(plugin);
                         pass = true;
                     });
                 }
@@ -259,7 +331,7 @@ class ClientAnalysis {
                 }
             }
         });
-        this.plugin_remove = (plugin, source) => {
+        this.plugin_remove = (plugin) => {
             this.client.plugins.plugins = this.client.plugins.plugins.filter(x => x.name != plugin.name);
             this.client.savePlugin();
             const dir = path.join(os.homedir(), interface_1.DATA_FOLDER, "node_plugin");
@@ -268,7 +340,7 @@ class ClientAnalysis {
             if ((0, fs_1.existsSync)(path.join(dir, plugin.name))) {
                 (0, fs_1.rmSync)(path.join(dir, plugin.name), { recursive: true });
             }
-            this.plugin_info(0, source);
+            this.plugin_info();
         };
         this.resource_start = (data, source) => {
             this.resource_wanter.push(source);
@@ -290,7 +362,7 @@ class ClientAnalysis {
             }
         };
         this.disconnect = (source) => {
-            this.shell.disconnect(source);
+            this.shell.disconnect2(source);
             this.exec.forEach(x => x.stop_job());
         };
         this.stop_all = () => {
@@ -372,6 +444,7 @@ class ClientAnalysis {
             });
         };
         this.client = _client;
+        this.socket = _socket;
         this.messager = _messager;
         this.messager_log = _messager_log;
         this.shell = new shell_1.ClientShell(_messager, _messager_log, this.client);

@@ -1,6 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DatabaseTemplateText = exports.ProjectTemplateText = exports.JobType2Text = exports.JobTypeText = exports.JobResultText = exports.ConnectionText = exports.JobCategoryText = exports.ExecuteStateText = exports.DataTypeText = exports.ServiceMode = exports.JavascriptLib = exports.RecordType = exports.ExecuteState = exports.DatabaseTemplate = exports.ProjectTemplate = exports.JobType2 = exports.JobType = exports.ConditionResult = exports.JobCategory = exports.FrontendUpdate = exports.ResourceType = exports.DataTypeBase = exports.BackendType = exports.DataType = exports.SocketState = exports.TaskLogicType = void 0;
+exports.DatabaseTemplateText = exports.ProjectTemplateText = exports.JobType2Text = exports.JobTypeText = exports.JobResultText = exports.ConnectionText = exports.JobCategoryText = exports.ExecuteStateText = exports.DataTypeText = exports.RecordTypePureText = exports.ServiceMode = exports.JavascriptLib = exports.CronJobStateType = exports.RecordType = exports.ExecuteState = exports.DatabaseTemplate = exports.ProjectTemplate = exports.JobType2 = exports.JobType = exports.ConditionResult = exports.JobCategory = exports.FrontendUpdate = exports.ResourceType = exports.DataTypeBase = exports.BackendType = exports.DataType = exports.SocketState = exports.TaskLogicType = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
+//
+//  ? Enum library, including translation which will be use in Vue
+//
+/**
+ * **SubTask Logic Type**\
+ * Define the container logic type\
+ * It effect the decoder behaviour
+ */
 var TaskLogicType;
 (function (TaskLogicType) {
     TaskLogicType[TaskLogicType["GROUP"] = 0] = "GROUP";
@@ -8,10 +21,15 @@ var TaskLogicType;
     TaskLogicType[TaskLogicType["EXECUTION"] = 2] = "EXECUTION";
     TaskLogicType[TaskLogicType["FAILED"] = 3] = "FAILED";
     TaskLogicType[TaskLogicType["SINGLE"] = 4] = "SINGLE";
-    TaskLogicType[TaskLogicType["ADD"] = 5] = "ADD";
+    TaskLogicType[TaskLogicType["AND"] = 5] = "AND";
     TaskLogicType[TaskLogicType["OR"] = 6] = "OR";
     TaskLogicType[TaskLogicType["NOT"] = 7] = "NOT";
 })(TaskLogicType || (exports.TaskLogicType = TaskLogicType = {}));
+/**
+ * **Socket Type**\
+ * This exists because reference to ws or buildin socket will sometime cause error\
+ * So we will need to create one for ourselves
+ */
 var SocketState;
 (function (SocketState) {
     SocketState[SocketState["CONNECTING"] = 0] = "CONNECTING";
@@ -19,6 +37,10 @@ var SocketState;
     SocketState[SocketState["CLOSING"] = 2] = "CLOSING";
     SocketState[SocketState["CLOSED"] = 3] = "CLOSED";
 })(SocketState || (exports.SocketState = SocketState = {}));
+/**
+ * **Data Type**\
+ * The support data type for database
+ */
 var DataType;
 (function (DataType) {
     DataType[DataType["Boolean"] = 0] = "Boolean";
@@ -30,6 +52,10 @@ var DataType;
     DataType[DataType["Select"] = 6] = "Select";
     DataType[DataType["List"] = 7] = "List";
 })(DataType || (exports.DataType = DataType = {}));
+/**
+ * **Express Server Type**\
+ * For checking the express server type
+ */
 var BackendType;
 (function (BackendType) {
     BackendType[BackendType["NONE"] = 0] = "NONE";
@@ -37,14 +63,27 @@ var BackendType;
     BackendType[BackendType["CLUSTER"] = 2] = "CLUSTER";
     BackendType[BackendType["NODE"] = 3] = "NODE";
 })(BackendType || (exports.BackendType = BackendType = {}));
+/**
+ * **Data Type Base**\
+ * The support data type for calculation\
+ * Proerty or expression calculation will use this
+ */
 var DataTypeBase;
 (function (DataTypeBase) {
     DataTypeBase[DataTypeBase["Boolean"] = 0] = "Boolean";
     DataTypeBase[DataTypeBase["Number"] = 1] = "Number";
     DataTypeBase[DataTypeBase["String"] = 2] = "String";
 })(DataTypeBase || (exports.DataTypeBase = DataTypeBase = {}));
+/**
+ * **Resource Query Type**\
+ * Client resource type\
+ * Use in when server query system information from node
+ */
 var ResourceType;
 (function (ResourceType) {
+    /**
+     * Apply all the information query
+     */
     ResourceType[ResourceType["ALL"] = 1023] = "ALL";
     ResourceType[ResourceType["SYSTEM"] = 1] = "SYSTEM";
     ResourceType[ResourceType["CPU"] = 2] = "CPU";
@@ -56,6 +95,9 @@ var ResourceType;
     ResourceType[ResourceType["DISK"] = 128] = "DISK";
     ResourceType[ResourceType["NETWORK"] = 256] = "NETWORK";
 })(ResourceType || (exports.ResourceType = ResourceType = {}));
+/**
+ * **Vue Update Type**
+ */
 var FrontendUpdate;
 (function (FrontendUpdate) {
     FrontendUpdate[FrontendUpdate["ALL"] = 1023] = "ALL";
@@ -67,11 +109,18 @@ var FrontendUpdate;
     FrontendUpdate[FrontendUpdate["SERVICE"] = 32] = "SERVICE";
     FrontendUpdate[FrontendUpdate["LOG"] = 64] = "LOG";
 })(FrontendUpdate || (exports.FrontendUpdate = FrontendUpdate = {}));
+/**
+ * **Job Category Type**
+ */
 var JobCategory;
 (function (JobCategory) {
     JobCategory[JobCategory["Condition"] = 0] = "Condition";
     JobCategory[JobCategory["Execution"] = 1] = "Execution";
 })(JobCategory || (exports.JobCategory = JobCategory = {}));
+/**
+ * **Condition Error Handle Result**\
+ * Determine the action after receive error
+ */
 var ConditionResult;
 (function (ConditionResult) {
     ConditionResult[ConditionResult["None"] = 0] = "None";
@@ -81,6 +130,9 @@ var ConditionResult;
     ConditionResult[ConditionResult["ThrowTask"] = 4] = "ThrowTask";
     ConditionResult[ConditionResult["Pause"] = 5] = "Pause";
 })(ConditionResult || (exports.ConditionResult = ConditionResult = {}));
+/**
+ * **Job SubType: Execution**
+ */
 var JobType;
 (function (JobType) {
     JobType[JobType["COPY_FILE"] = 0] = "COPY_FILE";
@@ -94,6 +146,9 @@ var JobType;
     JobType[JobType["COMMAND"] = 8] = "COMMAND";
     JobType[JobType["LIB_COMMAND"] = 9] = "LIB_COMMAND";
 })(JobType || (exports.JobType = JobType = {}));
+/**
+ * **Job SubType: Condition**
+ */
 var JobType2;
 (function (JobType2) {
     JobType2[JobType2["CHECK_PATH"] = 0] = "CHECK_PATH";
@@ -119,6 +174,9 @@ var ExecuteState;
     ExecuteState[ExecuteState["ERROR"] = 3] = "ERROR";
     ExecuteState[ExecuteState["SKIP"] = 4] = "SKIP";
 })(ExecuteState || (exports.ExecuteState = ExecuteState = {}));
+/**
+ * **Database Table Type**
+ */
 var RecordType;
 (function (RecordType) {
     RecordType[RecordType["PROJECT"] = 0] = "PROJECT";
@@ -130,6 +188,17 @@ var RecordType;
     RecordType[RecordType["LIB"] = 6] = "LIB";
     RecordType[RecordType["USER"] = 7] = "USER";
 })(RecordType || (exports.RecordType = RecordType = {}));
+var CronJobStateType;
+(function (CronJobStateType) {
+    CronJobStateType[CronJobStateType["JOB"] = 0] = "JOB";
+    CronJobStateType[CronJobStateType["OR"] = 1] = "OR";
+    CronJobStateType[CronJobStateType["AND"] = 2] = "AND";
+    CronJobStateType[CronJobStateType["NOT"] = 3] = "NOT";
+})(CronJobStateType || (exports.CronJobStateType = CronJobStateType = {}));
+/**
+ * **Lib Import Type**\
+ * For client-side javascript vm library import options
+ */
 var JavascriptLib;
 (function (JavascriptLib) {
     JavascriptLib[JavascriptLib["ALL"] = 127] = "ALL";
@@ -139,12 +208,36 @@ var JavascriptLib;
     JavascriptLib[JavascriptLib["HTTP"] = 8] = "HTTP";
     JavascriptLib[JavascriptLib["PATH"] = 16] = "PATH";
 })(JavascriptLib || (exports.JavascriptLib = JavascriptLib = {}));
+/**
+ * **Service Activate Mode**\
+ * Determine what cost service turn on
+ */
 var ServiceMode;
 (function (ServiceMode) {
+    /**
+     * Do it once, and shutdown
+     */
     ServiceMode[ServiceMode["ONCE"] = 0] = "ONCE";
+    /**
+     * Schedule setup, or a time cycle
+     */
     ServiceMode[ServiceMode["CYCLE"] = 1] = "CYCLE";
+    /**
+     * API event trigger, or other service trigger
+     */
     ServiceMode[ServiceMode["EVENT"] = 2] = "EVENT";
 })(ServiceMode || (exports.ServiceMode = ServiceMode = {}));
+//#region Translation
+exports.RecordTypePureText = {
+    0: 'PROJECT',
+    1: 'TASK',
+    2: 'JOB',
+    3: 'DATABASE',
+    4: 'NODE',
+    5: 'LOG',
+    6: 'LIB',
+    7: 'USER',
+};
 exports.DataTypeText = {
     0: 'types.boolean',
     1: 'types.number',
@@ -206,4 +299,5 @@ exports.ProjectTemplateText = {
 exports.DatabaseTemplateText = {
     0: 'enum.database.default'
 };
+//#endregion
 //# sourceMappingURL=enum.js.map

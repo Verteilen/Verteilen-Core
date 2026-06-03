@@ -13,7 +13,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PortAvailable = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
+//
+//  ? Port checker for NodeJS side
+//  ! Cannot use in browser
+//
 const tcp_port_used_1 = __importDefault(require("tcp-port-used"));
+/**
+ * Prevent use port which it's already use by other program
+ * @param start Port start number
+ * @returns The available port
+ */
 const PortAvailable = (start) => __awaiter(void 0, void 0, void 0, function* () {
     let port_result = start;
     let canbeuse = false;

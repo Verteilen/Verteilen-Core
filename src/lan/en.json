@@ -4,12 +4,44 @@
         "unverify": "Un verify",
         "no-permission-action": "You have no permission"
     },
+    "setup": {
+        "title": "Server Setup",
+        "auth": "Authentication",
+        "auth_type": "Authentication Method",
+        "auth_types": {
+            "self": "Self Auth",
+            "external": "External",
+            "service": "Service"
+        },
+        "auth_db": "Authentication Database",
+        "auth_service": "Authentication Service",
+        "content": "Content",
+        "content_type": "Content Method",
+        "content_types": {
+            "local": "Store Local",
+            "external": "External",
+            "service": "Service"
+        },
+        "content_db": "Content Database",
+        "content_service": "Content Service",
+        "open_guest": "Guest Login",
+        "open_register": "Open Register",
+        "account": "Root Account",
+        "password": "Root Password",
+        "success": "Setup Successfully !"
+    },
     "login": {
         "title": "Account Login",
         "submit": "Submit",
         "account": "Account",
         "password": "Password",
-        "failed": "Login Failed"
+        "failed": "Login Failed",
+        "guest": "Login as Guest",
+        "server": "Server",
+        "connect": "Connect",
+        "disconnect": "Disconnect",
+        "connect_failed": "Connect Failed",
+        "connect_success": "Connect Successfully"
     },
     "guides": {
         "workflow": "Workflow",
@@ -154,7 +186,15 @@
         "delete-service": "Delete Service",
         "delete-service-confirm": "Are you sure you want to delete these services?",
         "new-condition": "Create Condition",
-        "generate-database": "Generate Database"
+        "generate-database": "Generate Database",
+
+        "owner": "Owner",
+        "version": "Version",
+        "description": "Description",
+        "project-template": "Project",
+        "database-template": "Database",
+        "script": "Script",
+        "plugin": "File"
     },
     "toolbar": {
         "server": "Server",
@@ -194,7 +234,7 @@
         "path": "Path",
         "content": "Content",
         "command": "Command",
-        "databases": "Databases"
+        "variable": "Variable"
     },
     "enum":{
         "jobtype": {
@@ -452,5 +492,6 @@
     "state": "State",
     "delay": "Delay",
     "zoom": "Zoom",
-    "unzoom": "UnZoom"
+    "unzoom": "UnZoom",
+    "summary": "Summary"
 }

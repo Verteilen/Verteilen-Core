@@ -1,19 +1,33 @@
+/**
+ * **SubTask Logic Type**\
+ * Define the container logic type\
+ * It effect the decoder behaviour
+ */
 export declare enum TaskLogicType {
     GROUP = 0,
     CONDITION = 1,
     EXECUTION = 2,
     FAILED = 3,
     SINGLE = 4,
-    ADD = 5,
+    AND = 5,
     OR = 6,
     NOT = 7
 }
+/**
+ * **Socket Type**\
+ * This exists because reference to ws or buildin socket will sometime cause error\
+ * So we will need to create one for ourselves
+ */
 export declare enum SocketState {
     CONNECTING = 0,
     OPEN = 1,
     CLOSING = 2,
     CLOSED = 3
 }
+/**
+ * **Data Type**\
+ * The support data type for database
+ */
 export declare enum DataType {
     Boolean = 0,
     Number = 1,
@@ -24,18 +38,35 @@ export declare enum DataType {
     Select = 6,
     List = 7
 }
+/**
+ * **Express Server Type**\
+ * For checking the express server type
+ */
 export declare enum BackendType {
     NONE = 0,
     SERVER = 1,
     CLUSTER = 2,
     NODE = 3
 }
+/**
+ * **Data Type Base**\
+ * The support data type for calculation\
+ * Proerty or expression calculation will use this
+ */
 export declare enum DataTypeBase {
     Boolean = 0,
     Number = 1,
     String = 2
 }
+/**
+ * **Resource Query Type**\
+ * Client resource type\
+ * Use in when server query system information from node
+ */
 export declare enum ResourceType {
+    /**
+     * Apply all the information query
+     */
     ALL = 1023,
     SYSTEM = 1,
     CPU = 2,
@@ -47,6 +78,9 @@ export declare enum ResourceType {
     DISK = 128,
     NETWORK = 256
 }
+/**
+ * **Vue Update Type**
+ */
 export declare enum FrontendUpdate {
     ALL = 1023,
     PROJECT = 1,
@@ -57,10 +91,17 @@ export declare enum FrontendUpdate {
     SERVICE = 32,
     LOG = 64
 }
+/**
+ * **Job Category Type**
+ */
 export declare enum JobCategory {
     Condition = 0,
     Execution = 1
 }
+/**
+ * **Condition Error Handle Result**\
+ * Determine the action after receive error
+ */
 export declare enum ConditionResult {
     None = 0,
     SkipProject = 1,
@@ -69,6 +110,9 @@ export declare enum ConditionResult {
     ThrowTask = 4,
     Pause = 5
 }
+/**
+ * **Job SubType: Execution**
+ */
 export declare enum JobType {
     COPY_FILE = 0,
     COPY_DIR = 1,
@@ -81,6 +125,9 @@ export declare enum JobType {
     COMMAND = 8,
     LIB_COMMAND = 9
 }
+/**
+ * **Job SubType: Condition**
+ */
 export declare enum JobType2 {
     CHECK_PATH = 0,
     JAVASCRIPT = 1
@@ -102,6 +149,9 @@ export declare enum ExecuteState {
     ERROR = 3,
     SKIP = 4
 }
+/**
+ * **Database Table Type**
+ */
 export declare enum RecordType {
     PROJECT = 0,
     TASK = 1,
@@ -112,6 +162,16 @@ export declare enum RecordType {
     LIB = 6,
     USER = 7
 }
+export declare enum CronJobStateType {
+    JOB = 0,
+    OR = 1,
+    AND = 2,
+    NOT = 3
+}
+/**
+ * **Lib Import Type**\
+ * For client-side javascript vm library import options
+ */
 export declare enum JavascriptLib {
     ALL = 127,
     OS = 1,
@@ -120,11 +180,27 @@ export declare enum JavascriptLib {
     HTTP = 8,
     PATH = 16
 }
+/**
+ * **Service Activate Mode**\
+ * Determine what cost service turn on
+ */
 export declare enum ServiceMode {
+    /**
+     * Do it once, and shutdown
+     */
     ONCE = 0,
+    /**
+     * Schedule setup, or a time cycle
+     */
     CYCLE = 1,
+    /**
+     * API event trigger, or other service trigger
+     */
     EVENT = 2
 }
+export declare const RecordTypePureText: {
+    [key: number]: string;
+};
 export declare const DataTypeText: {
     [key: number]: string;
 };

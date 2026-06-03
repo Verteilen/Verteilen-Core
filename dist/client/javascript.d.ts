@@ -13,8 +13,31 @@ export declare class ClientJavascript {
     message: any;
     http: any;
     constructor(_messager: Messager, _messager_log: Messager_log, _getjob: Getjob);
+    /**
+     * Before running the js scripts, We must init first.\
+     * ! Otherwise it won't work or throw error
+     * @param _messager Message habndle
+     * @param _messager_log Message habndle with print on screen feature
+     * @param _clientos OS worker
+     * @param _para Database worker
+     * @param _getlib library getter method
+     * @param _getpara Database getter method
+     * @param _getjob Job getter method
+     */
     static Init: (_messager: Messager, _messager_log: Messager, _clientos: ClientOS, _para: ClientJobDatabase, _getlib: Getlib, _getpara: Getpara, _getjob: Getjob) => void;
+    /**
+     * Running js\
+     * With reference libraries\
+     * @param js js script text
+     * @param libs Libraries header names
+     * @returns Calcuate result
+     */
     JavascriptExecuteWithLib: (javascript: string, libs: Array<string>, log?: Messager) => Promise<any>;
+    /**
+     * Running js
+     * @param js js script text
+     * @returns Calcuate result
+     */
     JavascriptExecute: (javascript: string, log?: Messager) => Promise<any>;
     private getJavascriptEnv;
     private filename;

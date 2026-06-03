@@ -1,4 +1,4 @@
-import WebSocket from 'ws';
+import { Socket } from 'socket.io';
 import { Messager } from "../interface";
 import { Client } from "./client";
 export declare class ClientShell {
@@ -7,10 +7,26 @@ export declare class ClientShell {
     private os;
     private shell_workers;
     constructor(_messager: Messager, _messager_log: Messager, _client: Client);
-    open_shell: (data: number, source: WebSocket) => void;
-    enter_shell: (input: string, source: WebSocket) => void;
-    close_shell: (data: number, source: WebSocket) => void;
-    close_shell_all: (data: number) => void;
-    shell_folder: (data: string, source: WebSocket) => void;
-    disconnect: (source: WebSocket) => void;
+    /**
+     * Open shell consolet
+     */
+    open_shell: (uuid: string, source: Socket) => void;
+    /**
+     * Open shell console
+     * @param input
+     */
+    enter_shell: (uuid: string, input: string) => void;
+    /**
+     * Open shell console
+     * @param input
+     */
+    close_shell: (uuid: string) => void;
+    /**
+     * Open shell console
+     * @param input
+     */
+    close_shell_all: () => void;
+    shell_folder: (uuid: string, path: string) => void;
+    disconnect: (uuid: string) => void;
+    disconnect2: (source: Socket) => void;
 }

@@ -14,6 +14,9 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * Client
+ */
 __exportStar(require("./client/analysis"), exports);
 __exportStar(require("./client/client"), exports);
 __exportStar(require("./client/cluster"), exports);
@@ -26,9 +29,8 @@ __exportStar(require("./client/os"), exports);
 __exportStar(require("./client/database"), exports);
 __exportStar(require("./client/resource"), exports);
 __exportStar(require("./client/shell"), exports);
-__exportStar(require("./script/webhook_server_manager"), exports);
-__exportStar(require("./server/server2"), exports);
-__exportStar(require("./server/io2"), exports);
-__exportStar(require("./server/module/account"), exports);
+/**
+ * util
+ */
 __exportStar(require("./util/port"), exports);
 //# sourceMappingURL=computed.js.map

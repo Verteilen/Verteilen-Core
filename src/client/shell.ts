@@ -9,8 +9,8 @@
 //  ! It's unrelated to the job execution
 //
 import { ChildProcess, spawn } from "child_process";
-import WebSocket from 'ws';
-import { Header, Messager, ShellFolder, Single } from "../interface";
+import { Socket } from 'socket.io';
+import { Messager, ShellFolder, Single } from "../interface";
 import { Client } from "./client";
 import { ClientOS } from "./os";
 
@@ -19,20 +19,20 @@ export class ClientShell {
     private messager:Messager
     private messager_log:Messager
     private os:ClientOS
-    private shell_workers:Array<[WebSocket, ChildProcess]> = []
+    private shell_workers:Array<[string, Socket, ChildProcess]> = []
 
     constructor(_messager:Messager, _messager_log:Messager, _client:Client){
-        this.os = new ClientOS(() => "SHELL", () => "", _messager, _messager_log)
+        this.os = new ClientOS(() => "SHELL", () => "", () => undefined, _messager, _messager_log)
         this.messager = _messager
         this.messager_log = _messager_log
     }
 
     /**
-     * Open shell console
-     * @param input 
+     * Open shell consolet 
      */
-    open_shell = (data:number, source:WebSocket) => {
-        if(this.shell_workers.find(x => x[0] == source)){
+    open_shell = (uuid:string, source:Socket) => {
+        const shell = this.shell_workers.find(x => x[0] == uuid)
+        if(shell != undefined){
             this.messager_log(`[Shell] Error the source already open the shell`)
             return
         }
@@ -46,7 +46,7 @@ export class ClientShell {
                     ...process.env,
                 }
         })
-        this.shell_workers.push([source, child])
+        this.shell_workers.push([uuid, source, child])
         let t = ""
         const workerFeedback = (str:string) => {
             for(let i = 0; i < str.length; i++){
@@ -54,11 +54,7 @@ export class ClientShell {
                     const data:Single = {
                         data: t
                     }
-                    const d:Header = {
-                        name: "shell_reply",
-                        data: data
-                    }
-                    source.send(JSON.stringify(d))
+                    source.emit("shell_reply", data)
                     t = ""
                 }else{
                     t += str[i]
@@ -66,7 +62,7 @@ export class ClientShell {
             }
         }
         child.on('exit', (code, signal) => {
-            const index = this.shell_workers.findIndex(x => x[0] == source)
+            const index = this.shell_workers.findIndex(x => x[1] == source)
             if(index != -1) this.shell_workers.splice(index, 1)
         })
         child.on('message', (message, sendHandle) => {
@@ -84,69 +80,77 @@ export class ClientShell {
 
     /**
      * Open shell console
-     * @param input 
+     * @param input
      */
-    enter_shell = (input:string, source:WebSocket) => {
-        const p = this.shell_workers.find(x => x[0] == source)
-        if(p == undefined){
+    enter_shell = (uuid:string, input:string) => {
+        const shell = this.shell_workers.find(x => x[0] == uuid)
+        if(shell == undefined){
             this.messager_log(`[Shell] Cannot find shell instance`)
             return
         }
-        p[1].stdin?.write(input + '\n')
-        if(process.platform == 'win32') p[1].stdin?.write("echo %cd%" + '\n')
-        else p[1].stdin?.write("pwd" + '\n')
+        shell[2].stdin?.write(input + '\n')
+        if(process.platform == 'win32') shell[2].stdin?.write("echo %cd%" + '\n')
+        else shell[2].stdin?.write("pwd" + '\n')
     }
 
     /**
      * Open shell console
      * @param input 
      */
-    close_shell = (data:number, source:WebSocket) => {
-        const p = this.shell_workers.find(x => x[0] == source)
-        if(p == undefined){
+    close_shell = (uuid:string) => {
+        const shell = this.shell_workers.find(x => x[0] == uuid)
+        if(shell == undefined){
             this.messager_log(`[Shell] Cannot find shell instance`)
             return
         }
-        p[1].kill()
+        shell[2].kill()
     }
 
     /**
      * Open shell console
      * @param input 
      */
-    close_shell_all = (data:number) => {
+    close_shell_all = () => {
         this.shell_workers.forEach(p => {
             if(p == undefined){
                 this.messager_log(`[Shell] Cannot find shell instance`)
                 return
             }
-            p[1].kill()
+            p[2].kill()
         })
+        this.shell_workers = []
     }
 
-    shell_folder = (data:string, source:WebSocket) => {
-        if(data.length == 0){
-            data = process.cwd()
+    shell_folder = (uuid:string, path:string) => {
+        const shell = this.shell_workers.find(x => x[0] == uuid)
+        if(shell == undefined){
+            this.messager_log(`[Shell] Cannot find shell instance`)
+            return
         }
-        if(!this.os.fs_dir_exist({path: data})){
-            data = process.cwd()
+        if(path.length == 0){
+            path = process.cwd()
+        }
+        if(!this.os.fs_dir_exist({path: path})){
+            path = process.cwd()
         }
         const d:ShellFolder = {
-            path: data,
+            path: path,
             cwd: process.cwd(),
-            folders: this.os.dir_dirs({path: data}),
-            files: this.os.dir_files({path: data})
+            folders: this.os.dir_dirs({path: path}),
+            files: this.os.dir_files({path: path})
         }
-        const h:Header = {
-            name: "shell_folder_reply",
-            data: d
-        }
-        source.send(JSON.stringify(h))
+        shell[1].emit("shell_folder_reply", d)
     }
 
-    disconnect = (source:WebSocket) => {
-        const p = this.shell_workers.find(x => x[0] == source)
-        if(p == undefined) return
-        p[1].kill()
+    disconnect = (uuid:string) => {
+        const shell = this.shell_workers.find(x => x[0] == uuid)
+        if(shell == undefined) return
+        shell[2].kill()
+    }
+
+    disconnect2 = (source:Socket) => {
+        const shell = this.shell_workers.find(x => x[1] == source)
+        if(shell == undefined) return
+        shell[2].kill()
     }
 }

@@ -6,8 +6,8 @@
 //
 //  ? Analysis the packets send from the computed server
 //
-import { ChildProcess, exec, spawn } from 'child_process';
-import { WebSocket } from 'ws';
+import { ChildProcess, exec, ExecException, spawn } from 'child_process';
+import { Socket } from 'socket.io';
 import { DATA_FOLDER, Header, Job, Libraries, Messager, Messager_log, Database, Plugin, PluginWithToken, PluginNode } from "../interface";
 import { Client } from './client';
 import { ClientExecute } from "./execute";
@@ -23,6 +23,7 @@ export class ClientAnalysis {
     private messager: Messager
     private messager_log: Messager_log
     private client:Client
+    private socket:Socket
     private exec:Array<ClientExecute>
     private shell:ClientShell
     private resource_wanter:Array<WebSocket> = []
@@ -36,8 +37,9 @@ export class ClientAnalysis {
      * @param _messager_log The log function at the higher level, Which does send back to server
      * @param _client Client instance
      */
-    constructor(_messager:Messager, _messager_log:Messager_log, _client:Client){
+    constructor(_client:Client, _socket:Socket, _messager:Messager, _messager_log:Messager_log){
         this.client = _client
+        this.socket = _socket
         this.messager = _messager
         this.messager_log = _messager_log
         this.shell = new ClientShell(_messager, _messager_log, this.client)
@@ -45,7 +47,7 @@ export class ClientAnalysis {
     }
 
     /**
-     * Analysis the package
+     * Register socket io event
      * @param h Package
      * @param source Websocket instance
      * @return 
@@ -53,44 +55,27 @@ export class ClientAnalysis {
      * * 1: The header is undefined, cannot process
      * * 2: Cannot find the header name match with function typeMap
      */
-    analysis = (h:Header | undefined, source:WebSocket) => {
-        const typeMap = {
-            'execute_job': this.execute_job,
-            'release': this.release,
-            'stop_job': this.stop_all,
-            'set_database': this.set_database,
-            'set_libs': this.set_libs,
-            'shell_folder': this.shell.shell_folder,
-            'open_shell': this.shell.open_shell,
-            'close_shell': this.shell.close_shell,
-            'enter_shell': this.shell.enter_shell,
-            'resource_start': this.resource_start,
-            'resource_end': this.resource_end,
-            'ping': this.pong,
-            'plugin_info': this.plugin_info,
-            'plugin_download': this.plugin_download,
-            'plugin_remove': this.plugin_remove,
-        }
+    RegisterEvent = () => {
+        this.socket.on('message', this.message)
+        this.socket.on('execute_job', this.execute_job)
+        this.socket.on('release', this.release)
+        this.socket.on('stop_job', this.stop_all)
+        this.socket.on('set_database', this.set_database)
+        this.socket.on('set_libs', this.set_libs)
+        this.socket.on('shell_folder', this.shell.shell_folder)
+        this.socket.on('open_shell', (uuid:string) => this.shell.open_shell(uuid, this.socket))
+        this.socket.on('close_shell', this.shell.close_shell)
+        this.socket.on('enter_shell', this.shell.enter_shell)
+        this.socket.on('resource_start', this.resource_start)
+        this.socket.on('resource_end', this.resource_end)
+        this.socket.on('ping', this.pong)
+        this.socket.on('plugin_info', this.plugin_info)
+        this.socket.on('plugin_download', this.plugin_download)
+        this.socket.on('plugin_remove', this.plugin_remove)
+    }
 
-        if (h == undefined){
-            this.messager_log('[Client Analysis] Analysis Failed, Value is undefined')
-            return 1
-        }
-        if (h.message != undefined && h.message.length > 0){
-            this.messager_log(`[Client Analysis] ${h.message}`)
-        }
-        if (h.data == undefined) {
-            this.messager_log('[Client Analysis] Analysis Warn, Data is undefined')
-            h.data = 0
-        }
-        if(typeMap.hasOwnProperty(h.name)){
-            const castingFunc = typeMap[h.name]
-            castingFunc(h.data, source, h.channel)
-            return 0
-        }else{
-            this.messager_log(`[Client Analysis] Analysis Failed, Unknowed header, name: ${h.name}, meta: ${h.meta}`)
-            return 2
-        }
+    private message = (msg:string) => {
+        this.messager_log(`[Client Analysis] ${msg}`)
     }
 
     /**
@@ -99,10 +84,10 @@ export class ClientAnalysis {
      * @param source Command source
      * @param channel Job thread UUID channel
      */
-    private execute_job = (job: Job, source: WebSocket, channel:string | undefined) => {
+    private execute_job = (job: Job, channel:string | undefined) => {
         if(channel == undefined) return
         const target = this.exec_checker(channel)
-        target.execute_job(job, source)
+        target.execute_job(job, this.socket)
     }
 
     /**
@@ -111,7 +96,7 @@ export class ClientAnalysis {
      * @param source Command source
      * @param channel Job thread UUID channel
      */
-    private release = (dummy:number, source: WebSocket, channel:string | undefined) => {
+    private release = (channel:string | undefined) => {
         if(channel == undefined) return
         const index = this.exec.findIndex(x => x.uuid == channel)
         if(index == -1) return
@@ -124,7 +109,7 @@ export class ClientAnalysis {
      * @param source Command source
      * @param channel Job thread UUID channel
      */
-    private set_database = (data:Database, source: WebSocket, channel:string | undefined) => {
+    private set_database = (data:Database, channel:string | undefined) => {
         if(channel == undefined) return
         const target = this.exec_checker(channel)
         target.set_database(data)
@@ -136,7 +121,7 @@ export class ClientAnalysis {
      * @param source Command source
      * @param channel Job thread UUID channel
      */
-    private set_libs = (data:Libraries, source: WebSocket, channel:string | undefined) => {
+    private set_libs = (data:Libraries, channel:string | undefined) => {
         if(channel == undefined) return
         const target = this.exec_checker(channel)
         target.set_libs(data)
@@ -164,9 +149,8 @@ export class ClientAnalysis {
      * @param data Dummy value, should always be 0
      * @param source The cluster server websocket instance
      */
-    private pong = (data:number, source: WebSocket) => {
-        const h:Header = { name: 'pong', data: data }
-        source.send(JSON.stringify(h))
+    private pong = (id:string) => {
+        this.socket.emit('pong', id)
     }
 
     /**
@@ -174,17 +158,17 @@ export class ClientAnalysis {
      * @param dummy Not important 
      * @param source The cluster server websocket instance
      */
-    private plugin_info = (dummy:number, source: WebSocket) => {
+    private plugin_info = () => {
         const pat = path.join(os.homedir(), DATA_FOLDER, "node_plugin", "plugin.json")
         if(existsSync(pat)){
             const p:PluginNode = JSON.parse(readFileSync(pat).toString())
             const h:Header = { name: 'plugin_info_reply', data: p.plugins }
-            source.send(JSON.stringify(h))
+            this.socket.send(JSON.stringify(h))
         }else{
             const p:PluginNode = { plugins: [] }
             const h:Header = { name: 'plugin_info_reply', data: p.plugins }
             writeFileSync(pat, JSON.stringify(p))
-            source.send(JSON.stringify(h))
+            this.socket.send(JSON.stringify(h))
         }
     }
 
@@ -225,7 +209,7 @@ export class ClientAnalysis {
         return f.id
     }
 
-    private write_plugin = (t: string | undefined, plugin:PluginWithToken, source: WebSocket) => {
+    private write_plugin = (t: string | undefined, plugin:PluginWithToken) => {
         const list = this.client.plugins.plugins
         const index = list.findIndex(x => x.name == plugin.name)
         plugin.token = t ? [t] : []
@@ -236,10 +220,10 @@ export class ClientAnalysis {
             list[index] = plugin
         }
         this.client.savePlugin()
-        this.plugin_info(0, source)
+        this.plugin_info()
     }
 
-    private finish_plugin = (plugin:PluginWithToken, source: WebSocket) => {
+    private finish_plugin = (plugin:PluginWithToken) => {
         const list = this.client.plugins.plugins
         const index = list.findIndex(x => x.name == plugin.name)
         plugin.progress = 1
@@ -249,7 +233,7 @@ export class ClientAnalysis {
             list[index] = plugin
         }
         this.client.savePlugin()
-        this.plugin_info(0, source)
+        this.plugin_info()
     }
 
     /**
@@ -258,7 +242,7 @@ export class ClientAnalysis {
      * @param plugin Target plugin
      * @param source Command source
      */
-    private plugin_download = async (plugin:PluginWithToken, source: WebSocket) => {
+    private plugin_download = async (plugin:PluginWithToken) => {
         const target = plugin.contents.find(x => x.arch == process.arch && x.platform == process.platform)
         if(target == undefined){
             this.messager_log(`[Plugin] Cannot find target plugin for ${plugin.name} on ${process.platform} ${process.arch}`)
@@ -291,7 +275,7 @@ export class ClientAnalysis {
                     if(!res.ok){
                         throw new Error(`Failed to download file: ${res.status} ${res.statusText}`);
                     }
-                    this.write_plugin(t, plugin, source)
+                    this.write_plugin(t, plugin)
                     return res.blob()
                 }).then(blob => {
                     return blob.stream().getReader().read()
@@ -304,11 +288,12 @@ export class ClientAnalysis {
                     this.messager_log(`[Plugin] Downloaded ${plugin.name} successfully`)
                     fileStream.end();
                     if(process.platform == 'linux'){
-                        exec(`chmod +x ${path.join(dir, target.filename)}`, (err) => {
-                            this.messager_log(`[Plugin] Permission failed ${err?.message}`)
+                        exec(`chmod +x ${path.join(dir, target.filename)}`, (err:ExecException | null) => {
+                            if(err) this.messager_log(`[Plugin] Permission failed ${err?.message}`)
+                            else this.messager_log(`[Plugin] Apply Execute Permission Successfully`)
                         })
                     }
-                    this.finish_plugin(plugin, source)
+                    this.finish_plugin(plugin)
                     pass = true
                 })
             }
@@ -318,7 +303,7 @@ export class ClientAnalysis {
         }
     }
 
-    private plugin_remove = (plugin:Plugin, source: WebSocket) => {
+    private plugin_remove = (plugin:Plugin) => {
         this.client.plugins.plugins = this.client.plugins.plugins.filter(x => x.name != plugin.name)
         this.client.savePlugin()
         const dir = path.join(os.homedir(), DATA_FOLDER, "node_plugin")
@@ -326,7 +311,7 @@ export class ClientAnalysis {
         if(existsSync(path.join(dir, plugin.name))){
             rmSync(path.join(dir, plugin.name), { recursive: true })
         }
-        this.plugin_info(0, source)
+        this.plugin_info()
     }
 
     private resource_start = (data:number, source: WebSocket) => {
@@ -350,8 +335,8 @@ export class ClientAnalysis {
         }
     }
 
-    disconnect = (source: WebSocket) => {
-        this.shell.disconnect(source)
+    disconnect = (source: Socket) => {
+        this.shell.disconnect2(source)
         this.exec.forEach(x => x.stop_job())
     }
 

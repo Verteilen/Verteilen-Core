@@ -5,7 +5,6 @@
 // ========================
 import { DatabaseContainer, DataTime, Project } from "./base"
 import { ACLType, LocalPermission } from "./server"
-import { KeyValue } from "./struct"
 
 /**
  * Method to generate project template (populate)
@@ -84,7 +83,7 @@ export interface Plugin {
  */
 export interface PluginNode {
     /**
-     * A;; installed or installing 
+     * A: installed or installing 
      */
     plugins: Array<Plugin>
 }
@@ -95,6 +94,9 @@ export interface PluginNode {
  * To save time for next query
  */
 export interface PluginWithToken extends Plugin {
+    /**
+     * **Available token list**
+     */
     token: Array<string>
 }
 

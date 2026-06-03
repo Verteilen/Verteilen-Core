@@ -9,11 +9,10 @@
 //
 import * as path from 'path';
 import { check } from 'tcp-port-used';
-import { WebSocket } from 'ws';
-import * as ws from 'ws';
+import { Server, Socket } from 'socket.io';
 import { CLIENT_UPDATETICK, DATA_FOLDER, Header, Messager, Messager_log, PluginNode, PORT } from '../interface';
 import { ClientAnalysis } from './analysis';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'fs';
 import * as os from 'os'
 import * as pem from 'pem'
 import * as https from 'https'
@@ -30,8 +29,8 @@ export class Client {
     plugins: PluginNode = { plugins: [] }
     
     private httpss:https.Server<any> | undefined = undefined
-    private client:ws.Server | undefined = undefined
-    private sources:Array<WebSocket> = []
+    private client:Server | undefined = undefined
+    private sources:Array<Socket> = []
     private messager:Messager
     private messager_log:Messager_log
     private analysis:Array<ClientAnalysis>
@@ -46,7 +45,7 @@ export class Client {
     /**
      * Get connected client list instance
      */
-    public get clients() : Array<WebSocket> {
+    public get clients() : Array<Socket> {
         return this.sources
     }
 
@@ -55,7 +54,7 @@ export class Client {
         this.messager_log = _messager_log
         this.analysis = []
         this.updatehandle = setInterval(this.update, CLIENT_UPDATETICK);
-        this.loadPlugins()
+        this.loadPlugins(true)
     }
 
     Dispose (){
@@ -83,7 +82,7 @@ export class Client {
             res.end('HTTPS server is running');
         })
         this.httpss.addListener('upgrade', (req, res, head) => console.log('UPGRADE:', req.url))
-        this.client = new ws.WebSocketServer({server: this.httpss})
+        this.client = new Server(this.httpss, { path: '/', cors: { origin: '*' } })
         this.client.on('listening', () => {
             this.messager_log('[Server] Listen PORT: ' + port_result.toString())
         })
@@ -94,27 +93,24 @@ export class Client {
             this.messager_log('[Server] Close !')
             this.Release()
         })
-        this.client.on('connection', (ws, request) => {
-            const a = new ClientAnalysis(this.messager, this.messager_log, this)
+        this.client.on('connection', (socket) => {
+            const a = new ClientAnalysis(this, socket, this.messager, this.messager_log)
             this.analysis.push(a)
-            this.sources.push(ws)
-            this.messager_log(`[Server] New Connection detected, ${ws.url}`)
-            ws.on('close', (code, reason) => {
-                const index = this.sources.findIndex(x => x == ws)
+            this.sources.push(socket)
+            this.messager_log(`[Server] New Connection detected, ${socket.handshake.url}`)
+            socket.on('close', (code, reason) => {
+                const index = this.sources.findIndex(x => x == socket)
                 if(index != -1) this.sources.splice(index, 1)
                 this.messager_log(`[Source] Close ${code} ${reason}`)
-                a.disconnect(ws)
+                a.disconnect(socket)
             })
-            ws.on('error', (err) => {
+            socket.on('error', (err) => {
                 this.messager_log(`[Source] Error ${err.name}\n\t${err.message}\n\t${err.stack}`)
             })
-            ws.on('open', () => {
-                this.messager_log(`[Source] New source is connected, URL: ${ws?.url}`)
+            socket.on('open', () => {
+                this.messager_log(`[Source] New source is connected, URL: ${socket.handshake.url}`)
             })
-            ws.on('message', (data, isBinery) => {
-                const h:Header | undefined = JSON.parse(data.toString());
-                a.analysis(h, ws);
-            })
+            a.RegisterEvent()
         })
         this.httpss.listen(port_result, () => {
             this.messager_log('[Server] Select Port: ' + port_result.toString())
@@ -136,7 +132,7 @@ export class Client {
     }
 
     savePlugin = () => {
-        const f = path.join(os.homedir(), DATA_FOLDER)
+        const f = path.join(os.homedir(), DATA_FOLDER, 'node_plugin')
         const pluginPath = path.join(f, 'plugin.json')
         if(!existsSync(f)) mkdirSync(f, { recursive: true })
         writeFileSync(pluginPath, JSON.stringify(this.plugins, null, 4))
@@ -152,9 +148,10 @@ export class Client {
 
     /**
      * Load plugin info from disk
+     * @param init Whether or not delete the downloading one
      */
-    private loadPlugins = () => {
-        const f = path.join(os.homedir(), DATA_FOLDER, "node_plugin")
+    private loadPlugins = (init:boolean = false) => {
+        const f = path.join(os.homedir(), DATA_FOLDER, 'node_plugin')
         const pluginPath = path.join(f, 'plugin.json')
         if(!existsSync(f)) mkdirSync(f, { recursive: true })
         if(!existsSync(pluginPath)){
@@ -162,6 +159,15 @@ export class Client {
         }else{
             this.plugins = JSON.parse(readFileSync(pluginPath).toString())
         }
+
+        if(!init) return
+        const downloading = this.plugins.plugins.filter(x => x.progress == 0)
+        for(let x of downloading){
+            const p = path.join(DATA_FOLDER, 'node_plugin', x.name)
+            rmSync(p, {recursive: true})
+        }
+        this.plugins.plugins = this.plugins.plugins.filter(x => x.progress != 0)
+        this.savePlugin()
     }
 
     /**

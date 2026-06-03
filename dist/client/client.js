@@ -43,27 +43,53 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Client = void 0;
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
+//
+//  ? Computed client object base
+//  ? Or you could just use it anyway, Everything is here
+//
 const path = __importStar(require("path"));
 const tcp_port_used_1 = require("tcp-port-used");
-const ws = __importStar(require("ws"));
+const socket_io_1 = require("socket.io");
 const interface_1 = require("../interface");
 const analysis_1 = require("./analysis");
 const fs_1 = require("fs");
 const os = __importStar(require("os"));
 const pem = __importStar(require("pem"));
 const https = __importStar(require("https"));
+/**
+ * **Compute Client**\
+ * The calculation node worker
+ */
 class Client {
+    /**
+     * Get connected client count
+     */
     get count() {
         return this.sources.length;
     }
+    /**
+     * Get connected client list instance
+     */
     get clients() {
         return this.sources;
     }
     constructor(_messager, _messager_log) {
+        /**
+         * **Plugin Record**\
+         * Use {@link loadPlugins} to load the plugin from disk
+         */
         this.plugins = { plugins: [] };
         this.httpss = undefined;
         this.client = undefined;
         this.sources = [];
+        /**
+         * Start a websocket server, and waiting for cluster server to connect
+         */
         this.Init = () => __awaiter(this, void 0, void 0, function* () {
             let port_result = interface_1.PORT;
             let canbeuse = false;
@@ -82,7 +108,7 @@ class Client {
                 res.end('HTTPS server is running');
             });
             this.httpss.addListener('upgrade', (req, res, head) => console.log('UPGRADE:', req.url));
-            this.client = new ws.WebSocketServer({ server: this.httpss });
+            this.client = new socket_io_1.Server(this.httpss, { path: '/', cors: { origin: '*' } });
             this.client.on('listening', () => {
                 this.messager_log('[Server] Listen PORT: ' + port_result.toString());
             });
@@ -93,28 +119,25 @@ class Client {
                 this.messager_log('[Server] Close !');
                 this.Release();
             });
-            this.client.on('connection', (ws, request) => {
-                const a = new analysis_1.ClientAnalysis(this.messager, this.messager_log, this);
+            this.client.on('connection', (socket) => {
+                const a = new analysis_1.ClientAnalysis(this, socket, this.messager, this.messager_log);
                 this.analysis.push(a);
-                this.sources.push(ws);
-                this.messager_log(`[Server] New Connection detected, ${ws.url}`);
-                ws.on('close', (code, reason) => {
-                    const index = this.sources.findIndex(x => x == ws);
+                this.sources.push(socket);
+                this.messager_log(`[Server] New Connection detected, ${socket.handshake.url}`);
+                socket.on('close', (code, reason) => {
+                    const index = this.sources.findIndex(x => x == socket);
                     if (index != -1)
                         this.sources.splice(index, 1);
                     this.messager_log(`[Source] Close ${code} ${reason}`);
-                    a.disconnect(ws);
+                    a.disconnect(socket);
                 });
-                ws.on('error', (err) => {
+                socket.on('error', (err) => {
                     this.messager_log(`[Source] Error ${err.name}\n\t${err.message}\n\t${err.stack}`);
                 });
-                ws.on('open', () => {
-                    this.messager_log(`[Source] New source is connected, URL: ${ws === null || ws === void 0 ? void 0 : ws.url}`);
+                socket.on('open', () => {
+                    this.messager_log(`[Source] New source is connected, URL: ${socket.handshake.url}`);
                 });
-                ws.on('message', (data, isBinery) => {
-                    const h = JSON.parse(data.toString());
-                    a.analysis(h, ws);
-                });
+                a.RegisterEvent();
             });
             this.httpss.listen(port_result, () => {
                 this.messager_log('[Server] Select Port: ' + port_result.toString());
@@ -134,17 +157,25 @@ class Client {
             this.analysis = [];
         };
         this.savePlugin = () => {
-            const f = path.join(os.homedir(), interface_1.DATA_FOLDER);
+            const f = path.join(os.homedir(), interface_1.DATA_FOLDER, 'node_plugin');
             const pluginPath = path.join(f, 'plugin.json');
             if (!(0, fs_1.existsSync)(f))
                 (0, fs_1.mkdirSync)(f, { recursive: true });
             (0, fs_1.writeFileSync)(pluginPath, JSON.stringify(this.plugins, null, 4));
         };
+        /**
+         * The node update function, It will do things below
+         * * Send system info to cluster server
+         */
         this.update = () => {
             this.analysis.forEach(x => x.update(this));
         };
-        this.loadPlugins = () => {
-            const f = path.join(os.homedir(), interface_1.DATA_FOLDER, "node_plugin");
+        /**
+         * Load plugin info from disk
+         * @param init Whether or not delete the downloading one
+         */
+        this.loadPlugins = (init = false) => {
+            const f = path.join(os.homedir(), interface_1.DATA_FOLDER, 'node_plugin');
             const pluginPath = path.join(f, 'plugin.json');
             if (!(0, fs_1.existsSync)(f))
                 (0, fs_1.mkdirSync)(f, { recursive: true });
@@ -154,14 +185,27 @@ class Client {
             else {
                 this.plugins = JSON.parse((0, fs_1.readFileSync)(pluginPath).toString());
             }
+            if (!init)
+                return;
+            const downloading = this.plugins.plugins.filter(x => x.progress == 0);
+            for (let x of downloading) {
+                const p = path.join(interface_1.DATA_FOLDER, 'node_plugin', x.name);
+                (0, fs_1.rmSync)(p, { recursive: true });
+            }
+            this.plugins.plugins = this.plugins.plugins.filter(x => x.progress != 0);
+            this.savePlugin();
         };
+        /**
+         * Get https key and cert from disk
+         * @returns [Key, Cert]
+         */
         this.get_pem = () => {
             return new Promise((resolve) => {
                 const pemFolder = path.join(os.homedir(), interface_1.DATA_FOLDER, 'pem');
                 if (!(0, fs_1.existsSync)(pemFolder))
                     (0, fs_1.mkdirSync)(pemFolder);
-                const clientKey = path.join(pemFolder, "client_clientkey.pem");
-                const certificate = path.join(pemFolder, "client_certificate.pem");
+                const clientKey = path.join(pemFolder, "client_clientkey.pem"); // Key location
+                const certificate = path.join(pemFolder, "client_certificate.pem"); // Cert location
                 if (!(0, fs_1.existsSync)(clientKey) || !(0, fs_1.existsSync)(certificate)) {
                     pem.createCertificate({ selfSigned: true }, (err, keys) => {
                         (0, fs_1.writeFileSync)(clientKey, keys.clientKey, { encoding: 'utf8' });
@@ -178,25 +222,32 @@ class Client {
         this.messager_log = _messager_log;
         this.analysis = [];
         this.updatehandle = setInterval(this.update, interface_1.CLIENT_UPDATETICK);
-        this.loadPlugins();
+        this.loadPlugins(true);
     }
     Dispose() {
         clearInterval(this.updatehandle);
     }
 }
 exports.Client = Client;
+/**
+ * Get worker exe file path, but it could use in different file as well
+ * @param filename Worker file without extension
+ * @param extension file extension
+ * @returns The target file path
+ */
 Client.workerPath = (filename = "worker", extension = ".exe") => {
     var _a;
+    // @ts-ignore
     const isExe = ((_a = process.pkg) === null || _a === void 0 ? void 0 : _a.entrypoint) != undefined;
     const exe = process.platform == 'win32' ? filename + extension : filename;
     let workerExe = "";
     let p = 0;
-    if (isExe && path.basename(process.execPath) == (process.platform ? "app.exe" : 'app')) {
+    if (isExe && path.basename(process.execPath) == (process.platform ? "app.exe" : 'app')) { // Node build
         workerExe = path.join(process.execPath, "..", "bin", exe);
         p = 1;
     }
     else if ((process.mainModule && process.mainModule.filename.indexOf('app.asar') !== -1) ||
-        process.argv.filter(a => a.indexOf('app.asar') !== -1).length > 0) {
+        process.argv.filter(a => a.indexOf('app.asar') !== -1).length > 0) { // Electron package
         workerExe = path.join("bin", exe);
         p = 2;
     }
@@ -204,22 +255,32 @@ Client.workerPath = (filename = "worker", extension = ".exe") => {
         workerExe = path.join(process.cwd(), "bin", exe);
         p = 3;
     }
-    else {
+    else { // Node un-build
         workerExe = Client.isTypescript() ? path.join(__dirname, "bin", exe) : path.join(__dirname, "..", "bin", exe);
         p = 4;
     }
     return workerExe;
 };
+/**
+ * Check If we're currently in the typescript environment
+ */
 Client.isTypescript = () => {
+    // if this file is typescript, we are running typescript :D
+    // this is the best check, but fails when actionhero is compiled to js though...
     const extension = path.extname(__filename);
     if (extension === ".ts") {
         return true;
     }
+    // are we running via a ts-node/ts-node-dev shim?
     const lastArg = process.execArgv[process.execArgv.length - 1];
     if (lastArg && path.parse(lastArg).name.indexOf("ts-node") > 0) {
         return true;
     }
     try {
+        /**
+         * Are we running in typescript at the moment?
+         * see https://github.com/TypeStrong/ts-node/pull/858 for more details
+         */
         return process[Symbol.for("ts-node.register.instance")] ||
             (process.env.NODE_ENV === "test" &&
                 process.env.ACTIONHERO_TEST_FILE_EXTENSION !== "js")

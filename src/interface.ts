@@ -3,8 +3,6 @@
 //      Share Codebase     
 //                           
 // ========================
-const DefaultSerect = "aVdWN1gWTTUsAQ06aZHyyLMXo0kEJYhU"
-export const SERECT = typeof process !== 'undefined' ? (process.env.SERECT || DefaultSerect) : DefaultSerect
 /**
  * Default client node port
  */
@@ -43,6 +41,7 @@ export const MONGODB_NAME = "verteilen"
 export * from './interface/base'
 export * from './interface/bus'
 export * from './interface/enum'
+export * from './interface/error'
 export * from './interface/execute'
 export * from './interface/record'
 export * from './interface/server'
@@ -56,17 +55,3 @@ export * from './interface/log'
  * Plugin
  */
 export * as I18N from './plugins/i18n'
-/**
- * Scripts
- */
-export * from './script/execute'
-export * from './script/console_manager'
-export * from './script/console_server_manager'
-export * from './script/execute_manager'
-export * from './script/socket_manager'
-export * from './script/webhook_manager'
-/**
- * Util
- */
-export * from './server/detail/console_handle'
-export * from './server/detail/log_handle'

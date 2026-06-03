@@ -10,21 +10,29 @@
 import { BackendType } from "./enum"
 
 /**
+ * Shows the frontend page selection login
+ */
+export enum FrontendState {
+    NONE,
+    LOGIN_BACKEND,
+    LOGOUT_BACKEND,
+    SETUP_BACKEND,
+    LOGIN_STATIC,
+    LOGOUT_STATIC,
+    SETUP_STATIC,
+    CLUSTER,
+    NODE,
+}
+
+/**
  * **Application Configuration**\
  * Show current state of the app\
  * Defined by the backend proxy worker
  */
 export interface AppConfig {
-    /**
-     * **FLAG: Express**\
-     * For browser check if it's connect to a express server
-     */
-    isExpress: boolean
-    /**
-     * **FLAG: Electron**\
-     * For browser check if it's use Electron desktop app currently
-     */
-    isElectron: boolean
+    http_url?: string
+    websocket_url?: string
+    setup: boolean
     /**
      * **FLAG: Admin**\
      * If use express server, check user have root permission

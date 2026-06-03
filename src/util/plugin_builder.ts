@@ -1,7 +1,19 @@
+// ========================
+//                           
+//      Share Codebase     
+//                           
+// ========================
 import * as fs from 'fs'
 import * as path from 'path'
 import { CreateDefaultProject, DatabaseContainer, PluginBase, PluginContainer, PluginGenData, PluginNode, Project } from '../interface'
 
+/**
+ * Build plugin base on current project structure
+ * @param root Output folder
+ * @param plugins Plugin structure
+ * @param templates Template structure
+ * @param data Plugin header
+ */
 export const PluginBuild = (root:string, plugins:PluginNode, templates:PluginGenData, data:PluginBase) => {
     console.log("Activate Plugin Build Process...")
     const root_p = path.join(root, 'project')

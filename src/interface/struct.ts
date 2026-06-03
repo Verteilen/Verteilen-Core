@@ -7,22 +7,23 @@
  * All kinds of data structure
  * It's a mess, i know
  */
-import * as ws from 'ws'
+import { Socket } from 'socket.io-client'
 import { Job } from "./base"
-import { ServiceMode, TaskLogicType } from "./enum"
+import { ExecuteState, ServiceMode, TaskLogicType } from "./enum"
 import { Plugin } from "./plugin"
 
 /**
  * The websocket instance with extra information
  */
-export interface WebsocketPack {
+export interface SocketPack {
     s?:boolean
+    url: string
     uuid: string
     parent?: string
     /**
      * The instance of websocket
      */
-    websocket: WebSocket | ws.WebSocket
+    socket: Socket
     /**
      * Current execute job uuid list
      */
@@ -51,7 +52,7 @@ export interface WebsocketPack {
     /**
      * Cluster node possibility
      */
-    children?: Array<WebsocketPack>
+    children?: Array<SocketPack>
 }
 
 /**
@@ -153,6 +154,7 @@ export interface KeyValue {
 export interface JWT {
     user: string
     create: number
+    expire: number
 }
 
 export interface SystemLoad_GPU {
@@ -250,6 +252,13 @@ export interface ServiceConfig {
 }
 
 export interface TaskLogicUnit {
+    /**
+     * **Unique id for a container**
+     */
+    uuid: string
+    /**
+     * **Logic container type**
+     */
     type: TaskLogicType
     /**
      * **Attach Job ID**
@@ -259,6 +268,10 @@ export interface TaskLogicUnit {
      * **Attach Job Container (Runtime)**
      */
     job?: Job
+    /**
+     * Job state
+     */
+    state?: ExecuteState
     /**
      * **Common Logic Group**
      */

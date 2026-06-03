@@ -1,4 +1,4 @@
-import { Database, DataHeader, Node, Project, Shareable } from "./base"
+import { Database, DataHeader, DataTime, Node, Project, Shareable } from "./base"
 import { ExecuteState } from "./enum"
 import { ExecuteData } from "./record"
 
@@ -28,12 +28,15 @@ export interface ExecutionLog extends DataHeader, Shareable {
     logs: Array<ExecutionTaskLog>
 }
 
-export interface Log {
+export interface Log extends DataHeader, DataTime, Shareable {
     logs: Array<ExecutionLog>
 }
 
 /**
- * **Execute Record**
+ * **Execute Record**\
+ * Content all the information execution thread is needed
+ * * Projects - A list of project which need to execute by order
+ * * Nodes - The node which use for this thread
  */
 export interface Record {
     /**
@@ -48,6 +51,10 @@ export interface Record {
     nodes: Array<Node>
 }
 
+/**
+ * **Execute Thread State**\
+ * All the state is in here which will be use in execution processes
+ */
 export interface ExecuteRecord extends Record {
     /**
      * **Thread ID**
@@ -104,7 +111,16 @@ export interface ExecuteRecord extends Record {
      * **Current Task Index**
      */
     task_index: number
+    /**
+     * **Project State**
+     */
     project_state: Array<ExecuteData>
+    /**
+     * **Task State**
+     */
     task_state: Array<ExecuteData>
+    /**
+     * **Subtask Detail State**
+     */
     task_detail: Array<ExecuteRecordTask>
 }
